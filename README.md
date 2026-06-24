@@ -85,3 +85,95 @@ agent-smagent/
 ├── package.json
 └── README.md
 ```
+
+## Module Boundaries
+
+- ha_core/ — The Library:
+  Message model
+  CCR pipeline
+  cache alignment
+  token crushing
+  context manager
+  Token counting
+  Content classification
+  Compression rules
+  Cross‑agent memory
+  Output token reduction
+  Provider adapters
+  Reversible cache
+  This is the engine.
+
+- ha_proxy/ — Zero‑code‑change proxy
+  Thin wrapper around ha_core.
+  Accepts OpenAI/Anthropic/Google‑style requests
+  Runs compress()
+  Forwards to provider
+  Applies output reduction
+  Returns response
+  Stores originals
+  This is the drop‑in replacement for any app.
+- ha_mcp/ — MCP server
+  Exposes:
+  humanAuction_compress
+  humanAuction_retrieve
+  humanAuction_stats
+  This lets Claude Desktop, Cursor, etc. use your compression layer natively.
+
+- ha_wrap/ — Agent wrappers
+  One‑command wrappers for:
+  claude
+  aider
+  cursor
+  copilot
+  opencode
+  They:
+  Start proxy
+  Inject env vars
+  Launch agent
+
+- ha_learn/ — Self‑improving layer
+  Mines failed sessions → writes corrections to:
+  CLAUDE.md
+  AGENTS.md
+  This is our auto‑tuning brain.
+
+- ha_cli/ — Unified CLI
+  Everything exposed as:
+    ```Code
+    humanAuction proxy
+    humanAuction wrap aider
+    humanAuction learn
+    humanAuction stats
+    ```
+
+## 🧱 Build Order
+
+- ha_core/
+  message model
+  cache
+  CCR pipeline
+  compress() Python + TS
+
+- ha_proxy/
+  HTTP server
+  provider adapters
+  reversible logging
+
+- ha_mcp/
+  compress
+  retrieve
+  stats
+
+- ha_wrap/
+  agent wrappers
+
+- ha_learn/
+  failure miner
+  CLAUDE.md / AGENTS.md writer
+
+- ha_cli/
+  unify everything
+  docs/
+  architecture
+  roadmap
+  usage
