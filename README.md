@@ -1,0 +1,87 @@
+#agent-smagent
+
+## intro
+
+This is all because i got murdered on tokens asking stupid questions and being naturally paranoid. also recently distrustful of using basically anything since the NPM, Linux, react, GitHub, open source breach, etc...
+i found solutions, like headroom, started reading code and then got scared. if i dont understand something i try to build it. so, when i'd stopped being scared, i figured maybe just write it myself and at least then I'll know it isn't also doing "something else" at "some tbc dateTime" by "yes" (probably, shits been WILD recently...).
+
+## Project Structure
+
+```text
+agent-smagent/
+│
+├── ha_core/                 # The beating heart: CCR pipeline + message model
+│   ├── analyze/             # Parsers, token counters, classifiers
+│   ├── transform/           # CCR: cache alignment, token crushing, context manager
+│   ├── call/                # Provider adapters (OpenAI, Anthropic, Google)
+│   ├── cache/               # Raw reversible storage (FS/SQLite/Redis)
+│   ├── memory/              # Cross-agent memory layer
+│   ├── stats/               # Token metrics, waste detection
+│   ├── output/              # Output token reduction
+│   ├── compress.py          # Python entrypoint
+│   ├── compress.ts          # TypeScript entrypoint
+│   └── __init__.py
+│
+├── ha_proxy/                # Zero‑code‑change HTTP proxy
+│   ├── server.py
+│   ├── router.py
+│   ├── middleware.py
+│   └── config.py
+│
+├── ha_mcp/                  # MCP server exposing: compress, retrieve, stats
+│   ├── server.py
+│   ├── tools/
+│   │   ├── compress.py
+│   │   ├── retrieve.py
+│   │   └── stats.py
+│   └── protocol/
+│
+├── ha_wrap/                 # Agent wrappers (claude, aider, cursor, copilot, etc.)
+│   ├── wrap.py
+│   ├── agents/
+│   │   ├── claude.py
+│   │   ├── aider.py
+│   │   ├── cursor.py
+│   │   └── copilot.py
+│   └── env/
+│
+├── ha_learn/                # Failure mining + CLAUDE.md / AGENTS.md updates
+│   ├── miner.py
+│   ├── summarizer.py
+│   ├── writer.py
+│   └── patterns/
+│
+├── ha_cli/                  # Unified CLI: `humanAuction <command>`
+│   ├── main.py
+│   ├── commands/
+│   │   ├── proxy.py
+│   │   ├── wrap.py
+│   │   ├── learn.py
+│   │   └── stats.py
+│   └── utils.py
+│
+├── docs/
+│   ├── ARCHITECTURE.md
+│   ├── CCR.md
+│   ├── MEMORY.md
+│   ├── PROXY.md
+│   ├── MCP.md
+│   ├── LEARN.md
+│   └── ROADMAP.md
+│
+├── tests/
+│   ├── core/
+│   ├── proxy/
+│   ├── mcp/
+│   ├── wrap/
+│   └── learn/
+│
+├── examples/
+│   ├── python/
+│   ├── typescript/
+│   └── proxy/
+│
+├── pyproject.toml
+├── package.json
+└── README.md
+```
