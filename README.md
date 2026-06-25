@@ -1,4 +1,4 @@
-#agent-smagent
+# agent-smagent
 
 ## intro
 
@@ -112,6 +112,7 @@ agent-smagent/
   Returns response
   Stores originals
   This is the drop‑in replacement for any app.
+
 - ha_mcp/ — MCP server
   Exposes:
   humanAuction_compress
@@ -139,14 +140,15 @@ agent-smagent/
 
 - ha_cli/ — Unified CLI
   Everything exposed as:
-    ```Code
+
+```Code
     humanAuction proxy
     humanAuction wrap aider
     humanAuction learn
     humanAuction stats
-    ```
+```
 
-## 🧱 Build Order
+## Build Order
 
 - ha_core/
   message model
