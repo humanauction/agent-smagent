@@ -1,3 +1,10 @@
+const compressed = await smage.compress({
+    messages,
+    agent: "copilot",
+    session: "abc123",
+    options: { ast: false, maxAge: 3600_000 },
+});
+
 export interface SMAGEOptions {
     ast?: boolean;
     maxAge?: number; // ms
