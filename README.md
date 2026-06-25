@@ -12,14 +12,25 @@ agent-smagent/
 │
 ├── ha_core/                 # The beating heart: CCR pipeline + message model
 │   ├── analyze/             # Parsers, token counters, classifiers
+│   │   ├── classifier.ts
+│   │   └── tokens.ts
 │   ├── transform/           # CCR: cache alignment, token crushing, context manager
+│   │   ├── ccr.ts
+│   │   ├── payload.ts
+│   │   └── context.ts
 │   ├── call/                # Provider adapters (OpenAI, Anthropic, Google)
+│   │   └── providers.ts
 │   ├── cache/               # Raw reversible storage (FS/SQLite/Redis)
+│   │   └── store.ts
 │   ├── memory/              # Cross-agent memory layer
+│   │   └── memory.ts
 │   ├── stats/               # Token metrics, waste detection
+│   │   └── stats.ts
 │   ├── output/              # Output token reduction
+│   │   └── reducer.ts
 │   ├── compress.py          # Python entrypoint
 │   ├── compress.ts          # TypeScript entrypoint
+│   ├── index.ts
 │   └── __init__.py
 │
 ├── ha_proxy/                # Zero‑code‑change HTTP proxy
