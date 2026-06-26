@@ -1,27 +1,28 @@
-const compressed = await smage.compress({
-    messages,
-    agent: "copilot",
-    session: "abc123",
-    options: { ast: false, maxAge: 3600_000 },
-});
+import { classifyMessage } from "./analyze/classifier";
+import { countTokens } from "./analyze/tokens";
+// import { cacheStore } from "./cache/store";
+// import { applyCCR } from "./transform/ccr";
+import type { SMAGEMessage, SMAGECompressParams } from "./index";
 
-export interface SMAGEOptions {
-    ast?: boolean;
-    maxAge?: number; // ms
-}
+export async function compress(
+    params: SMAGECompressParams,
+): Promise<SMAGEMessage[]> {
+    const { messages, session } = params;
+    const opts = params.options ?? {};
 
-export interface SMAGEMessage {
-    role: "system" | "user" | "assistant" | "tool";
-    content: string;
-    name?: string;
-    meta?: Record<string, any>;
-}
+    const annotated = messages.map((msg, i) => {
+        const kind = classifyMessage(msg);
+        const tokens = countTokens(msg.content);
+        const cacheKey = cacheStore(session, i, msg);
 
-export interface SMAGECompressParams {
-    messages: SMAGEMessage[];
-    agent: string;
-    session: string;
-    options?: SMAGEOptions;
+        return {
+            ...msg,
+            meta: { ...(msg.meta ?? {}), kind, tokens, cacheKey },
+        };
+    });
+
+    const transformed = await applyCCR(annotated, params.agent, session, opts);
+    return transformed;
 }
 
 //
@@ -29,10 +30,6 @@ export interface SMAGECompressParams {
 //  INTERNAL HELPERS (minimal, functional)
 // ─────────────────────────────────────────────────────────────
 //
-
-function tokenCount(text: string): number {
-    return text.split(/\s+/).length;
-}
 
 function isCodeBlock(msg: SMAGEMessage): boolean {
     return msg.content.trim().startsWith("```");
