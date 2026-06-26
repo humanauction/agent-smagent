@@ -2,8 +2,8 @@
     // Visit https://aka.ms/tsconfig to read more about this file
     "compilerOptions": {
         // File Layout
-        // "rootDir": "./src",
-        // "outDir": "./dist",
+        "rootDir": "./ha_core",
+        "outDir": "./dist",
 
         // Environment Settings
         // See also https://aka.ms/tsconfig/module
@@ -23,6 +23,7 @@
         // Stricter Typechecking Options
         "noUncheckedIndexedAccess": true,
         "exactOptionalPropertyTypes": true,
+        "moduleResolution": "bundler",
 
         // Style Options
         // "noImplicitReturns": true,
@@ -34,7 +35,6 @@
 
         // Recommended Options
         "strict": true,
-        "jsx": "react-jsx",
         "verbatimModuleSyntax": true,
         "isolatedModules": true,
         "noUncheckedSideEffectImports": true,
