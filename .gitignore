@@ -1,0 +1,15 @@
+# boilerplate gitignore file for a Python project including npm and vscode settings
+
+npm-debug.log
+yarn-error.log
+node_modules/
+dist/
+*.pyc
+__pycache__/
+
+# VSCode settings
+.vscode/
+
+.venv/
+env.py
+env/

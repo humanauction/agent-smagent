@@ -1,5 +1,5 @@
 import type { SMAGEMessage, SMAGEOptions } from "../index";
-import { applyPayloadCompression } from "../transform/payload";
+import { applyPayloadCompression } from "./payload";
 import { applyContextManager } from "./context";
 
 export async function applyCCR(
@@ -8,9 +8,6 @@ export async function applyCCR(
     session: string,
     options: SMAGEOptions,
 ): Promise<SMAGEMessage[]> {
-    // cache alignment already done in compress.ts
-
     const crushed = await applyPayloadCompression(messages, options);
-    const finalContext = applyContextManager(crushed, agent, session, options);
-    return finalContext;
+    return applyContextManager(crushed, agent, session, options);
 }
