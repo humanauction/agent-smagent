@@ -1,10 +1,7 @@
 import type { SMAGEMessage, SMAGEOptions } from "../index";
-import { countTokens } from "../analyze/tokens";
+import { tokenCount } from "../analyze/tokens";
 import { classifyMessage } from "../analyze/classifier";
-
-function compressContent(text: string): string {
-    return "[compressed] " + text.split(/\s+/).slice(0, 80).join(" ") + " ...";
-}
+import { compressContent } from "./compressors/basic";
 
 export async function applyPayloadCompression(
     messages: SMAGEMessage[],
@@ -12,7 +9,7 @@ export async function applyPayloadCompression(
 ): Promise<SMAGEMessage[]> {
     return messages.map((msg) => {
         const kind = classifyMessage(msg);
-        const tokens = countTokens(msg.content);
+        const tokens = tokenCount(msg.content);
 
         // invariants
         if (kind === "user" || kind === "system") return msg;

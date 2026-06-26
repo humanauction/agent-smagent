@@ -1,29 +1,8 @@
 import { classifyMessage } from "./analyze/classifier";
-import { countTokens } from "./analyze/tokens";
+import { tokenCount } from "./analyze/tokens";
 // import { cacheStore } from "./cache/store";
 // import { applyCCR } from "./transform/ccr";
 import type { SMAGEMessage, SMAGECompressParams } from "./index";
-
-export async function compress(
-    params: SMAGECompressParams,
-): Promise<SMAGEMessage[]> {
-    const { messages, session } = params;
-    const opts = params.options ?? {};
-
-    const annotated = messages.map((msg, i) => {
-        const kind = classifyMessage(msg);
-        const tokens = countTokens(msg.content);
-        const cacheKey = cacheStore(session, i, msg);
-
-        return {
-            ...msg,
-            meta: { ...(msg.meta ?? {}), kind, tokens, cacheKey },
-        };
-    });
-
-    const transformed = await applyCCR(annotated, params.agent, session, opts);
-    return transformed;
-}
 
 //
 // ─────────────────────────────────────────────────────────────

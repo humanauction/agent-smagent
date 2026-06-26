@@ -3,13 +3,6 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Optional, Any
 import copy
 
-compressed = smage.compress(
-    SMAGECompressParams(
-        messages=my_messages,
-        agent="claude",
-        session="abc123"
-    )
-)
 # ─────────────────────────────────────────────────────────────
 #  DATA MODELS
 # ─────────────────────────────────────────────────────────────

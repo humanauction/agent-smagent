@@ -1,5 +1,5 @@
 import type { SMAGEMessage, SMAGEOptions } from "../index";
-import { applyPayloadCompression } from "./payload";
+import { applyPayloadCompression } from "../transform/payload";
 import { applyContextManager } from "./context";
 
 export async function applyCCR(
