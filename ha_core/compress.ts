@@ -5,14 +5,10 @@ import type { SMAGECompressParams, SMAGEMessage } from "./index";
 export async function compress(
     params: SMAGECompressParams,
 ): Promise<SMAGEMessage[]> {
-    const { messages, session } = params;
+    const { messages, agent, session } = params;
+    const options = params.options ?? {};
 
     messages.forEach((msg, i) => cacheStore(session, i, msg));
 
-    return applyCCR(
-        messages,
-        params.agent,
-        params.session,
-        params.options ?? {},
-    );
+    return applyCCR(messages, agent, session, options);
 }

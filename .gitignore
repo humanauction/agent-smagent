@@ -1,4 +1,4 @@
-# boilerplate gitignore file for a Python project including npm and vscode settings
+# boilerplate gitignore file for project including python, environment, npm and vscode settings
 
 npm-debug.log
 yarn-error.log
