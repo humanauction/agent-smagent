@@ -19,5 +19,9 @@ const compressed = await smage.compress({
     options: { maxTokens: 200 },
 });
 
+messages.push(msg({ role: "assistant", content: "response" }));
+messages.push(msg({ role: "assistant", content: "response" }));
+messages.push(msg({ role: "assistant", content: "response   " }));
+messages.push(msg({ role: "assistant", content: "RESPONSE" }));
 console.log("compressed", compressed);
 // console.log("cache", cacheGet("abc123", 1));

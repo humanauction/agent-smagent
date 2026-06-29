@@ -1,5 +1,6 @@
 import type { SMAGEMessage } from "../index";
 
+// Priority levels for messages.
 export interface Anchor {
     system: SMAGEMessage[];
     lastUser?: SMAGEMessage;

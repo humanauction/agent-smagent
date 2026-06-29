@@ -1,6 +1,7 @@
 import type { SMAGEMessage, SMAGEOptions } from "../index";
 import { applyPayloadCompression } from "./payload";
 import { applyContextManager } from "./context";
+import { dedupeMessages } from "./dedupe";
 
 export async function applyCCR(
     messages: SMAGEMessage[],
@@ -9,5 +10,6 @@ export async function applyCCR(
     options: SMAGEOptions,
 ): Promise<SMAGEMessage[]> {
     const crushed = await applyPayloadCompression(messages, options);
-    return applyContextManager(crushed, agent, session, options);
+    const deduped = dedupeMessages(crushed);
+    return applyContextManager(deduped, agent, session, options);
 }
