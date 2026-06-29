@@ -7,7 +7,7 @@ export enum Priority {
     TOOL = 3,
     LOG = 4,
 }
-export function priorityOf(message: SMAGEMessage): Priority {
+export function priorityOf(msg: SMAGEMessage): Priority {
     if (msg.role === "system") return Priority.SYSTEM;
     if (msg.role === "user") return Priority.USER;
     if (msg.role === "assistant") return Priority.ASSISTANT;
