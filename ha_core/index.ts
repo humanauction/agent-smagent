@@ -17,4 +17,9 @@ export interface SMAGECompressParams {
     session: string;
     options?: SMAGEOptions;
 }
+
+export function msg(m: SMAGEMessage): SMAGEMessage {
+    return m;
+}
+
 export { compress } from "./compress";
