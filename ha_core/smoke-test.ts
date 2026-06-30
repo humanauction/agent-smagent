@@ -18,10 +18,19 @@ const compressed = await smage.compress({
     session: "abc123",
     options: { maxTokens: 200 },
 });
-
+// output reduction tests
 messages.push(msg({ role: "assistant", content: "response" }));
 messages.push(msg({ role: "assistant", content: "response" }));
 messages.push(msg({ role: "assistant", content: "response   " }));
 messages.push(msg({ role: "assistant", content: "RESPONSE" }));
+
+messages.push(
+    msg({
+        role: "assistant",
+        content:
+            "This is a very long assistant message. It contains many sentences. \
+              It is verbose and repetitive. It should be reduced. Thank you.",
+    }),
+);
 console.log("compressed", compressed);
 // console.log("cache", cacheGet("abc123", 1));

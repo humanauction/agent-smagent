@@ -3,6 +3,7 @@ import { applyPayloadCompression } from "./payload";
 import { applyContextManager } from "./context";
 import { dedupeMessages } from "./dedupe";
 import { mineMemory, injectMemory } from "../memory/memory";
+import { applyOutputReduction } from "../output/reducer";
 
 // Apply compression, context management, memory injection
 export async function applyCCR(
@@ -14,14 +15,21 @@ export async function applyCCR(
     // Mine memory from incoming messages
     mineMemory(messages, agent);
 
-    // Inject memory into the context
+    // 2. Compress original messages
+    const crushed = await applyPayloadCompression(messages, options);
+
+    // 3. Dedupe
+    const deduped = dedupeMessages(crushed);
+
+    // 4. Inject memory
     const memoryMessages = injectMemory(agent);
 
-    // Merge memory + messages
-    const merged = [...memoryMessages, ...messages];
+    // 5. Merge memory + deduped
+    const merged = [...memoryMessages, ...deduped];
 
-    // Apply payload compression
-    const crushed = await applyPayloadCompression(merged, options);
-    const deduped = dedupeMessages(crushed);
-    return applyContextManager(deduped, agent, session, options);
+    // 6. Context manager (anchors + priority + relevance + window)
+    const shaped = applyContextManager(merged, agent, session, options);
+
+    // 7. Output reduction (final stage)
+    return applyOutputReduction(shaped);
 }
