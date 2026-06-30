@@ -2,6 +2,7 @@ import type { SMAGEMessage, SMAGEOptions } from "../index";
 import { tokenCount } from "../analyze/tokens";
 import { priorityOf, Priority } from "./priority";
 import { extractAnchor } from "./anchor";
+import { relevanceScore } from "./relevance";
 
 const DEFAULT_MAX_TOKENS = 4000;
 
@@ -46,6 +47,15 @@ export function applyContextManager(
         runningTotal += cost;
     }
 
+    // compute each message relevence
+    const total = messages.length;
+    const lastUser = anchor.lastUser;
+
+    const relevanceMap = new Map<SMAGEMessage, number>();
+
+    messages.forEach((msg, index) => {
+        relevanceMap.set(msg, relevanceScore(msg, lastUser, index, total));
+    });
     // 2. Fill remaining window by priority tiers
     const tiers: Priority[] = [
         Priority.SYSTEM,
@@ -58,8 +68,12 @@ export function applyContextManager(
     for (const tier of tiers) {
         const bucket = buckets[tier];
 
+        // Sort by relevance descending
+        const sorted = [...bucket].sort(
+            (a, b) => (relevanceMap.get(b) ?? 0) - (relevanceMap.get(a) ?? 0),
+        );
         // Walk backwards (most recent first)
-        for (const msg of [...bucket].reverse()) {
+        for (const msg of sorted) {
             if (pinned.includes(msg)) continue;
 
             const cost = tokenCount(msg.content);
