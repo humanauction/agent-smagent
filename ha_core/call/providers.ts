@@ -1,15 +1,6 @@
 import type { SMAGEMessage, SMAGEOptions } from "../index";
 import { applyCCR } from "../transform/ccr";
 
-interface OpenAIResponse {
-    choices: {
-        message: {
-            role: string;
-            content: string;
-        };
-    }[];
-}
-
 function toProviderFormat(messages: SMAGEMessage[]) {
     return messages.map((m) => ({
         role: m.role,
@@ -24,6 +15,9 @@ function fromProviderFormat(
     return { role, content };
 }
 
+// ---------------
+// OpenAIProvider
+// ---------------
 export const OpenAIProvider = {
     name: "openai",
 
@@ -44,7 +38,17 @@ export const OpenAIProvider = {
             body: JSON.stringify(payload),
         });
 
-        const json = (await res.json()) as OpenAIResponse;
+        // Strict Safe Mode: Narrow response type to avoid runtime errors
+        const raw = (await res.json()) as unknown;
+
+        const json = raw as {
+            choices?: {
+                message?: {
+                    role?: string;
+                    content?: string;
+                };
+            }[];
+        };
         // Safe narrowing
         const choice = json?.choices?.[0];
         const message = choice?.message;
@@ -62,8 +66,9 @@ export const OpenAIProvider = {
         return fromProviderFormat(role, content);
     },
 };
-
+// ------------------
 // anthropicProvider
+// ------------------
 export const anthropicProvider = {
     name: "anthropic",
 
@@ -89,9 +94,9 @@ export const anthropicProvider = {
             body: JSON.stringify(payload),
         });
 
-        const json = (await res.json()) as unknown;
+        const raw = (await res.json()) as unknown;
 
-        const obj = json as {
+        const obj = raw as {
             content?: { text?: string }[];
         };
 
@@ -101,7 +106,9 @@ export const anthropicProvider = {
         return fromProviderFormat("assistant", text);
     },
 };
+// ----------------
 // googleProvider
+// ----------------
 export const googleProvider = {
     name: "google",
 
@@ -122,8 +129,8 @@ export const googleProvider = {
             body: JSON.stringify(payload),
         });
 
-        const json = (await res.json()) as unknown;
-        const obj = json as {
+        const raw = (await res.json()) as unknown;
+        const obj = raw as {
             candidates?: {
                 content?: { parts?: { text?: string }[] };
             }[];
