@@ -30,20 +30,35 @@ Full CCR (Cache–Crush–Reconstruct) pipeline with:
 agent-smagent/
 │
 ├── ha_core/ # The beating heart: CCR pipeline + message model
-│ ├── analyze/ # Parsers, token counters, classifiers
-│ ├── transform/ # CCR: cache alignment, token crushing, context manager
-│ ├── call/ # Provider adapters (OpenAI, Anthropic, Google)
-│ ├── cache/ # Raw reversible storage (FS/SQLite/Redis)
-│ ├── memory/ # Cross-agent memory layer
-│ ├── stats/ # Token metrics, waste detection
-│ ├── output/ # Output token reduction
-│ ├── compress.py # Python entrypoint
-│ ├── compress.ts # TypeScript entrypoint
-│ ├── index.ts
-│ └── **init**.py
+│   ├── analyze/ # Parsers, token counters, classifiers
+│   ├── transform/ # CCR: cache alignment, token crushing, context manager
+│   ├── call/ # Provider adapters (OpenAI, Anthropic, Google)
+│   ├── cache/ # Raw reversible storage (FS/SQLite/Redis)
+│   ├── memory/ # Cross-agent memory layer
+│   ├── stats/ # Token metrics, waste detection
+│   ├── output/ # Output token reduction
+│   ├── compress.py # Python entrypoint
+│   ├── compress.ts # TypeScript entrypoint
+│   ├── index.ts
+│   └── **init**.py
 │
 ├── ha_proxy/ # Zero‑code‑change HTTP proxy
+│   ├── config.ts # Proxy config (port, provider, etc.)
+│   ├──middleware.ts
+│   ├──router.ts
+│   ├──server.ts # Proxy entrypoint
+│   ├── test-provider.ts # Test provider adapter
+│   └── test-proxy.ts # Test proxy
+│
 ├── ha_mcp/ # MCP server exposing: compress, retrieve, stats
+│   │
+│   ├── server.ts      # MCP server entrypoint
+│   ├── tools/
+│   │   ├── compress.ts
+│   │   ├── retrieve.ts
+│   │   └── stats.ts
+│   └── protocol/     # type defs / helpers
+│
 ├── ha_wrap/ # Agent wrappers (claude, aider, cursor, copilot, etc.)
 ├── ha_learn/ # Failure mining + CLAUDE.md / AGENTS.md updates
 ├── ha_cli/ # Unified CLI
