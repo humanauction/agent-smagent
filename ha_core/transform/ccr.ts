@@ -4,6 +4,7 @@ import { applyContextManager } from "./context";
 import { dedupeMessages } from "./dedupe";
 import { mineMemory, injectMemory } from "../memory/memory";
 import { applyOutputReduction } from "../output/reducer";
+import { cacheAppend } from "../cache/store";
 
 // Apply compression, context management, memory injection
 export async function applyCCR(
@@ -30,6 +31,20 @@ export async function applyCCR(
     // 6. Context manager (anchors + priority + relevance + window)
     const shaped = applyContextManager(merged, agent, session, options);
 
+    // log shaped context window
+    cacheAppend(session, {
+        stage: "shaped",
+        messages: shaped,
+    });
+
     // 7. Output reduction (final stage)
-    return applyOutputReduction(shaped);
+    const reduced = await applyOutputReduction(shaped);
+
+    // log reduced output
+    cacheAppend(session, {
+        stage: "reduced",
+        messages: reduced,
+    });
+
+    return reduced;
 }
