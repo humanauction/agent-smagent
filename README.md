@@ -60,6 +60,11 @@ agent-smagent/
 │   └── protocol/     # type defs / helpers
 │
 ├── ha_wrap/ # Agent wrappers (claude, aider, cursor, copilot, etc.)
+│   │
+│   ├── agent.ts          # main wrapper class
+│   ├── mcp-client.ts     # JSON-RPC client for MCP server
+│   └── types.ts          # shared types
+│
 ├── ha_learn/ # Failure mining + CLAUDE.md / AGENTS.md updates
 ├── ha_cli/ # Unified CLI
 ├── docs/ # Architecture, CCR, Memory, Proxy, MCP, Learn, Roadmap
@@ -101,7 +106,7 @@ it:
 
 ### ha_mcp — MCP server
 
-This lets Claude Desktop, Cursor, and other MCP clients use your compression layer natively. Exposes:
+This lets Claude Desktop, Cursor, and other MCP clients use the compression layer natively. Exposes:
 
 - `humanAuction_compress`
 - `humanAuction_retrieve`

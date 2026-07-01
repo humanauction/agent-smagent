@@ -21,5 +21,18 @@
         "moduleDetection": "force",
         "skipLibCheck": true
     },
-    "include": ["ha_core/**/*", "ha_proxy/**/*", "ha_mcp/**/*"]
+    "include": [
+        "ha_core/**/*",
+        "ha_proxy/**/*",
+        "ha_mcp/**/*",
+        "ha_wrap/**/*",
+        "ha_cli/**/*"
+    ],
+    "exclude": ["node_modules", "dist"],
+    "paths": {
+        "@core/*": ["ha_core/*"],
+        "@proxy/*": ["ha_proxy/*"],
+        "@mcp/*": ["ha_mcp/*"],
+        "@wrap/*": ["ha_wrap/*"]
+    }
 }
