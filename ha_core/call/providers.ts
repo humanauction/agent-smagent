@@ -143,3 +143,24 @@ export const googleProvider = {
         return fromProviderFormat("assistant", text);
     },
 };
+
+// Call the appropriate provider based on the name
+export async function callProvider(
+    providerName: string,
+    messages: SMAGEMessage[],
+    model: string,
+    options: SMAGEOptions,
+): Promise<SMAGEMessage> {
+    const registry: Record<string, any> = {
+        openai: OpenAIProvider,
+        anthropic: anthropicProvider,
+        google: googleProvider,
+    };
+
+    const provider = registry[providerName];
+    if (!provider) {
+        throw new Error(`Unknown provider: ${providerName}`);
+    }
+
+    return provider.call(messages, model, options);
+}
