@@ -1,15 +1,33 @@
-# boilerplate gitignore file for project including python, environment, npm and vscode settings
-
-npm-debug.log
-yarn-error.log
+# Node
 node_modules/
+npm-debug.log*
+yarn-error.log*
 dist/
-*.pyc
-__pycache__/
+build/
 
-# VSCode settings
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+env.py
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# VSCode
 .vscode/
 
-.venv/
-env.py
-env/
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
