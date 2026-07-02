@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 
-import { runLearningCycle } from "../ha_learn/engine";
+import { runLearn } from "./commands/learn";
 import { startProxy } from "./commands/proxy";
 import { testAgent } from "./commands/agent";
 
@@ -13,9 +13,7 @@ const arg = process.argv[3];
 async function main() {
     switch (cmd) {
         case "learn":
-            const session = arg ?? "default";
-            const update = await runLearningCycle(session);
-            console.log(JSON.stringify(update, null, 2));
+            await runLearn(arg ?? "default");
             break;
 
         case "proxy":
