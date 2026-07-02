@@ -31,3 +31,7 @@ Thumbs.db
 # Environment
 .env
 .env.*
+
+
+# agent.mds
+.github/agents/askTutor.agent.md

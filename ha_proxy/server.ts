@@ -15,3 +15,6 @@ app.use(errorMiddleware);
 app.listen(config.port, () => {
     console.log(`SMAGE proxy running on port ${config.port}`);
 });
+
+// export handleLLM for testing purposes
+export { handleLLM };

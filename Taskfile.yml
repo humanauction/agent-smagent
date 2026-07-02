@@ -1,0 +1,87 @@
+version: "3"
+
+tasks:
+    # -----------------------------
+    # Help / Command List
+    # -----------------------------
+    help:
+        desc: "Show all available tasks"
+        cmds:
+            - echo "Available tasks:"
+            - task --list
+
+    list:
+        desc: "Alias for help"
+        cmds:
+            - task help
+
+    # -----------------------------
+    # Python environment management
+    # -----------------------------
+    vvact:
+        desc: "Activate Python virtual environment"
+        cmds:
+            - source .venv/bin/activate
+
+    vvup:
+        desc: "Update Python requirements"
+        cmds:
+            - pip install -r requirements.txt
+            - pip freeze > requirements.txt
+
+    # -----------------------------
+    # TypeScript / Node tasks
+    # -----------------------------
+    tsin:
+        desc: "Install Node packages"
+        cmds:
+            - npm install
+
+    tsup:
+        desc: "Update Node packages"
+        cmds:
+            - npm update
+
+    tsbd:
+        desc: "Build TypeScript"
+        cmds:
+            - npx tsc
+
+    tstst:
+        desc: "Run TypeScript tests"
+        cmds:
+            - npx tsx ha_wrap/test-agent.ts
+            - npx tsx ha_learn/test-learn.ts
+
+    # -----------------------------
+    # SMAGE servers
+    # -----------------------------
+    proxy:
+        desc: "Start SMAGE proxy server"
+        cmds:
+            - npx tsx ha_cli/main.ts proxy
+
+    mcp:
+        desc: "Start MCP server"
+        cmds:
+            - node ha_mcp/server.js
+
+    agent:
+        desc: "Run agent wrapper test"
+        cmds:
+            - npx tsx ha_cli/main.ts agent
+
+    learn:
+        desc: "Run learning engine"
+        cmds:
+            - npx tsx ha_cli/main.ts learn test-session
+
+    # -----------------------------
+    # Full system checks
+    # -----------------------------
+    chk:
+        desc: "Run full system check"
+        cmds:
+            - task tsbd
+            - task tstst
+            - task learn

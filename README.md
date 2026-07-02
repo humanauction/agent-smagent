@@ -66,7 +66,20 @@ agent-smagent/
 │   └── types.ts          # shared types
 │
 ├── ha_learn/ # Failure mining + CLAUDE.md / AGENTS.md updates
+│   │
+│   ├── engine.ts # Main learning cycle
+│   ├── miner.ts  # Collect samples, mine signals
+│   ├── types.ts  # LearningSample, LearningSignal, LearningUpdate
+│   └── test-learn.ts # Test script for learning cycle
+│
 ├── ha_cli/ # Unified CLI
+│   │
+│   ├── commands/
+│   │   ├── learn.ts
+│   │   ├── proxy.ts
+│   │   └── agent.ts
+│   └── main.ts # CLI entrypoint
+│
 ├── docs/ # Architecture, CCR, Memory, Proxy, MCP, Learn, Roadmap
 ├── tests/ # Core + proxy + MCP + wrappers + learning
 ├── examples/ # Python, TypeScript, Proxy usage
