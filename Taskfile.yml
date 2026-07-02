@@ -85,3 +85,14 @@ tasks:
             - task tsbd
             - task tstst
             - task learn
+
+    # -----------------------------
+    # PATH bootstrap
+    # -----------------------------
+    path:
+        desc: "Alias for path:bootstrap"
+        cmds:
+            - echo "Exporting local node_modules/.bin into PATH"
+            - export PATH="./node_modules/.bin:$PATH"
+            - echo "PATH updated. Current PATH:"
+            - echo $PATH
