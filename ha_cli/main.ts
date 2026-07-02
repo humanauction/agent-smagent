@@ -3,6 +3,7 @@
 import { runLearn } from "./commands/learn";
 import { startProxy } from "./commands/proxy";
 import { testAgent } from "./commands/agent";
+import { generateDocs } from "./commands/docs";
 
 // this file contains the main CLI entry point for the agentSmagent project
 
@@ -24,11 +25,16 @@ async function main() {
             await testAgent();
             break;
 
+        case "docs":
+            await generateDocs();
+            break;
+
         default:
             console.log("Commands:");
-            console.log("  humanAuction learn <session>");
-            console.log("  humanAuction proxy");
-            console.log("  humanAuction agent");
+            console.log("  AgentSmagent learn <session>");
+            console.log("  AgentSmagent proxy");
+            console.log("  AgentSmagent agent");
+            console.log("  AgentSmagent docs");
     }
 }
 

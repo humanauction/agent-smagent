@@ -59,7 +59,7 @@ tasks:
     proxy:
         desc: "Start SMAGE proxy server"
         cmds:
-            - npx tsx ha_cli/main.ts proxy
+            - npx ts-node --esm ha_cli/main.ts proxy
 
     mcp:
         desc: "Start MCP server"
@@ -69,12 +69,12 @@ tasks:
     agent:
         desc: "Run agent wrapper test"
         cmds:
-            - npx tsx ha_cli/main.ts agent
+            - npx ts-node --esm ha_cli/main.ts agent
 
     learn:
         desc: "Run learning engine"
         cmds:
-            - npx tsx ha_cli/main.ts learn test-session
+            - npx ts-node --esm ha_cli/main.ts learn test-session
 
     # -----------------------------
     # Full system checks
@@ -96,3 +96,8 @@ tasks:
             - export PATH="./node_modules/.bin:$PATH"
             - echo "PATH updated. Current PATH:"
             - echo $PATH
+
+    docs:
+        desc: "Generate SMAGE documentation"
+        cmds:
+            - npx ts-node --esm ha_cli/main.ts docs
