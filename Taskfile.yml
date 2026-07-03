@@ -64,7 +64,7 @@ tasks:
     mcp:
         desc: "Start MCP server"
         cmds:
-            - node ha_mcp/server.js
+            - node --require ts-node/register ha_mcp/server.ts
 
     agent:
         desc: "Run agent wrapper test"
