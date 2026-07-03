@@ -10,6 +10,13 @@ const rl = readline.createInterface({
     output: process.stdout,
 });
 
+// Heartbeat — top‑level, outside the request handler
+setInterval(() => {
+    process.stdout.write(
+        JSON.stringify({ type: "heartbeat", ts: Date.now() }) + "\n",
+    );
+}, 3000);
+
 rl.on("line", async (line: string) => {
     let req;
     try {
