@@ -7,6 +7,24 @@ interface AgentProcess {
 }
 
 let agent: AgentProcess | null = null;
+
+const metrics = {
+    restarts: 0,
+    uptimeStart: Date.now(),
+    lastHeartbeat: Date.now(),
+    heartbeatLatency: 0,
+    cpu: 0,
+    memory: 0,
+};
+
+function sampleSystemMetrics() {
+    const usage = process.cpuUsage();
+    const mem = process.memoryUsage();
+
+    metrics.cpu = usage.user / 1000; // ms
+    metrics.memory = Math.round(mem.rss / 1024 / 1024); // MB
+}
+
 // this function sends a test message to the provider, logs result via MCP
 
 function startAgent(): AgentProcess {
@@ -33,6 +51,9 @@ function startAgent(): AgentProcess {
         // heartbeat check
         if (text.includes('"type":"heartbeat"')) {
             agentProc.lastHeartbeat = Date.now();
+            metrics.heartbeatLatency = now - agentProc.lastHeartbeat;
+            agentProc.lastHeartbeat = now;
+            metrics.lastHeartbeat = now;
         }
         console.log(`[mcp] ${text}`);
     });
@@ -46,6 +67,7 @@ function startAgent(): AgentProcess {
 }
 
 function restartAgent() {
+    metrics.restarts++;
     console.log("[agent] restarting MCP server...");
     agent = startAgent();
 }
@@ -66,10 +88,34 @@ function startHealthCheck() {
     }, 5000);
 }
 
+function startDashboard() {
+    setInterval(() => {
+        sampleSystemMetrics();
+        printDashboard();
+    }, 2000);
+}
+
+function printDashboard() {
+    console.clear();
+    console.log("=== SMAGE Agent Metrics Dashboard ===");
+    console.log(
+        `Uptime: ${Math.round((Date.now() - metrics.uptimeStart) / 1000)}s`,
+    );
+    console.log(`Restarts: ${metrics.restarts}`);
+    console.log(`Heartbeat latency: ${metrics.heartbeatLatency}ms`);
+    console.log(`CPU: ${metrics.cpu}ms`);
+    console.log(`Memory: ${metrics.memory}MB`);
+    console.log(
+        `Last heartbeat: ${new Date(metrics.lastHeartbeat).toLocaleTimeString()}`,
+    );
+    console.log("=====================================");
+}
+
 export async function testAgent() {
     console.log("[agent] supervisor starting...");
     agent = startAgent();
     startHealthCheck();
+    startDashboard();
 
     console.log("[agent] agent supervisor running. Press Ctrl+C to stop.");
 }
