@@ -17,6 +17,11 @@ setInterval(() => {
     );
 }, 3000);
 
+// agent crash logging
+process.on("uncaughtException", (err) => {
+    process.stdout.write(`crash:${err.message}\n`);
+});
+
 rl.on("line", async (line: string) => {
     let req;
     try {

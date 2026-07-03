@@ -21,8 +21,11 @@ function sampleSystemMetrics() {
     const usage = process.cpuUsage();
     const mem = process.memoryUsage();
 
-    metrics.cpu = usage.user / 1000; // ms
-    metrics.memory = Math.round(mem.rss / 1024 / 1024); // MB
+    metrics.cpu = (usage.user + usage.system) / 1000; // ms
+    metrics.memory = {
+        rss: Math.round(mem.rss / 1024 / 1024), // MB
+        heap: Math.round(mem.heapUsed / 1024 / 1024), // MB
+    };
 }
 
 // this function sends a test message to the provider, logs result via MCP
@@ -38,11 +41,9 @@ function startAgent(): AgentProcess {
         },
     );
 
-    const now = Date.now();
-
     const agentProc: AgentProcess = {
         proc,
-        lastHeartbeat: now,
+        lastHeartbeat: Date.now(),
     };
 
     proc.stdout.on("data", (data) => {
@@ -50,7 +51,7 @@ function startAgent(): AgentProcess {
 
         // heartbeat check
         if (text.includes('"type":"heartbeat"')) {
-            agentProc.lastHeartbeat = Date.now();
+            const now = Date.now();
             metrics.heartbeatLatency = now - agentProc.lastHeartbeat;
             agentProc.lastHeartbeat = now;
             metrics.lastHeartbeat = now;
@@ -82,7 +83,7 @@ function startHealthCheck() {
 
         if (diff > 10000) {
             console.log("[agent] Agent is unresponsive, restarting...");
-            agent.proc.kill;
+            agent.proc.kill();
             restartAgent();
         }
     }, 5000);
@@ -96,7 +97,7 @@ function startDashboard() {
 }
 
 function printDashboard() {
-    console.clear();
+    console.log("\x1Bc"); // safe clear console
     console.log("=== SMAGE Agent Metrics Dashboard ===");
     console.log(
         `Uptime: ${Math.round((Date.now() - metrics.uptimeStart) / 1000)}s`,
