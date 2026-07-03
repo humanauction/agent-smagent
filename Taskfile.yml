@@ -59,7 +59,7 @@ tasks:
     proxy:
         desc: "Start SMAGE proxy server"
         cmds:
-            - npx ts-node --esm ha_cli/main.ts proxy
+            - node --require ts-node/register ha_cli/main.ts proxy
 
     mcp:
         desc: "Start MCP server"
@@ -69,12 +69,12 @@ tasks:
     agent:
         desc: "Run agent wrapper test"
         cmds:
-            - npx ts-node --esm ha_cli/main.ts agent
+            - node --require ts-node/register ha_cli/main.ts agent
 
     learn:
         desc: "Run learning engine"
         cmds:
-            - npx ts-node --esm ha_cli/main.ts learn test-session
+            - node --require ts-node/register ha_cli/main.ts learn test-session
 
     # -----------------------------
     # Full system checks

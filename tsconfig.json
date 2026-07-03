@@ -4,7 +4,7 @@
         "outDir": "dist",
         "esModuleInterop": true,
         "resolveJsonModule": true,
-        "module": "esnext",
+        "module": "commonjs",
         "target": "esnext",
         "types": ["node"],
         "lib": ["esnext"],
@@ -13,12 +13,11 @@
         "declarationMap": true,
         "noUncheckedIndexedAccess": true,
         "exactOptionalPropertyTypes": true,
-        "moduleResolution": "bundler",
+        "moduleResolution": "node",
         "strict": true,
-        "verbatimModuleSyntax": true,
-        "isolatedModules": true,
+        "ignoreDeprecations": "6.0",
+
         "noUncheckedSideEffectImports": true,
-        "moduleDetection": "force",
         "skipLibCheck": true
     },
     "include": [
@@ -26,13 +25,18 @@
         "ha_proxy/**/*",
         "ha_mcp/**/*",
         "ha_wrap/**/*",
-        "ha_cli/**/*"
+        "ha_cli/**/*",
+        "ha_docs/**/*",
+        "ha_learn/**/*"
     ],
     "exclude": ["node_modules", "dist"],
     "paths": {
         "@core/*": ["ha_core/*"],
         "@proxy/*": ["ha_proxy/*"],
         "@mcp/*": ["ha_mcp/*"],
-        "@wrap/*": ["ha_wrap/*"]
+        "@wrap/*": ["ha_wrap/*"],
+        "@docs/*": ["ha_docs/*"],
+        "@learn/*": ["ha_learn/*"],
+        "@cli/*": ["ha_cli/*"]
     }
 }
