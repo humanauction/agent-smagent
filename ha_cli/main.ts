@@ -4,6 +4,7 @@ import { runLearn } from "./commands/learn";
 import { startProxy } from "./commands/proxy";
 import { testAgent } from "./commands/agent";
 import { generateDocs } from "./commands/docs";
+import { generateHtmlDocs } from "./commands/docs-html";
 
 // this file contains the main CLI entry point for the agentSmagent project
 
@@ -29,12 +30,17 @@ async function main() {
             await generateDocs();
             break;
 
+        case "docs:html":
+            await generateHtmlDocs();
+            break;
+
         default:
             console.log("Commands:");
             console.log("  AgentSmagent learn <session>");
             console.log("  AgentSmagent proxy");
             console.log("  AgentSmagent agent");
             console.log("  AgentSmagent docs");
+            console.log("  AgentSmagent docs:html");
     }
 }
 

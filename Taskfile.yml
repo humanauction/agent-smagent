@@ -100,4 +100,9 @@ tasks:
     docs:
         desc: "Generate SMAGE documentation"
         cmds:
-            - npx ts-node --esm ha_cli/main.ts docs
+            - node --require ts-node/register ha_cli/main.ts docs
+
+    docsite:
+    desc: "Generate SMAGE HTML docsite"
+    cmds:
+        - node --require ts-node/register ha_cli/main.ts docs:html
