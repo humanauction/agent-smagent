@@ -6,7 +6,6 @@ export const AnthropicAdapter: ProviderAdapter = {
     name: "anthropic",
 
     async call(req) {
-        // req.messages: SMAGEMessage[]
         const payload = {
             model: req.model,
             messages: req.messages.map((m) => ({
