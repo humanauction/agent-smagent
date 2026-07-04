@@ -14,7 +14,10 @@ const metrics = {
     lastHeartbeat: Date.now(),
     heartbeatLatency: 0,
     cpu: 0,
-    memory: 0,
+    memory: {
+        rss: 0,
+        heap: 0,
+    },
 };
 
 function sampleSystemMetrics() {
@@ -105,7 +108,9 @@ function printDashboard() {
     console.log(`Restarts: ${metrics.restarts}`);
     console.log(`Heartbeat latency: ${metrics.heartbeatLatency}ms`);
     console.log(`CPU: ${metrics.cpu}ms`);
-    console.log(`Memory: ${metrics.memory}MB`);
+    console.log(
+        `Memory: RSS ${metrics.memory.rss}MB, Heap ${metrics.memory.heap}MB`,
+    );
     console.log(
         `Last heartbeat: ${new Date(metrics.lastHeartbeat).toLocaleTimeString()}`,
     );

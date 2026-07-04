@@ -40,7 +40,7 @@ agent-smagent/
 │   ├── compress.py # Python entrypoint
 │   ├── compress.ts # TypeScript entrypoint
 │   ├── index.ts
-│   └── **init**.py
+│   └── __init__.py
 │
 ├── ha_proxy/ # Zero‑code‑change HTTP proxy
 │   ├── config.ts # Proxy config (port, provider, etc.)
@@ -77,7 +77,8 @@ agent-smagent/
 │   ├── commands/
 │   │   ├── learn.ts
 │   │   ├── proxy.ts
-│   │   └── agent.ts
+│   │   ├── agent.ts
+│   │   └── docs.ts
 │   └── main.ts # CLI entrypoint
 │
 ├── docs/ # Architecture, CCR, Memory, Proxy, MCP, Learn, Roadmap
