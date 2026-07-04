@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index";
 import { callProvider } from "../ha_core/call/providers";
-import { cacheAppend, cachePut } from "../ha_core/cache/store";
+import { reversibleLog } from "../ha_core/cache/log";
 import { applyCCR } from "../ha_core/transform/ccr";
 import { mapProviderRole } from "../ha_core/call/providers/roles";
 
@@ -23,25 +23,12 @@ export async function handleLLM(req: Request, res: Response) {
     const smageMessages = toSMAGE(messages);
     const smageOptions = (options ?? {}) as SMAGEOptions;
 
-    cachePut("session", {
-        stage: "original",
-        messages: smageMessages,
-        provider,
-        model,
-        options: smageOptions,
-    });
-
     const shaped = await applyCCR(
         smageMessages,
         provider,
         "session",
         smageOptions,
     );
-
-    cacheAppend("session", {
-        stage: "shaped",
-        messages: shaped,
-    });
 
     const result = await callProvider({
         session: "session",
@@ -50,10 +37,16 @@ export async function handleLLM(req: Request, res: Response) {
         options: { ...smageOptions, provider },
     });
 
-    cacheAppend("session", {
-        stage: "provider_response",
-        message: result,
+    reversibleLog("session", "original", {
+        provider,
+        model,
+        messages: smageMessages,
+        options: smageOptions,
     });
+
+    reversibleLog("session", "shaped", shaped);
+
+    reversibleLog("session", "provider_response", result);
 
     return res.json({
         id: "smage-proxy-response",

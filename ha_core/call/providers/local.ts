@@ -6,7 +6,6 @@ export const LocalAdapter: ProviderAdapter = {
     name: "local",
 
     async call(req) {
-        // req.messages: SMAGEMessage[]
         const payload = {
             model: req.model,
             messages: req.messages.map((m) => ({
