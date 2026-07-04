@@ -3,11 +3,12 @@ import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index";
 import { callProvider } from "../ha_core/call/providers";
 import { cacheAppend, cachePut } from "../ha_core/cache/store";
 import { applyCCR } from "../ha_core/transform/ccr";
+import { mapProviderRole } from "../ha_core/call/providers/roles";
 
 // this file converts provider‑style messages → SMAGEMessage → CCR → provider → response
 function toSMAGE(messages: any[]): SMAGEMessage[] {
     return messages.map((m) => ({
-        role: m.role,
+        role: mapProviderRole(m.role),
         content: m.content,
     }));
 }
@@ -22,7 +23,6 @@ export async function handleLLM(req: Request, res: Response) {
     const smageMessages = toSMAGE(messages);
     const smageOptions = (options ?? {}) as SMAGEOptions;
 
-    // Reversible Logging checkpoint 1: Store the shaped messages in cache for debugging
     cachePut("session", {
         stage: "original",
         messages: smageMessages,
@@ -31,7 +31,6 @@ export async function handleLLM(req: Request, res: Response) {
         options: smageOptions,
     });
 
-    // run CCR
     const shaped = await applyCCR(
         smageMessages,
         provider,
@@ -39,16 +38,18 @@ export async function handleLLM(req: Request, res: Response) {
         smageOptions,
     );
 
-    // check 2 - shaped messages after contextManager before provider
     cacheAppend("session", {
         stage: "shaped",
         messages: shaped,
     });
 
-    // Call Provider
-    const result = await callProvider(provider, shaped, model, smageOptions);
+    const result = await callProvider({
+        session: "session",
+        model,
+        messages: shaped,
+        options: { ...smageOptions, provider },
+    });
 
-    // Checkpoint 3 — provider response
     cacheAppend("session", {
         stage: "provider_response",
         message: result,

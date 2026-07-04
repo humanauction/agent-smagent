@@ -1,4 +1,8 @@
-import type { ProviderAdapter } from "./interface";
+import type {
+    ProviderAdapter,
+    ProviderRequest,
+    ProviderResponse,
+} from "./interface";
 import { OpenAIAdapter } from "./openai";
 import { AnthropicAdapter } from "./anthropic";
 import { GoogleAdapter } from "./google";
@@ -17,4 +21,12 @@ export function getProvider(name: string): ProviderAdapter {
     const p = providers[name];
     if (!p) throw new Error(`Unknown provider: ${name}`);
     return p;
+}
+
+// unified call entrypoint for proxy / MCP / wrappers
+export async function callProvider(
+    req: ProviderRequest,
+): Promise<ProviderResponse> {
+    const provider = getProvider(req.options?.provider ?? "openai");
+    return provider.call(req);
 }
