@@ -1,4 +1,5 @@
 import type { SMAGEMessage } from "../index";
+import { tokenCount } from "../analyze/tokens";
 // CCR pipeline relevance scoring. components: keyword overlap, role weighting, recency weighting
 /**
  * Extract keywords from a message.
@@ -51,4 +52,17 @@ export function relevanceScore(
     const recency = (index + 1) / total; // 0..1
 
     return overlap * roleWeight * recency;
+}
+
+export function scoreMessage(msg: SMAGEMessage): number {
+    let score = 0;
+
+    if (msg.meta?.anchor) score += 100;
+    if (msg.role === "user") score += 50;
+    if (msg.role === "system") score += 40;
+    if (msg.role === "assistant") score += 20;
+
+    score += Math.min(tokenCount(msg.content), 200) / 10;
+
+    return score;
 }

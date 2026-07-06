@@ -12,7 +12,7 @@ export function priorityOf(msg: SMAGEMessage): Priority {
     if (msg.role === "user") return Priority.USER;
     if (msg.role === "assistant") return Priority.ASSISTANT;
 
-    // tool messages may include meta, chaning priority based on the meta content.
+    // tool messages may include meta, changing priority based on the meta content.
     // For example, a tool message with meta indicating it is a log message should have a lower priority than a regular tool message.
     if (msg.role === "tool") {
         if (msg.meta?.log === true) return Priority.LOG;
@@ -20,4 +20,20 @@ export function priorityOf(msg: SMAGEMessage): Priority {
         return Priority.TOOL;
     }
     return Priority.LOG;
+}
+
+export function assignPriority(msg: SMAGEMessage): number {
+    if (msg.meta?.anchor) return 0;
+    switch (msg.role) {
+        case "system":
+            return 1;
+        case "user":
+            return 2;
+        case "assistant":
+            return 3;
+        case "tool":
+            return 4;
+        default:
+            return 5;
+    }
 }
