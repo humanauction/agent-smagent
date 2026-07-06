@@ -1,5 +1,5 @@
 import type { ProviderAdapter } from "./interface";
-import { shapeOutput, logProviderIO } from "./utils";
+import { shapeOutput } from "./utils";
 import { mapProviderRole } from "./roles";
 import { reversibleLog } from "../../cache/log";
 

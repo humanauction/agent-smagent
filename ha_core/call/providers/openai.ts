@@ -1,7 +1,6 @@
 import type { ProviderAdapter } from "./interface";
 import { shapeOutput, logProviderIO } from "./utils";
 import { mapProviderRole } from "./roles";
-import { reversibleLog } from "../../cache/log";
 
 export const OpenAIAdapter: ProviderAdapter = {
     name: "openai",
@@ -19,12 +18,7 @@ export const OpenAIAdapter: ProviderAdapter = {
         // TODO: fill in actual OpenAI request
         const response = shapeOutput("assistant", "[openai placeholder]");
 
-        reversibleLog(req.session, "provider_request", {
-            provider: "openai",
-            payload,
-        });
-
-        reversibleLog(req.session, "provider_response", response);
+        logProviderIO(req.session, "openai", req, response);
         return response;
     },
 };
