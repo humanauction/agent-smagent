@@ -11,7 +11,7 @@ export function logProviderIO(
     req: ProviderRequest,
     res: ProviderResponse,
 ) {
-    reversibleLog(session, {
+    reversibleLog(session, "provider_io", {
         provider,
         request: req,
         response: res,
