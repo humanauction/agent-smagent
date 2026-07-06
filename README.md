@@ -54,7 +54,7 @@ agent-smagent/
 │   │       └── utils.ts
 │   ├── cache/ # Raw reversible storage (FS/SQLite/Redis)
 │   │   ├── store.ts
-│   │   └── log.ts  
+│   │   └── log.ts
 │   ├── memory/ # Cross-agent memory layer
 │   ├── stats/ # Token metrics, waste detection
 │   ├── output/ # Output token reduction
@@ -210,3 +210,101 @@ humanAuction stats
 - architecture
 - roadmap
 - usage
+
+## Current Status
+
+### 1. ha_core
+
+- ✔ Complete enough to support CCR, providers, memory, output, cache
+
+### 2. Message model
+
+- ✔ Stable (SMAGEMessage, SMAGEOptions, roles, meta)
+
+### 3. Cache
+
+- ✔ cache/store.ts
+- ✔ cache/log.ts
+- ✔ Reversible logging API unified
+
+### 4. CCR pipeline — Current Stage
+
+- Implementing:
+- anchors
+- dedupe
+- relevance
+- priority
+- window
+- reconstruction
+- payload compression
+- output reduction
+- memory mining
+- memory injection
+- reversible logging at each stage
+
+### 5. compress() Python + TS
+
+- ✔ Already implemented (TS + Python entrypoints exist)
+
+### 6. Provider adapters
+
+- ✔ OpenAI, Anthropic, Google, Local — unified and logging correctly
+
+### 7. Reversible logging
+
+- ✔ Fully integrated across:
+- providers
+- CCR
+- MCP
+- learning engine
+- proxy
+
+### 8. ha_proxy
+
+- ✔ HTTP server exists
+- ✔ Provider routing exists
+- ⬆ Will benefit from CCR improvements, but not blocked
+
+### 9. Provider adapters (proxy layer)
+
+- ✔ Already wired
+
+### 10. Reversible logging (proxy layer)
+
+- ✔ Already wired
+
+### 11. ha_mcp
+
+- ✔ compress
+- ✔ retrieve
+- ✔ stats
+- ✔ reversible logging
+- ✔ agent loop
+- ✔ heartbeat
+- ✔ JSON‑RPC dispatch
+
+### 12. ha_wrap (agent wrappers)
+
+- ⬆ Next stage after CCR
+
+### 13. ha_learn
+
+- ✔ failure miner
+- ⬆ CLAUDE.md / AGENTS.md writer pending
+- ⬆ signal weighting pending
+- ⬆ session scoring pending
+
+### 14. ha_cli
+
+- ✔ CLI exists
+- ⬆ Will be expanded after wrappers + learning
+
+### 15. docs
+
+- Pending:
+- Architecture diagrams
+- Roadmap
+- Usage examples
+- CCR deep dive
+- Proxy + MCP docs
+- Wrapper docs
