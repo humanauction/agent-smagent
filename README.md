@@ -32,8 +32,29 @@ agent-smagent/
 ├── ha_core/ # The beating heart: CCR pipeline + message model
 │   ├── analyze/ # Parsers, token counters, classifiers
 │   ├── transform/ # CCR: cache alignment, token crushing, context manager
+│   │   ├── compressors/
+│   │   │   └── basic.ts
+│   │   ├── anchor.ts
+│   │   ├── ccr.ts
+│   │   ├── context.ts
+│   │   ├── dedupe.ts
+│   │   ├── payload.ts
+│   │   ├── priority.ts
+│   │   └── relevance.ts
+│   │
 │   ├── call/ # Provider adapters (OpenAI, Anthropic, Google)
+│   │   └── providers/ # OpenAI, Anthropic, Google, Local
+│   │       ├── anthropic.ts
+│   │       ├── openai.ts
+│   │       ├── google.ts
+│   │       ├── local.ts
+│   │       ├── index.ts
+│   │       ├── interface.ts
+│   │       ├── roles.ts
+│   │       └── utils.ts
 │   ├── cache/ # Raw reversible storage (FS/SQLite/Redis)
+│   │   ├── store.ts
+│   │   └── log.ts  
 │   ├── memory/ # Cross-agent memory layer
 │   ├── stats/ # Token metrics, waste detection
 │   ├── output/ # Output token reduction
@@ -78,7 +99,8 @@ agent-smagent/
 │   │   ├── learn.ts
 │   │   ├── proxy.ts
 │   │   ├── agent.ts
-│   │   └── docs.ts
+│   │   ├── docs.ts
+│   │   └── docs-html.ts
 │   └── main.ts # CLI entrypoint
 │
 ├── docs/ # Architecture, CCR, Memory, Proxy, MCP, Learn, Roadmap

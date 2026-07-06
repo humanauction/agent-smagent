@@ -2,6 +2,7 @@ import type { AgentCallParams, AgentResult } from "./types";
 import { MCPClient } from "./mcp-client";
 import { callProvider } from "../ha_core/call/providers";
 import type { SMAGEOptions } from "../ha_core/index";
+import { reversibleLog } from "../ha_core/cache/log";
 
 // this file is the main entry point for the agent wrapper, which handles calls to the MCP and provider
 export class SMAGEAgent {

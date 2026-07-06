@@ -1,5 +1,5 @@
 import { spawn } from "child_process";
-// this file is the CLI for SMAGEAgent testing
+import { reversibleLog } from "../../ha_core/cache/log";
 
 interface AgentProcess {
     proc: ReturnType<typeof spawn>;
@@ -24,24 +24,26 @@ function sampleSystemMetrics() {
     const usage = process.cpuUsage();
     const mem = process.memoryUsage();
 
-    metrics.cpu = (usage.user + usage.system) / 1000; // ms
+    metrics.cpu = (usage.user + usage.system) / 1000;
     metrics.memory = {
-        rss: Math.round(mem.rss / 1024 / 1024), // MB
-        heap: Math.round(mem.heapUsed / 1024 / 1024), // MB
+        rss: Math.round(mem.rss / 1024 / 1024),
+        heap: Math.round(mem.heapUsed / 1024 / 1024),
     };
 }
 
-// this function sends a test message to the provider, logs result via MCP
-
 function startAgent(): AgentProcess {
     console.log("[agent] starting MCP server...");
-    // spawn a child process to run the MCP server, then call the agent and log the result
+
+    // reversible logging: agent start
+    reversibleLog("agent", "agent_start", {
+        ts: Date.now(),
+        restarts: metrics.restarts,
+    });
+
     const proc = spawn(
         "node",
         ["--require", "ts-node/register", "ha_mcp/server.ts"],
-        {
-            stdio: ["pipe", "pipe", "inherit"],
-        },
+        { stdio: ["pipe", "pipe", "inherit"] },
     );
 
     const agentProc: AgentProcess = {
@@ -52,18 +54,24 @@ function startAgent(): AgentProcess {
     proc.stdout.on("data", (data) => {
         const text = data.toString().trim();
 
-        // heartbeat check
         if (text.includes('"type":"heartbeat"')) {
             const now = Date.now();
             metrics.heartbeatLatency = now - agentProc.lastHeartbeat;
             agentProc.lastHeartbeat = now;
             metrics.lastHeartbeat = now;
+
+            // reversible logging: heartbeat
+            reversibleLog("agent", "agent_heartbeat", {
+                ts: now,
+                latency: metrics.heartbeatLatency,
+            });
         }
+
         console.log(`[mcp] ${text}`);
     });
 
     proc.on("exit", (code) => {
-        console.log(`[mcp] MCP server exited with code ${code}`);
+        console.log(`[agent] MCP server exited with code ${code}`);
         restartAgent();
     });
 
@@ -73,10 +81,17 @@ function startAgent(): AgentProcess {
 function restartAgent() {
     metrics.restarts++;
     console.log("[agent] restarting MCP server...");
+
+    // reversible logging: restart event
+    reversibleLog("agent", "agent_restart", {
+        ts: Date.now(),
+        reason: "exit_or_unresponsive",
+        restarts: metrics.restarts,
+    });
+
     agent = startAgent();
 }
 
-// healthcheck every 5 seconds
 function startHealthCheck() {
     setInterval(() => {
         if (!agent) return;
@@ -86,6 +101,14 @@ function startHealthCheck() {
 
         if (diff > 10000) {
             console.log("[agent] Agent is unresponsive, restarting...");
+
+            // reversible logging: heartbeat timeout
+            reversibleLog("agent", "agent_restart", {
+                ts: now,
+                reason: "heartbeat_timeout",
+                lastHeartbeat: agent.lastHeartbeat,
+            });
+
             agent.proc.kill();
             restartAgent();
         }
@@ -100,7 +123,7 @@ function startDashboard() {
 }
 
 function printDashboard() {
-    console.log("\x1Bc"); // safe clear console
+    console.log("\x1Bc");
     console.log("=== SMAGE Agent Metrics Dashboard ===");
     console.log(
         `Uptime: ${Math.round((Date.now() - metrics.uptimeStart) / 1000)}s`,

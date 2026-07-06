@@ -4,6 +4,7 @@ import process from "process";
 import { humanAuction_compress } from "./tools/compress";
 import { humanAuction_retrieve } from "./tools/retrieve";
 import { humanAuction_stats } from "./tools/stats";
+import { reversibleLog } from "../ha_core/cache/log";
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -50,6 +51,10 @@ rl.on("line", async (line: string) => {
         } else {
             result = { error: `Unknown method: ${method}` };
         }
+
+        //reversibleLog tracing of requests and responses for debugging
+        reversibleLog(params.session, "mcp_request", req);
+        reversibleLog(params.session, "mcp_response", result);
 
         process.stdout.write(JSON.stringify({ id, result }) + "\n");
     } catch (err: any) {

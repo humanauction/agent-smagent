@@ -1,6 +1,7 @@
 import type { ProviderAdapter } from "./interface";
-import { shapeOutput, logProviderIO } from "./utils";
+import { shapeOutput } from "./utils";
 import { mapProviderRole } from "./roles";
+import { reversibleLog } from "../../cache/log";
 
 export const LocalAdapter: ProviderAdapter = {
     name: "local",
@@ -17,7 +18,12 @@ export const LocalAdapter: ProviderAdapter = {
         // TODO: integrate local model / llama.cpp / python bridge
         const response = shapeOutput("assistant", "[local placeholder]");
 
-        logProviderIO(req.session, "local", req, response);
+        reversibleLog(req.session, "provider_request", {
+            provider: "local",
+            payload,
+        });
+
+        reversibleLog(req.session, "provider_response", response);
         return response;
     },
 };
