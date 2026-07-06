@@ -1,7 +1,6 @@
 import type { ProviderAdapter } from "./interface";
-import { shapeOutput } from "./utils";
+import { shapeOutput, logProviderIO } from "./utils";
 import { mapProviderRole } from "./roles";
-import { reversibleLog } from "../../cache/log";
 
 export const AnthropicAdapter: ProviderAdapter = {
     name: "anthropic",
@@ -18,12 +17,7 @@ export const AnthropicAdapter: ProviderAdapter = {
         // TODO: fill in actual Anthropic request
         const response = shapeOutput("assistant", "[anthropic placeholder]");
 
-        reversibleLog(req.session, "provider_request", {
-            provider: "anthropic",
-            payload,
-        });
-
-        reversibleLog(req.session, "provider_response", response);
+        logProviderIO(req.session, "anthropic", req, response);
         return response;
     },
 };
