@@ -2,11 +2,14 @@ import type { SMAGEMessage, SMAGEOptions } from "../../ha_core/index";
 import { applyCCR } from "../../ha_core/transform/ccr";
 import { reversibleLog } from "../../ha_core/cache/log";
 
+import { loadPersona } from "./personaLoader";
+import { bindTools } from "./toolBinder";
+
 // this file defines the base wrapper class that all wrappers extend.
 
 export interface WrapperConfig {
     id: string; // "claude", "aider", "cursor", etc.
-    persona: string; // persona.md content
+    persona?: string; // persona.md content
     rules?: string; // rules.md content
     tools?: SMAGEMessage[]; // tool schema anchors
     memory?: SMAGEMessage[]; // wrapper-specific memory anchors
@@ -26,34 +29,72 @@ export abstract class BaseWrapper {
      * - tool schema anchors
      * - wrapper memory anchors
      */
+
+    /**
+     * Load persona.md, rules.md, tools.md from disk unless overridden.
+     */
+
+    protected loadWrapperPersona(): {
+        persona: string;
+        rules?: string;
+        tools?: SMAGEMessage[];
+    } {
+        const bundle = loadPersona(this.config.id);
+
+        const persona = this.config.persona ?? bundle.persona;
+        const rules = this.config.rules ?? bundle.rules;
+
+        const toolAnchors =
+            this.config.tools ?? bindTools(bundle.tools ?? "", this.config.id);
+
+        const result: {
+            persona: string;
+            rules?: string;
+            tools?: SMAGEMessage[];
+        } = { persona };
+
+        if (rules !== undefined) {
+            result.rules = rules;
+        }
+
+        if (toolAnchors !== undefined) {
+            result.tools = toolAnchors;
+        }
+
+        return result;
+    }
+
     protected prepareWrapperAnchors(): SMAGEMessage[] {
         const anchors: SMAGEMessage[] = [];
+
+        const { persona, rules, tools } = this.loadWrapperPersona();
 
         // Persona anchor
         anchors.push({
             role: "system",
-            content: this.config.persona,
+            content: persona,
             meta: { anchor: true, wrapper: this.config.id },
         });
 
         // Rules anchor
-        if (this.config.rules) {
+        if (rules?.trim()) {
             anchors.push({
                 role: "system",
-                content: this.config.rules,
+                content: rules,
                 meta: { anchor: true, wrapper: this.config.id },
             });
         }
 
         // Tool schema anchors
-        if (this.config.tools) {
-            for (const tool of this.config.tools) {
+        if (tools?.length) {
+            for (const tool of tools) {
                 anchors.push({
                     ...tool,
                     meta: {
                         ...tool.meta,
                         anchor: true,
                         wrapper: this.config.id,
+                        toolSchema: true,
                     },
                 });
             }
