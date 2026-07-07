@@ -2,6 +2,7 @@ export interface SMAGEOptions {
     ast?: boolean;
     maxAge?: number; // ms
     maxTokens?: number;
+    model?: string;
 }
 
 export interface SMAGEMessage {

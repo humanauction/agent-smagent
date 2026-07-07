@@ -82,6 +82,28 @@ agent-smagent/
 │
 ├── ha_wrap/ # Agent wrappers (claude, aider, cursor, copilot, etc.)
 │   │
+│   ├── claude/
+│   │     ├──wrapper.ts
+│   │     ├──persona.md
+│   │     └──tools.ts
+│   ├── aider/
+│   │     ├── wrapper.ts
+│   │     ├── persona.md
+│   │     └── tools.ts
+│   ├── cursor/
+│   │     ├── wrapper.ts
+│   │     └── persona.md
+│   ├── copilot/
+│   │     ├── wrapper.ts
+│   │     └── persona.md
+│   ├── opencode/
+│   │     ├── wrapper.ts
+│   │     └── persona.md
+│   ├── shared/
+│   │     ├── baseWrapper.ts
+│   │     ├── personaLoader.ts
+│   │     └── toolBinder.ts
+│   │
 │   ├── agent.ts          # main wrapper class
 │   ├── mcp-client.ts     # JSON-RPC client for MCP server
 │   └── types.ts          # shared types
