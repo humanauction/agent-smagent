@@ -78,7 +78,7 @@ export abstract class BaseWrapper {
 
     /**
      * Main wrapper entrypoint.
-     * This is what ha_cli, ha_proxy, and ha_mcp will call.
+     * This is what ha_cli, ha_proxy and ha_mcp call.
      */
     async run(
         session: string,
