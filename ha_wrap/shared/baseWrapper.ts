@@ -73,9 +73,11 @@ export abstract class BaseWrapper {
 
         const { persona, rules, tools } = this.loadWrapperPersona();
 
+        const isWeighted = (m: SMAGEMessage) => (m.meta?.weight ?? 0) > 0.2;
+
         const learnedMemory = loadWrapperMemory(this.config.id)
             .map(applyMemoryScoring)
-            .filter((m) => (m.meta?.weight ?? 0) > 0.2);
+            .filter(isWeighted);
 
         for (const mem of learnedMemory) {
             anchors.push({
