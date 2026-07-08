@@ -89,6 +89,20 @@ export abstract class BaseWrapper {
             });
         }
 
+        // Wrapper memory anchors
+        if (this.config.memory) {
+            for (const mem of this.config.memory) {
+                anchors.push({
+                    ...mem,
+                    meta: {
+                        ...mem.meta,
+                        anchor: true,
+                        wrapper: this.config.id,
+                    },
+                });
+            }
+        }
+
         // Persona anchor
         anchors.push({
             role: "system",
@@ -115,20 +129,6 @@ export abstract class BaseWrapper {
                         anchor: true,
                         wrapper: this.config.id,
                         toolSchema: true,
-                    },
-                });
-            }
-        }
-
-        // Wrapper memory anchors
-        if (this.config.memory) {
-            for (const mem of this.config.memory) {
-                anchors.push({
-                    ...mem,
-                    meta: {
-                        ...mem.meta,
-                        anchor: true,
-                        wrapper: this.config.id,
                     },
                 });
             }
