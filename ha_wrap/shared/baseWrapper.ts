@@ -4,6 +4,10 @@ import { reversibleLog } from "../../ha_core/cache/log";
 
 import { loadPersona } from "./personaLoader";
 import { bindTools } from "./toolBinder";
+import { loadWrapperMemory } from "./memoryLoader";
+import { scoreMemory } from "../../ha_learn/memoryScore";
+import { decayMemory } from "../../ha_learn/memoryDecay";
+import { weightMemory } from "../../ha_learn/memoryWeight";
 
 // this file defines the base wrapper class that all wrappers extend.
 
@@ -68,6 +72,22 @@ export abstract class BaseWrapper {
         const anchors: SMAGEMessage[] = [];
 
         const { persona, rules, tools } = this.loadWrapperPersona();
+
+        const learnedMemory = loadWrapperMemory(this.config.id)
+            .map(applyMemoryScoring)
+            .filter((m) => (m.meta?.weight ?? 0) > 0.2);
+
+        for (const mem of learnedMemory) {
+            anchors.push({
+                ...mem,
+                meta: {
+                    ...(mem.meta ?? {}),
+                    anchor: true,
+                    wrapper: this.config.id,
+                    memory: true,
+                },
+            });
+        }
 
         // Persona anchor
         anchors.push({
@@ -173,4 +193,29 @@ export abstract class BaseWrapper {
         messages: SMAGEMessage[],
         options: SMAGEOptions,
     ): Promise<SMAGEMessage[]>;
+}
+
+function applyMemoryScoring(mem: SMAGEMessage): SMAGEMessage {
+    const meta = mem.meta ?? {};
+
+    const score = scoreMemory({
+        failureType: meta.failureType,
+        frequency: meta.frequency ?? 1,
+        recencyMs: Date.now() - (meta.timestamp ?? Date.now()),
+        wrapperId: meta.wrapper,
+    });
+
+    const weight = decayMemory(
+        weightMemory(score),
+        Date.now() - (meta.timestamp ?? Date.now()),
+    );
+
+    return {
+        ...mem,
+        meta: {
+            ...(mem.meta ?? {}),
+            score,
+            weight,
+        },
+    };
 }

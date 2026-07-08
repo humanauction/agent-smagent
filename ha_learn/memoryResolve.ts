@@ -4,13 +4,16 @@ export function resolveConflicts(memories: SMAGEMessage[]): SMAGEMessage[] {
     const map = new Map<string, SMAGEMessage>();
 
     for (const mem of memories) {
-        const key = mem.meta.failureType ?? mem.content.slice(0, 50);
+        const meta = mem.meta ?? {};
+        const key = meta.failureType ?? mem.content.slice(0, 50);
 
         if (!map.has(key)) {
             map.set(key, mem);
         } else {
             const existing = map.get(key)!;
-            if ((mem.meta.weight ?? 0) > (existing.meta.weight ?? 0)) {
+            const memWeight = mem.meta?.weight ?? 0;
+            const existingWeight = existing.meta?.weight ?? 0;
+            if (memWeight > existingWeight) {
                 map.set(key, mem);
             }
         }

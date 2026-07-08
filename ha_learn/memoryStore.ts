@@ -12,6 +12,7 @@ function normalizeMemory(mem: SMAGEMessage): SMAGEMessage {
         meta: {
             ...(mem.meta ?? {}),
             memory: true,
+            anchor: true,
         },
     };
 }
