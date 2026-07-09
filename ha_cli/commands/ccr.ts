@@ -2,10 +2,12 @@ import { getWrapper } from "../../ha_wrap/wrapperRegistry";
 import { applyCCR } from "../../ha_core/transform/ccr";
 import { printSection, printJSON } from "../utils/printer";
 
-export async function ccrCommand(wrapperId: string, prompt: string) {
-    const wrapper = getWrapper(wrapperId);
+import type { WrapperId } from "../../ha_wrap/wrapperRegistry";
 
-    const anchors = wrapper["prepareWrapperAnchors"]();
+export async function ccrCommand(wrapperId: string, prompt: string) {
+    const w = getWrapper(wrapper as WrapperId);
+
+    const anchors = w["prepareWrapperAnchors"]();
     const merged = [...anchors, { role: "user", content: prompt }];
 
     const shaped = await applyCCR(merged, wrapperId, "cli-session", {});
