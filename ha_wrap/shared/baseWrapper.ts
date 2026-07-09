@@ -34,6 +34,14 @@ export abstract class BaseWrapper {
      * - wrapper memory anchors
      */
 
+    public async debugProvider(
+        session: string,
+        messages: SMAGEMessage[],
+        options: SMAGEOptions,
+    ): Promise<SMAGEMessage[]> {
+        return this.callProvider(session + ":debug", messages, options);
+    }
+
     /**
      * Load persona.md, rules.md, tools.md from disk unless overridden.
      */
