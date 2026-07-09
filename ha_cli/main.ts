@@ -19,7 +19,7 @@ import type { WrapperId } from "../ha_wrap/wrapperRegistry";
 const cmd = process.argv[2];
 const arg = process.argv[3];
 const wrapper = (process.argv[3] ?? "claude") as WrapperId;
-const w = getWrapper(wrapper as WrapperId);
+// const w = getWrapper(wrapper as WrapperId);
 const prompt = process.argv.slice(4).join(" ").trim();
 
 // this function is the entry point for the CLI, handles learning, proxy, and agent commands
