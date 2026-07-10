@@ -1,10 +1,11 @@
 import { layout } from "./layout";
+import { escapeHTML } from "../utils/messages";
 
-export function renderProvider(anchors: any[]): string {
-    const body = `
-<div class="section">
-    <pre>${JSON.stringify(anchors, null, 2)}</pre>
-</div>
-`;
-    return layout("Wrapper Provider", body);
+export function renderProvider(data: any): string {
+    return layout(
+        "Wrapper Provider",
+        `
+        <pre>${escapeHTML(JSON.stringify(data, null, 2))}</pre>
+    `,
+    );
 }

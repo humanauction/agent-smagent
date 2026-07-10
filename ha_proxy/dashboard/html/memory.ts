@@ -1,10 +1,11 @@
 import { layout } from "./layout";
+import { escapeHTML } from "../utils/messages";
 
-export function renderMemory(anchors: any[]): string {
-    const body = `
-<div class="section">
-    <pre>${JSON.stringify(anchors, null, 2)}</pre>
-</div>
-`;
-    return layout("Wrapper Memory", body);
+export function renderMemory(data: any): string {
+    return layout(
+        "Memory",
+        `
+        <pre>${escapeHTML(JSON.stringify(data, null, 2))}</pre>
+    `,
+    );
 }

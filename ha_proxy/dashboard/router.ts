@@ -133,3 +133,112 @@ dashboardRouter.get("/:wrapper/health", (req, res) => {
                     : "large",
     });
 });
+
+// HTML endpoints for dashboard rendering
+
+// GET /dashboard/:wrapper/anchors/html
+dashboardRouter.get("/:wrapper/anchors/html", (req, res) => {
+    const wrapper = getWrapper(req.params.wrapper as any);
+    const anchors = wrapper["prepareWrapperAnchors"]();
+    res.send(renderAnchors(anchors));
+});
+
+// GET /dashboard/:wrapper/memory/html
+dashboardRouter.get("/:wrapper/memory/html", (req, res) => {
+    const wrapperId = req.params.wrapper as any;
+    const raw = loadWrapperMemory(wrapperId);
+
+    // same scoring pipeline as JSON version
+    const scored = raw.map((m) => {
+        const meta = m.meta ?? {};
+        const score = scoreMemory({
+            failureType: meta.failureType,
+            frequency: meta.frequency ?? 1,
+            recencyMs: Date.now() - (meta.timestamp ?? Date.now()),
+            wrapperId: meta.wrapper,
+        });
+
+        const weight = decayMemory(
+            weightMemory(score),
+            Date.now() - (meta.timestamp ?? Date.now()),
+        );
+
+        return {
+            ...m,
+            meta: {
+                ...meta,
+                score,
+                weight,
+            },
+        };
+    });
+    const pruned = pruneMemory(scored);
+    const resolved = resolveConflicts(pruned);
+    const sorted = [...resolved].sort(
+        (a, b) => (b.meta?.weight ?? 0) - (a.meta?.weight ?? 0),
+    );
+
+    res.send(renderMemory({ raw, scored, pruned, resolved, sorted }));
+});
+
+// GET /dashboard/:wrapper/ccr/html
+dashboardRouter.get("/:wrapper/ccr/html", async (req, res) => {
+    const wrapper = getWrapper(req.params.wrapper as any);
+    const prompt = req.query.prompt?.toString() ?? "test prompt";
+
+    const anchors = wrapper["prepareWrapperAnchors"]();
+    const merged: SMAGEMessage[] = [
+        ...anchors,
+        { role: "user" as const, content: prompt },
+    ];
+
+    const shaped = await applyCCR(
+        merged,
+        req.params.wrapper,
+        "dashboard-session",
+        {},
+    );
+    res.send(renderCCR(shaped));
+});
+
+// GET /dashboard/:wrapper/provider/html
+dashboardRouter.get("/:wrapper/provider/html", async (req, res) => {
+    const wrapper = getWrapper(req.params.wrapper as any);
+    const prompt = req.query.prompt?.toString() ?? "test prompt";
+
+    const response = await wrapper.debugProvider(
+        "dashboard-session",
+        [{ role: "user" as const, content: prompt }],
+        {},
+    );
+
+    res.send(renderProvider(response));
+});
+
+// GET /dashboard/:wrapper/config/html
+dashboardRouter.get("/:wrapper/config/html", (req, res) => {
+    const wrapper = getWrapper(req.params.wrapper as any);
+    res.send(renderConfig(wrapper["config"]));
+});
+
+// GET /dashboard/:wrapper/health/html
+dashboardRouter.get("/:wrapper/health/html", (req, res) => {
+    const wrapperId = req.params.wrapper;
+    const memory = loadWrapperMemory(wrapperId as any);
+    const memoryCount = memory.length;
+
+    const health = {
+        wrapper: wrapperId,
+        memoryCount,
+        memoryStatus:
+            memoryCount === 0
+                ? "empty"
+                : memoryCount < 10
+                  ? "healthy"
+                  : memoryCount < 50
+                    ? "growing"
+                    : "large",
+    };
+
+    res.send(renderHealth(health));
+});

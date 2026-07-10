@@ -1,10 +1,12 @@
 import { layout } from "./layout";
+import type { WrapperConfig } from "../../../ha_wrap/shared/baseWrapper";
+import { escapeHTML } from "../utils/messages";
 
-export function renderConfig(anchors: any[]): string {
-    const body = `
-<div class="section">
-    <pre>${JSON.stringify(anchors, null, 2)}</pre>
-</div>
-`;
-    return layout("Wrapper Config", body);
+export function renderConfig(config: WrapperConfig): string {
+    return layout(
+        "Wrapper Config",
+        `
+        <pre>${escapeHTML(JSON.stringify(config, null, 2))}</pre>
+    `,
+    );
 }
