@@ -13,6 +13,13 @@ import { SMAGEMessage } from "../../ha_core";
 
 import { userMsg } from "./utils/messages";
 
+import { renderAnchors } from "./html/anchors";
+import { renderMemory } from "./html/memory";
+import { renderCCR } from "./html/ccr";
+import { renderProvider } from "./html/provider";
+import { renderConfig } from "./html/config";
+import { renderHealth } from "./html/health";
+
 // this file defines the dashboard router for the Express app. It provides endpoints for fetching wrapper anchors, memory, CCR, provider responses, and wrapper config.
 
 export const dashboardRouter = express.Router();
