@@ -74,7 +74,8 @@ agent-smagent/
 │   │   ├── ccr.ts # HTML renderer
 │   │   ├── provider.ts # HTML renderer
 │   │   ├── config.ts # HTML renderer
-│   │   └── health.ts # HTML renderer
+│   │   ├── health.ts # HTML renderer
+│   │   └── types.ts
 │   ├── config.ts # Proxy config (port, provider, etc.)
 │   ├──middleware.ts
 │   ├──router.ts
