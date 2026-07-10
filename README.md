@@ -64,6 +64,17 @@ agent-smagent/
 │   └── __init__.py
 │
 ├── ha_proxy/ # Zero‑code‑change HTTP proxy
+│   ├── utils/
+│   │   ├── messages.ts
+│   │   └── router.ts
+│   ├── html/
+│   │   ├── layout.ts # shared HTML wrapper
+│   │   ├── anchors.ts # HTML renderer
+│   │   ├── memory.ts # HTML renderer
+│   │   ├── ccr.ts # HTML renderer
+│   │   ├── provider.ts # HTML renderer
+│   │   ├── config.ts # HTML renderer
+│   │   └── health.ts # HTML renderer
 │   ├── config.ts # Proxy config (port, provider, etc.)
 │   ├──middleware.ts
 │   ├──router.ts

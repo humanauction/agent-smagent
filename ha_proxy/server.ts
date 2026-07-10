@@ -2,11 +2,14 @@ import express from "express";
 import { jsonMiddleware, errorMiddleware } from "./middleware";
 import { handleLLM } from "./router";
 import { config } from "./config";
+import { dashboardRouter } from "./dashboard/router";
 // this file is the entry point for the HA Proxy server, which sets up the Express app and routes.
 const app = express();
 
 app.use(express.text({ type: "application/json" }));
 app.use(jsonMiddleware);
+
+app.use("/dashboard", dashboardRouter);
 
 app.post("/v1/chat/completions", handleLLM);
 
