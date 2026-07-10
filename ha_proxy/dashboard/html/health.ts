@@ -3,10 +3,22 @@ import { escapeHTML } from "../utils/messages";
 import type { HealthView } from "./types";
 
 export function renderHealth(data: HealthView): string {
-    return layout(
-        "Wrapper Health",
-        `
-        <pre>${escapeHTML(JSON.stringify(data, null, 2))}</pre>
-    `,
-    );
+    const body = `
+<div class="tabs">
+    <div class="tab active" data-target="health-tab">Health</div>
+</div>
+
+<div id="health-tab" class="tab-content active">
+    <div class="section">
+        <div class="section-header">
+            <span class="section-title">Wrapper Health</span>
+            <span class="section-toggle">Hide</span>
+        </div>
+        <div class="section-body" style="display: block;">
+            <pre>${escapeHTML(JSON.stringify(data, null, 2))}</pre>
+        </div>
+    </div>
+</div>
+`;
+    return layout("Wrapper Health", body);
 }
