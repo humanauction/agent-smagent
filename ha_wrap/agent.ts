@@ -9,7 +9,14 @@ export class SMAGEAgent {
     private mcp: MCPClient;
 
     constructor() {
-        this.mcp = new MCPClient("node", ["ha_mcp/server.js"]);
+        this.mcp = new MCPClient("node", [
+            "--require=ts-node/register",
+            "ha_mcp/server.ts",
+        ]);
+
+        reversibleLog("agent", "mcp_start", {
+            server: "ha_mcp/server.ts",
+        });
     }
 
     async call(params: AgentCallParams): Promise<AgentResult> {
@@ -24,11 +31,27 @@ export class SMAGEAgent {
             options: smageOptions,
         });
 
+        reversibleLog(session, "mcp_compress", {
+            messages_in: messages,
+            messages_out: shaped.messages,
+            stats: shaped.stats,
+        });
+
         // 2. Call provider with shaped messages
         const result = await callProvider(shaped.messages);
 
+        reversibleLog(session, "provider_call", {
+            provider,
+            model,
+            result,
+        });
+
         // 3. Log via MCP
-        await this.mcp.call("humanAuction_retrieve", { session });
+        const retrieve = await this.mcp.call("humanAuction_retrieve", {
+            session,
+        });
+
+        reversibleLog(session, "mcp_retrieve", retrieve);
 
         return {
             role: result.role,
