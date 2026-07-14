@@ -1,9 +1,6 @@
 version: "3"
 
 tasks:
-    # -----------------------------
-    # Help / Command List
-    # -----------------------------
     help:
         desc: "Show all available tasks"
         cmds:
@@ -15,70 +12,53 @@ tasks:
         cmds:
             - task help
 
-    # -----------------------------
-    # Python environment management
-    # -----------------------------
-    vvact:
-        desc: "Activate Python virtual environment"
-        cmds:
-            - source .venv/bin/activate
-
     vvup:
         desc: "Update Python requirements"
         cmds:
             - pip install -r requirements.txt
             - pip freeze > requirements.txt
 
-    # -----------------------------
-    # TypeScript / Node tasks
-    # -----------------------------
     tsin:
         desc: "Install Node packages"
         cmds:
-            - npm install
+            - arch -arm64 npm install
 
     tsup:
         desc: "Update Node packages"
         cmds:
-            - npm update
+            - arch -arm64 npm update
 
     tsbd:
         desc: "Build TypeScript"
         cmds:
-            - npx tsc
+            - arch -arm64 npx tsc
 
     tstst:
         desc: "Run TypeScript tests"
         cmds:
-            - npx tsx ha_wrap/test-agent.ts
-            - npx tsx ha_learn/test-learn.ts
+            - arch -arm64 npx tsx ha_wrap/test-agent.ts
+            - arch -arm64 npx tsx ha_learn/test-learn.ts
 
-    # -----------------------------
-    # SMAGE servers
-    # -----------------------------
     proxy:
         desc: "Start SMAGE proxy server"
         cmds:
-            - node --require ts-node/register ha_cli/main.ts proxy
+            - arch -arm64 node --require ts-node/register ha_proxy/server.ts
 
     mcp:
         desc: "Start MCP server"
         cmds:
-            - node --require ts-node/register ha_mcp/server.ts
+            - arch -arm64 node --require ts-node/register ha_mcp/server.ts
 
     agent:
         desc: "Run agent wrapper test"
         cmds:
-            - node --require ts-node/register ha_cli/main.ts agent
+            - arch -arm64 node --require ts-node/register ha_cli/main.ts agent
 
     learn:
         desc: "Run learning engine"
         cmds:
-            - node --require ts-node/register ha_cli/main.ts learn test-session
+            - arch -arm64 node --require ts-node/register ha_cli/main.ts learn test-session
 
-    # -----------------------------
-    # Full system checks
-    # -----------------------------
     chk:
         desc: "Run full system check"
         cmds:
@@ -86,23 +66,12 @@ tasks:
             - task tstst
             - task learn
 
-    # -----------------------------
-    # PATH bootstrap
-    # -----------------------------
-    path:
-        desc: "Alias for path:bootstrap"
-        cmds:
-            - echo "Exporting local node_modules/.bin into PATH"
-            - export PATH="./node_modules/.bin:$PATH"
-            - echo "PATH updated. Current PATH:"
-            - echo $PATH
-
     docs:
         desc: "Generate SMAGE documentation"
         cmds:
-            - node --require ts-node/register ha_cli/main.ts docs
+            - arch -arm64 node --require ts-node/register ha_cli/main.ts docs
 
     docsite:
-    desc: "Generate SMAGE HTML docsite"
-    cmds:
-        - node --require ts-node/register ha_cli/main.ts docs:html
+        desc: "Generate SMAGE HTML documentation"
+        cmds:
+            - arch -arm64 node --require ts-node/register ha_cli/main.ts docs:html

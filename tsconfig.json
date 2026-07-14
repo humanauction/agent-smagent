@@ -4,7 +4,7 @@
         "outDir": "dist",
         "esModuleInterop": true,
         "resolveJsonModule": true,
-        "module": "commonjs",
+        "module": "esnext",
         "target": "esnext",
         "types": ["node"],
         "lib": ["esnext"],
