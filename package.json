@@ -1,7 +1,7 @@
 {
     "name": "agent-smagent",
     "version": "1.0.0",
-    "type": "commonjs",
+    "type": "module",
     "description": "This is all because i got murdered on tokens asking stupid questions and being naturally paranoid. also recently distrustful of using basically anything since the NPM, Linux, react, GitHub, open source breach, etc... i found solutions, like headroom, started reading code and then got scared. if i dont understand something i try to build it. so, when i'd stopped being scared, i figured maybe just write it myself and at least then I'll know it isn't also doing \"something else\" at \"some tbc dateTime\" by \"yes\" (probably, shits been WILD recently...).",
     "main": "./dist/index.js",
     "scripts": {

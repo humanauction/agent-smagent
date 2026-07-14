@@ -65,6 +65,7 @@ tasks:
             - task bd
             - task tst
             - task learn
+            - task proxy
 
     docs:
         desc: "Generate SMAGE documentation"

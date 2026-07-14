@@ -16,6 +16,8 @@
         "moduleResolution": "node",
         "strict": true,
         "ignoreDeprecations": "6.0",
+        "allowImportingTsExtensions": true,
+        "rewriteRelativeImportExtensions": true,
 
         "noUncheckedSideEffectImports": true,
         "skipLibCheck": true

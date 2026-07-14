@@ -16,7 +16,7 @@ setInterval(() => {
     process.stdout.write(
         JSON.stringify({ type: "heartbeat", ts: Date.now() }) + "\n",
     );
-}, 3000);
+}, 8000);
 
 // agent crash logging
 process.on("uncaughtException", (err) => {
