@@ -18,25 +18,25 @@ tasks:
             - pip install -r requirements.txt
             - pip freeze > requirements.txt
 
-    tsin:
+    in:
         desc: "Install Node packages"
         cmds:
             - arch -arm64 npm install
 
-    tsup:
+    up:
         desc: "Update Node packages"
         cmds:
             - arch -arm64 npm update
 
-    tsbd:
+    bd:
         desc: "Build TypeScript"
         cmds:
             - arch -arm64 npx tsc
 
-    tstst:
+    tst:
         desc: "Run TypeScript tests"
         cmds:
-            - arch -arm64 npx tsx ha_wrap/test-agent.ts
+            - arch -arm64 npx tsx ha_proxy/test-provider.ts
             - arch -arm64 npx tsx ha_learn/test-learn.ts
 
     proxy:
@@ -62,8 +62,8 @@ tasks:
     chk:
         desc: "Run full system check"
         cmds:
-            - task tsbd
-            - task tstst
+            - task bd
+            - task tst
             - task learn
 
     docs:

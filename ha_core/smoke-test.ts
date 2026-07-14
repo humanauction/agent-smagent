@@ -26,7 +26,7 @@ messages.push(
     }),
 );
 
-// NOW run CCR pipeline
+// run CCR pipeline
 const compressed = await smage.compress({
     messages,
     agent: "copilot",

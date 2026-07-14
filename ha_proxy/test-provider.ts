@@ -1,17 +1,19 @@
-import { callProvider } from "../ha_core/call/providers";
+// import { callProvider } from "../ha_core/call/providers";
 import { msg } from "../ha_core/index";
+import { SMAGEAgent } from "../ha_wrap/agent";
 
 async function main() {
-    const messages = [
-        msg({ role: "user", content: "hello" }),
-        msg({ role: "assistant", content: "response" }),
-    ];
+    const agent = new SMAGEAgent();
 
-    const result = await callProvider("openai", messages, "gpt-4o-mini", {
-        maxTokens: 200,
+    const result = await agent.call({
+        messages: [msg({ role: "user", content: "hello" })],
+        provider: "openai",
+        model: "gpt-4o-mini",
+        session: "test-session",
+        options: {},
     });
 
-    console.log("provider result:", result);
+    console.log(result);
 }
 
 main();

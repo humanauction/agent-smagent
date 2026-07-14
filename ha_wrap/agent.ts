@@ -25,12 +25,7 @@ export class SMAGEAgent {
         });
 
         // 2. Call provider with shaped messages
-        const result = await callProvider(
-            provider,
-            shaped.messages,
-            model,
-            smageOptions,
-        );
+        const result = await callProvider(shaped.messages);
 
         // 3. Log via MCP
         await this.mcp.call("humanAuction_retrieve", { session });
