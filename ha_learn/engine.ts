@@ -1,6 +1,6 @@
-import { collectSamples, mineSignals } from "./miner";
-import type { LearningUpdate } from "./types";
-import { reversibleLog } from "../ha_core/cache/log";
+import { collectSamples, mineSignals } from './miner.js';
+import type { LearningUpdate } from './types.js';
+import { reversibleLog } from '../ha_core/cache/log.js';
 
 // this file contains the main function that runs the learning cycle for a given session
 

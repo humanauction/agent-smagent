@@ -1,5 +1,5 @@
-import { cacheRetrieve } from "../ha_core/cache/store";
-import type { LearningSample, LearningSignal, LearningUpdate } from "./types";
+import { cacheRetrieve } from '../ha_core/cache/store.js';
+import type { LearningSample, LearningSignal, LearningUpdate } from './types.js';
 
 // this file contains the functions used by the MCP server to collect learning samples, mine signals
 

@@ -1,7 +1,7 @@
-import type { SMAGEMessage, SMAGEOptions } from "../index";
-import { tokenCount } from "../analyze/tokens";
-import { classifyMessage } from "../analyze/classifier";
-import { compressContent } from "./compressors/basic";
+import type { SMAGEMessage, SMAGEOptions } from "../index.js";
+import { tokenCount } from "../analyze/tokens.js";
+import { classifyMessage } from "../analyze/classifier.js";
+import { compressContent } from "./compressors/basic.js";
 
 export async function applyPayloadCompression(
     messages: SMAGEMessage[],

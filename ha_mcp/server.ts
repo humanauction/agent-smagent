@@ -1,10 +1,10 @@
 import * as readline from "readline";
 import process from "process";
 
-import { humanAuction_compress } from "./tools/compress";
-import { humanAuction_retrieve } from "./tools/retrieve";
-import { humanAuction_stats } from "./tools/stats";
-import { reversibleLog } from "../ha_core/cache/log";
+import { humanAuction_compress } from './tools/compress.js';
+import { humanAuction_retrieve } from './tools/retrieve.js';
+import { humanAuction_stats } from './tools/stats.js';
+import { reversibleLog } from '../ha_core/cache/log.js';
 
 const rl = readline.createInterface({
     input: process.stdin,

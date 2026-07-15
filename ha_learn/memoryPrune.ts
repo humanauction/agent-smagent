@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from "../ha_core/index";
+import type { SMAGEMessage } from '../ha_core/index.js';
 
 export function pruneMemory(memories: SMAGEMessage[]): SMAGEMessage[] {
     return memories.filter((m) => (m.meta?.weight ?? 0) > 0.2);

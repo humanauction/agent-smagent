@@ -1,16 +1,16 @@
-import type { SMAGEMessage, SMAGEOptions } from "../index";
+import type { SMAGEMessage, SMAGEOptions } from "../index.js";
 
-import { mineMemory, injectMemory } from "../memory/memory";
-import { applyPayloadCompression } from "./payload";
-import { dedupeMessages } from "./dedupe";
-import { extractAnchor } from "./anchor";
-import { scoreMessage } from "./relevance";
-import { assignPriority } from "./priority";
-import { applyContextWindow } from "./window";
-import { reconstruct } from "./reconstruct";
-import { applyOutputReduction } from "../output/reducer";
+import { mineMemory, injectMemory } from "../memory/memory.js";
+import { applyPayloadCompression } from "./payload.js";
+import { dedupeMessages } from "./dedupe.js";
+import { extractAnchor } from "./anchor.js";
+import { scoreMessage } from "./relevance.js";
+import { assignPriority } from "./priority.js";
+import { applyContextWindow } from "./window.js";
+import { reconstruct } from "./reconstruct.js";
+import { applyOutputReduction } from "../output/reducer.js";
 
-import { reversibleLog } from "../cache/log";
+import { reversibleLog } from "../cache/log.js";
 
 export async function applyCCR(
     messages: SMAGEMessage[],

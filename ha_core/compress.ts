@@ -1,6 +1,6 @@
-import { cacheStore } from "./cache/store";
-import { applyCCR } from "./transform/ccr";
-import type { SMAGECompressParams, SMAGEMessage } from "./index";
+import { cacheStore } from './cache/store.js';
+import { applyCCR } from './transform/ccr.js';
+import type { SMAGECompressParams, SMAGEMessage } from './index.js';
 
 export async function compress(
     params: SMAGECompressParams,

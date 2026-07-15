@@ -1,4 +1,4 @@
-import { cacheRetrieve, cacheAppend } from "../../ha_core/cache/store";
+import { cacheRetrieve, cacheAppend } from '../../ha_core/cache/store.js';
 
 export async function humanAuction_retrieve(session: string) {
     const data = cacheRetrieve(session);

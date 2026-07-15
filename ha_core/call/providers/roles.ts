@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from "../../index";
+import type { SMAGEMessage } from "../../index.js";
 
 // this file defines utility functions for provider adapters
 

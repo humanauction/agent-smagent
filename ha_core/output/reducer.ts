@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from "../index";
+import type { SMAGEMessage } from '../index.js';
 // reduce assistant output tokens before returning the response to the caller.
 //TODO: semantic summarization, specific reduction rules: agent, model, tool.
 /**

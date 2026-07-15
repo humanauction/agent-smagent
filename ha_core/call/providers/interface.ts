@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from "../../index";
+import type { SMAGEMessage } from "../../index.js";
 // this file defines the interface for the provider adapter to call the provider's API.
 export interface ProviderRequest {
     session: string;

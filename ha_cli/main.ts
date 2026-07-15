@@ -1,18 +1,18 @@
 #!/usr/bin/env tsx
 
-import { runLearn } from "./commands/learn";
-import { startProxy } from "./commands/proxy";
-import { testAgent } from "./commands/agent";
-import { generateDocs } from "./commands/docs";
-import { generateHtmlDocs } from "./commands/docs-html";
+import { runLearn } from "./commands/learn.js";
+import { startProxy } from "./commands/proxy.js";
+import { testAgent } from "./commands/agent.js";
+import { generateDocs } from "./commands/docs.js";
+import { generateHtmlDocs } from "./commands/docs-html.js";
 
-import { runCommand } from "./commands/run";
-import { anchorsCommand } from "./commands/anchors";
-import { memoryCommand } from "./commands/memory";
-import { ccrCommand } from "./commands/ccr";
-import { providerCommand } from "./commands/provider";
+import { runCommand } from "./commands/run.js";
+import { anchorsCommand } from "./commands/anchors.js";
+import { memoryCommand } from "./commands/memory.js";
+import { ccrCommand } from "./commands/ccr.js";
+import { providerCommand } from "./commands/provider.js";
 
-import type { WrapperId } from "../ha_wrap/wrapperRegistry";
+import type { WrapperId } from "../ha_wrap/wrapperRegistry.js";
 
 // this file contains the main CLI entry point for the agentSmagent project
 

@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from "../ha_core/index";
+import type { SMAGEMessage } from '../ha_core/index.js';
 
 export function resolveConflicts(memories: SMAGEMessage[]): SMAGEMessage[] {
     const map = new Map<string, SMAGEMessage>();

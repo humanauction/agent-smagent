@@ -1,6 +1,6 @@
-import { layout } from "./layout";
-import type { WrapperConfig } from "../../../ha_wrap/shared/baseWrapper";
-import { escapeHTML } from "../utils/messages";
+import { layout } from './layout.js';
+import type { WrapperConfig } from '../../../ha_wrap/shared/baseWrapper.js';
+import { escapeHTML } from '../utils/messages.js';
 
 export function renderConfig(config: WrapperConfig): string {
     const body = `

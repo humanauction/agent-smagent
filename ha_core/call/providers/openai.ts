@@ -1,6 +1,6 @@
-import type { ProviderAdapter } from "./interface";
-import { shapeOutput, logProviderIO } from "./utils";
-import { mapProviderRole } from "./roles";
+import type { ProviderAdapter } from "./interface.js";
+import { shapeOutput, logProviderIO } from "./utils.js";
+import { mapProviderRole } from "./roles.js";
 
 export const OpenAIAdapter: ProviderAdapter = {
     name: "openai",

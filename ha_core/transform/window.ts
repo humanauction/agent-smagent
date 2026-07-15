@@ -1,6 +1,6 @@
-import type { SMAGEMessage } from "../index";
-import { assignPriority } from "./priority";
-import { tokenCount } from "../analyze/tokens";
+import type { SMAGEMessage } from "../index.js";
+import { assignPriority } from "./priority.js";
+import { tokenCount } from "../analyze/tokens.js";
 
 // this function applies a context window to the messages, keeping the most relevant messages within the max token limit.
 /**

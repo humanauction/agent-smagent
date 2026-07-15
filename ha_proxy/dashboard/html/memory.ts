@@ -1,6 +1,6 @@
-import { layout } from "./layout";
-import { escapeHTML } from "../utils/messages";
-import type { MemoryView } from "./types";
+import { layout } from './layout.js';
+import { escapeHTML } from '../utils/messages.js';
+import type { MemoryView } from './types.js';
 
 export function renderMemory(data: MemoryView): string {
     const body = `

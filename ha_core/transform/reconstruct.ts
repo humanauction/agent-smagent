@@ -1,5 +1,5 @@
-import type { SMAGEMessage } from "../index";
-import type { Anchor } from "./anchor";
+import type { SMAGEMessage } from '../index.js';
+import type { Anchor } from './anchor.js';
 // Responsibilities
 // rebuild final message list
 // re‑inject anchors

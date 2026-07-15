@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from "../ha_core/index";
+import type { SMAGEMessage } from '../ha_core/index.js';
 
 // this file is a store for wrapper memory
 //TODO: persistent storage

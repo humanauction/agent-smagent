@@ -1,4 +1,4 @@
-import { handleLLM } from "../../ha_proxy/router";
+import { handleLLM } from '../../ha_proxy/router.js';
 import express from "express";
 
 // this file contains the SMAGE proxy server start command.

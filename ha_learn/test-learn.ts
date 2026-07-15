@@ -1,4 +1,4 @@
-import { runLearningCycle } from "./../ha_learn/engine";
+import { runLearningCycle } from './../ha_learn/engine.js';
 // this file contains a test script that runs the learning cycle for a given session and prints the resulting update to the console
 
 // this function runs the learning cycle for a given session and prints the resulting update to the console

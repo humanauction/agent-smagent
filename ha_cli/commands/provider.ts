@@ -1,7 +1,7 @@
-import { getWrapper } from "../../ha_wrap/wrapperRegistry";
-import { printSection, printJSON } from "../utils/printer";
+import { getWrapper } from '../../ha_wrap/wrapperRegistry.js';
+import { printSection, printJSON } from '../utils/printer.js';
 
-import type { WrapperId } from "../../ha_wrap/wrapperRegistry";
+import type { WrapperId } from '../../ha_wrap/wrapperRegistry.js';
 
 export async function providerCommand(wrapperId: string, prompt: string) {
     const wrapperObj = getWrapper(wrapperId as WrapperId);

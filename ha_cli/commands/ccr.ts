@@ -1,9 +1,9 @@
-import { getWrapper } from "../../ha_wrap/wrapperRegistry";
-import { applyCCR } from "../../ha_core/transform/ccr";
-import { printSection, printJSON } from "../utils/printer";
+import { getWrapper } from "../../ha_wrap/wrapperRegistry.js";
+import { applyCCR } from "../../ha_core/transform/ccr.js";
+import { printSection, printJSON } from "../utils/printer.js";
 
-import type { WrapperId } from "../../ha_wrap/wrapperRegistry";
-import { SMAGEMessage } from "../../ha_core";
+import type { WrapperId } from "../../ha_wrap/wrapperRegistry.js";
+import { SMAGEMessage } from "../../ha_core/index.js";
 
 export async function ccrCommand(wrapperId: string, prompt: string) {
     const wrapper = getWrapper(wrapperId as WrapperId);

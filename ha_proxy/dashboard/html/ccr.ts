@@ -1,5 +1,5 @@
-import { layout } from "./layout";
-import { escapeHTML } from "../utils/messages";
+import { layout } from './layout.js';
+import { escapeHTML } from '../utils/messages.js';
 
 export function renderCCR(data: any): string {
     const body = `

@@ -1,14 +1,14 @@
-import { loadWrapperMemory } from "../../ha_wrap/shared/memoryLoader";
-import { printSection, printJSON } from "../utils/printer";
+import { loadWrapperMemory } from '../../ha_wrap/shared/memoryLoader.js';
+import { printSection, printJSON } from '../utils/printer.js';
 
-import type { WrapperId } from "../../ha_wrap/wrapperRegistry";
-import type { SMAGEMessage } from "../../ha_core/index";
+import type { WrapperId } from '../../ha_wrap/wrapperRegistry.js';
+import type { SMAGEMessage } from '../../ha_core/index.js';
 
-import { scoreMemory } from "../../ha_learn/memoryScore";
-import { decayMemory } from "../../ha_learn/memoryDecay";
-import { weightMemory } from "../../ha_learn/memoryWeight";
-import { pruneMemory } from "../../ha_learn/memoryPrune";
-import { resolveConflicts } from "../../ha_learn/memoryResolve";
+import { scoreMemory } from '../../ha_learn/memoryScore.js';
+import { decayMemory } from '../../ha_learn/memoryDecay.js';
+import { weightMemory } from '../../ha_learn/memoryWeight.js';
+import { pruneMemory } from '../../ha_learn/memoryPrune.js';
+import { resolveConflicts } from '../../ha_learn/memoryResolve.js';
 
 export async function memoryCommand(wrapperId: string) {
     const raw = loadWrapperMemory(wrapperId as WrapperId);

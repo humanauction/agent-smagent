@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from "../index";
+import type { SMAGEMessage } from '../index.js';
 
 // This file implements an in-memory cache for storing session-level data and message history.
 

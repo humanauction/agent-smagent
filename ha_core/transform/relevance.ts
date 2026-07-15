@@ -1,5 +1,5 @@
-import type { SMAGEMessage } from "../index";
-import { tokenCount } from "../analyze/tokens";
+import type { SMAGEMessage } from "../index.js";
+import { tokenCount } from "../analyze/tokens.js";
 // CCR pipeline relevance scoring. components: keyword overlap, role weighting, recency weighting
 /**
  * Extract keywords from a message.

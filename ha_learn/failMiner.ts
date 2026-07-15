@@ -1,5 +1,5 @@
-import type { SMAGEMessage } from "../ha_core/index";
-import { addMemory } from "./memoryStore";
+import type { SMAGEMessage } from '../ha_core/index.js';
+import { addMemory } from './memoryStore.js';
 
 // this file mines failures and adds them to memory for model learning, improvement
 

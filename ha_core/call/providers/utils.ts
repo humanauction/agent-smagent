@@ -1,5 +1,5 @@
-import type { ProviderRequest, ProviderResponse } from "./interface";
-import { reversibleLog } from "../../cache/log";
+import type { ProviderRequest, ProviderResponse } from "./interface.js";
+import { reversibleLog } from "../../cache/log.js";
 
 export function shapeOutput(role: string, content: string): ProviderResponse {
     return { role, content };

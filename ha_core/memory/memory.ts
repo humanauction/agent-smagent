@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from "../index";
+import type { SMAGEMessage } from '../index.js';
 // multi‑agent compression pipeline
 
 /**

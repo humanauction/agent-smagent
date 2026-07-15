@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from "../../../ha_core";
+import type { SMAGEMessage } from "../../../ha_core/index.js";
 
 export const userMsg = (content: string): SMAGEMessage => ({
     role: "user",

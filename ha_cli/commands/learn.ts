@@ -1,4 +1,4 @@
-import { runLearningCycle } from "../../ha_learn/engine";
+import { runLearningCycle } from '../../ha_learn/engine.js';
 
 //this function runs the learning cycle for a given session, prints resulting update to console.log()
 export async function runLearn(session: string) {

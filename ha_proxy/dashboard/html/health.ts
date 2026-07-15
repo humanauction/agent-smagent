@@ -1,6 +1,6 @@
-import { layout } from "./layout";
-import { escapeHTML } from "../utils/messages";
-import type { HealthView } from "./types";
+import { layout } from './layout.js';
+import { escapeHTML } from '../utils/messages.js';
+import type { HealthView } from './types.js';
 
 export function renderHealth(data: HealthView): string {
     const body = `

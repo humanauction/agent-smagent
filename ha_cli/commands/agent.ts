@@ -1,5 +1,5 @@
 import { spawn } from "child_process";
-import { reversibleLog } from "../../ha_core/cache/log";
+import { reversibleLog } from '../../ha_core/cache/log.js';
 
 interface AgentProcess {
     proc: ReturnType<typeof spawn>;
