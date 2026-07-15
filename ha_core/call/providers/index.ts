@@ -2,11 +2,11 @@ import type {
     ProviderAdapter,
     ProviderRequest,
     ProviderResponse,
-} from "./interface";
-import { OpenAIAdapter } from "./openai";
-import { AnthropicAdapter } from "./anthropic";
-import { GoogleAdapter } from "./google";
-import { LocalAdapter } from "./local";
+} from "./interface.js";
+import { OpenAIAdapter } from "./openai.js";
+import { AnthropicAdapter } from "./anthropic.js";
+import { GoogleAdapter } from "./google.js";
+import { LocalAdapter } from "./local.js";
 
 // this file defines available provider adapters
 
