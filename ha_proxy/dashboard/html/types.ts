@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from '../../../ha_core.js';
+import type { SMAGEMessage } from "../../../ha_core/index.js";
 
 export interface MemoryView {
     raw: SMAGEMessage[];
