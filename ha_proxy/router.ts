@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index.js";
-import { callProvider } from "../ha_core/call/providers";
+import { callProvider } from "../ha_core/call/providers/index.js";
 import { reversibleLog } from "../ha_core/cache/log.js";
 import { applyCCR } from "../ha_core/transform/ccr.js";
 import { mapProviderRole } from "../ha_core/call/providers/roles.js";
