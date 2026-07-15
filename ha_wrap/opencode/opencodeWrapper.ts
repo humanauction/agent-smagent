@@ -1,11 +1,11 @@
 // ha_wrap/opencode/opencodeWrapper.ts
 
-import type { SMAGEMessage, SMAGEOptions } from "../../ha_core/index";
-import { BaseWrapper } from "../shared/baseWrapper";
+import type { SMAGEMessage, SMAGEOptions } from '../../ha_core/index.js';
+import { BaseWrapper } from '../shared/baseWrapper.js';
 
-import { LocalAdapter } from "../../ha_core/call/providers/local";
-import { reversibleLog } from "../../ha_core/cache/log";
-import { mapProviderRole } from "../../ha_core/call/providers/roles";
+import { LocalAdapter } from '../../ha_core/call/providers/local.js';
+import { reversibleLog } from '../../ha_core/cache/log.js';
+import { mapProviderRole } from '../../ha_core/call/providers/roles.js';
 
 /**
  * Opencode persona + rules.

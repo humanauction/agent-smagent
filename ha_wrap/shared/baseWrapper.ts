@@ -1,13 +1,13 @@
-import type { SMAGEMessage, SMAGEOptions } from "../../ha_core/index";
-import { applyCCR } from "../../ha_core/transform/ccr";
-import { reversibleLog } from "../../ha_core/cache/log";
+import type { SMAGEMessage, SMAGEOptions } from '../../ha_core/index.js';
+import { applyCCR } from '../../ha_core/transform/ccr.js';
+import { reversibleLog } from '../../ha_core/cache/log.js';
 
-import { loadPersona } from "./personaLoader";
-import { bindTools } from "./toolBinder";
-import { loadWrapperMemory } from "./memoryLoader";
-import { scoreMemory } from "../../ha_learn/memoryScore";
-import { decayMemory } from "../../ha_learn/memoryDecay";
-import { weightMemory } from "../../ha_learn/memoryWeight";
+import { loadPersona } from './personaLoader.js';
+import { bindTools } from './toolBinder.js';
+import { loadWrapperMemory } from './memoryLoader.js';
+import { scoreMemory } from '../../ha_learn/memoryScore.js';
+import { decayMemory } from '../../ha_learn/memoryDecay.js';
+import { weightMemory } from '../../ha_learn/memoryWeight.js';
 
 // this file defines the base wrapper class that all wrappers extend.
 

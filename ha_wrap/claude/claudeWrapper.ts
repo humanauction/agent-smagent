@@ -1,9 +1,9 @@
-import type { SMAGEMessage, SMAGEOptions } from "../../ha_core/index";
-import { BaseWrapper } from "../shared/baseWrapper";
+import type { SMAGEMessage, SMAGEOptions } from '../../ha_core/index.js';
+import { BaseWrapper } from '../shared/baseWrapper.js';
 
-import { AnthropicAdapter } from "../../ha_core/call/providers/anthropic";
-import { reversibleLog } from "../../ha_core/cache/log";
-import { mapProviderRole } from "../../ha_core/call/providers/roles";
+import { AnthropicAdapter } from '../../ha_core/call/providers/anthropic.js';
+import { reversibleLog } from '../../ha_core/cache/log.js';
+import { mapProviderRole } from '../../ha_core/call/providers/roles.js';
 
 /**
  * Claude persona + rules.
