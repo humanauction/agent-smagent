@@ -1,24 +1,20 @@
 import express from "express";
-import { getWrapper } from "../../ha_wrap/wrapperRegistry";
-import { loadWrapperMemory } from "../../ha_wrap/shared/memoryLoader";
-
-import { scoreMemory } from "../../ha_learn/memoryScore";
-import { decayMemory } from "../../ha_learn/memoryDecay";
-import { weightMemory } from "../../ha_learn/memoryWeight";
-import { pruneMemory } from "../../ha_learn/memoryPrune";
-import { resolveConflicts } from "../../ha_learn/memoryResolve";
-
-import { applyCCR } from "../../ha_core/transform/ccr";
-import { SMAGEMessage } from "../../ha_core";
-
-import { userMsg } from "./utils/messages";
-
-import { renderAnchors } from "./html/anchors";
-import { renderMemory } from "./html/memory";
-import { renderCCR } from "./html/ccr";
-import { renderProvider } from "./html/provider";
-import { renderConfig } from "./html/config";
-import { renderHealth } from "./html/health";
+import { getWrapper } from "../../ha_wrap/wrapperRegistry.js";
+import { loadWrapperMemory } from "../../ha_wrap/shared/memoryLoader.js";
+import { scoreMemory } from "../../ha_learn/memoryScore.js";
+import { decayMemory } from "../../ha_learn/memoryDecay.js";
+import { weightMemory } from "../../ha_learn/memoryWeight.js";
+import { pruneMemory } from "../../ha_learn/memoryPrune.js";
+import { resolveConflicts } from "../../ha_learn/memoryResolve.js";
+import { applyCCR } from "../../ha_core/transform/ccr.js";
+import { SMAGEMessage } from "../../ha_core/index.js";
+import { userMsg } from "./utils/messages.js";
+import { renderAnchors } from "./html/anchors.js";
+import { renderMemory } from "./html/memory.js";
+import { renderCCR } from "./html/ccr.js";
+import { renderProvider } from "./html/provider.js";
+import { renderConfig } from "./html/config.js";
+import { renderHealth } from "./html/health.js";
 
 // this file defines the dashboard router for the Express app. It provides endpoints for fetching wrapper anchors, memory, CCR, provider responses, and wrapper config.
 

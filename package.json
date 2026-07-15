@@ -2,10 +2,12 @@
     "name": "agent-smagent",
     "version": "1.0.0",
     "type": "module",
-    "description": "This is all because i got murdered on tokens asking stupid questions and being naturally paranoid. also recently distrustful of using basically anything since the NPM, Linux, react, GitHub, open source breach, etc... i found solutions, like headroom, started reading code and then got scared. if i dont understand something i try to build it. so, when i'd stopped being scared, i figured maybe just write it myself and at least then I'll know it isn't also doing \"something else\" at \"some tbc dateTime\" by \"yes\" (probably, shits been WILD recently...).",
+    "description": "HumanAuction SMAGE pipeline.",
     "main": "./dist/index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "proxy": "node --loader ts-node/esm ha_proxy/server.ts",
+        "mcp": "node --loader ts-node/esm ha_mcp/server.ts",
+        "cli": "node --loader ts-node/esm ha_cli/main.ts"
     },
     "repository": {
         "type": "git",
@@ -19,10 +21,8 @@
     },
     "homepage": "https://github.com/humanauction/agent-smagent#readme",
     "devDependencies": {
-        "@esbuild/darwin-arm64": "^0.28.1",
         "@types/express": "^5.0.6",
         "@types/node": "^26.1.0",
-        "esbuild": "^0.28.1",
         "ts-node": "^10.9.2",
         "tsx": "^4.23.1",
         "typescript": "^6.0.3"

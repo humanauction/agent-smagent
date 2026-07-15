@@ -1,8 +1,9 @@
 import express from "express";
-import { errorMiddleware } from "./middleware.ts";
-import { handleLLM } from "./router";
-import { config } from "./config";
-import { dashboardRouter } from "./dashboard/router";
+import { errorMiddleware } from "./middleware.js";
+import { handleLLM } from "./router.js";
+import { config } from "./config.js";
+import { dashboardRouter } from "./dashboard/router.js";
+
 // this file is the entry point for the HA Proxy server, which sets up the Express app and routes.
 async function startServer() {
     try {
