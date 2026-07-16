@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { generateDocs } from "./generator";
-import type { DocModule } from "./types";
+import { generateDocs } from "./generator.js";
+import type { DocModule } from "./types.js";
 
 function escapeHtml(text: string): string {
     return text
