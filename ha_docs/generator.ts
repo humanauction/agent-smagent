@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { walkSourceFiles } from "./walk";
-import type { DocModule, DocSymbol } from "./types";
+import { walkSourceFiles } from "./walk.js";
+import type { DocModule, DocSymbol } from "./types.js";
 
 // this file generates project documentation. walks through source files, extracts symbols and related JSDoc comments
 
