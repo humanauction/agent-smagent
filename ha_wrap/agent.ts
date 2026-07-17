@@ -11,11 +11,11 @@ export class SMAGEAgent {
     constructor() {
         this.mcp = new MCPClient("node", [
             "--require=ts-node/register",
-            "ha_mcp/server.ts",
+            "dist/ha_mcp/server.js",
         ]);
 
         reversibleLog("agent", "mcp_start", {
-            server: "ha_mcp/server.ts",
+            server: "dist/ha_mcp/server.js",
         });
     }
 
@@ -38,7 +38,12 @@ export class SMAGEAgent {
         });
 
         // 2. Call provider with shaped messages
-        const result = await callProvider(shaped.messages);
+        const result = await callProvider({
+            messages: shaped.messages,
+            model,
+            session,
+            options: smageOptions,
+        });
 
         reversibleLog(session, "provider_call", {
             provider,

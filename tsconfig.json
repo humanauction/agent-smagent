@@ -4,21 +4,24 @@
         "outDir": "dist",
         "esModuleInterop": true,
         "resolveJsonModule": true,
+
         "module": "esnext",
         "target": "esnext",
         "types": ["node", "express"],
         "lib": ["esnext"],
+
         "sourceMap": true,
         "declaration": true,
         "declarationMap": true,
+
         "noUncheckedIndexedAccess": true,
         "exactOptionalPropertyTypes": true,
+
         "moduleResolution": "node",
+        "rewriteRelativeImportExtensions": true,
+
         "strict": true,
         "ignoreDeprecations": "6.0",
-        // "allowImportingTsExtensions": true,
-        // "rewriteRelativeImportExtensions": true,
-
         "noUncheckedSideEffectImports": true,
         "skipLibCheck": true
     },

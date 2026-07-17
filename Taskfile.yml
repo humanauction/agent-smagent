@@ -12,12 +12,18 @@ tasks:
         cmds:
             - task help
 
+    # -----------------------------
+    # Python environment management
+    # -----------------------------
     vvup:
         desc: "Update Python requirements"
         cmds:
             - pip install -r requirements.txt
             - pip freeze > requirements.txt
 
+    # -----------------------------
+    # Node / TypeScript
+    # -----------------------------
     in:
         desc: "Install Node packages"
         cmds:
@@ -29,36 +35,43 @@ tasks:
             - arch -arm64 npm update
 
     bd:
-        desc: "Build TypeScript"
+        desc: "Build TypeScript → dist/"
         cmds:
             - arch -arm64 npx tsc
 
     tst:
-        desc: "Run TypeScript tests"
+        desc: "Run tests against compiled JS"
         cmds:
-            - arch -arm64 npx tsx ha_proxy/test-provider.ts
-            - arch -arm64 npx tsx ha_learn/test-learn.ts
+            - task bd
+            - arch -arm64 node dist/ha_proxy/test-provider.js
+            - arch -arm64 node dist/ha_learn/test-learn.js
 
+    # -----------------------------
+    # Runtime servers (compiled JS)
+    # -----------------------------
     proxy:
-        desc: "Start SMAGE proxy server"
+        desc: "Start SMAGE proxy server (dist)"
         cmds:
-            - arch -arm64 node --require ts-node/register ha_proxy/server.ts
+            - arch -arm64 node dist/ha_proxy/server.js
 
     mcp:
-        desc: "Start MCP server"
+        desc: "Start MCP server (dist)"
         cmds:
-            - arch -arm64 node --require ts-node/register ha_mcp/server.ts
+            - arch -arm64 node dist/ha_mcp/server.js
 
     agent:
-        desc: "Run agent wrapper test"
+        desc: "Run agent wrapper test (dist)"
         cmds:
-            - arch -arm64 node --require ts-node/register ha_cli/main.ts agent
+            - arch -arm64 node dist/ha_cli/main.js agent
 
     learn:
-        desc: "Run learning engine"
+        desc: "Run learning engine (dist)"
         cmds:
-            - arch -arm64 node --require ts-node/register ha_cli/main.ts learn test-session
+            - arch -arm64 node dist/ha_cli/main.js learn test-session
 
+    # -----------------------------
+    # Full system checks
+    # -----------------------------
     chk:
         desc: "Run full system check"
         cmds:
@@ -67,12 +80,15 @@ tasks:
             - task learn
             - task proxy
 
+    # -----------------------------
+    # Documentation
+    # -----------------------------
     docs:
         desc: "Generate SMAGE documentation"
         cmds:
-            - arch -arm64 node --require ts-node/register ha_cli/main.ts docs
+            - arch -arm64 node dist/ha_cli/main.js docs
 
     docsite:
         desc: "Generate SMAGE HTML documentation"
         cmds:
-            - arch -arm64 node --require ts-node/register ha_cli/main.ts docs:html
+            - arch -arm64 node dist/ha_cli/main.js docs:html
