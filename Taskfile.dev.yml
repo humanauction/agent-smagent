@@ -1,0 +1,24 @@
+version: '3'
+
+tasks:
+  bd:
+    desc: Build dist
+    cmds:
+      - arch -arm64 npx tsc
+
+  dev:
+    desc: Run SMAGE agent + MCP in dev mode (tsx)
+    cmds:
+      - tsx ha_mcp/server.ts
+
+  tst:
+    desc: Run provider + MCP tests
+    cmds:
+      - task bd
+      - arch -arm64 node dist/ha_proxy/test-provider.js
+
+  learn:
+    desc: Run SMAGE learn tests
+    cmds:
+      - task bd
+      - arch -arm64 node dist/ha_learn/test-learn.js

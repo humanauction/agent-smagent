@@ -8,30 +8,58 @@ I found solutions like Headroom, started reading the code, didnt know why a bunc
 ## Overview
 
 Full CCR (Cache–Crush–Reconstruct) pipeline with:
+deterministic compression
+reversible caching
+priority‑tier context windows
+anchors
+dedupe
+relevance scoring
+cross‑agent memory
+output token reduction
+provider adapters
+zero‑code‑change proxy
+MCP server
+agent wrappers
+failure mining
+Everything is explicit. Nothing is hidden.
 
-- deterministic compression
-- reversible caching
-- priority‑tier context windows
-- anchors
-- dedupe
-- relevance scoring
-- cross‑agent memory
-- output token reduction
-- provider adapters
-- zero‑code‑change proxy
-- MCP server
-- agent wrappers
-- failure mining
-- Everything is explicit. Nothing is hidden.
+## What’s Working Right Now
+
+Core message model
+Provider adapters (OpenAI, Anthropic, Google, Local)
+MCP server (compress, retrieve, stats)
+Proxy server
+Agent wrapper (SMAGEAgent)
+Learning engine skeleton
+CLI commands
+Dist‑based MCP execution
+tsx‑based dev execution
+Reversible logging across core, proxy, MCP, provider, learn
+Tests for proxy, MCP, learn
+Docsite generator
+
+## What’s Being Built Now (current milestone)
+
+CCR pipeline internals:
+anchors
+dedupe
+relevance scoring
+priority tiers
+window shaping
+reconstruction
+payload compression
+memory injection
+memory mining
+output reduction
 
 ## Project Structure
 
 ```text
 agent-smagent/
 │
-├── ha_core/ # The beating heart: CCR pipeline + message model
-│   ├── analyze/ # Parsers, token counters, classifiers
-│   ├── transform/ # CCR: cache alignment, token crushing, context manager
+├── ha_core/                 # The beating heart: CCR pipeline + message model
+│   ├── analyze/             # Parsers, token counters, classifiers
+│   ├── transform/           # CCR: cache alignment, token crushing, context manager
 │   │   ├── compressors/
 │   │   │   └── basic.ts
 │   │   ├── anchor.ts
@@ -41,9 +69,8 @@ agent-smagent/
 │   │   ├── payload.ts
 │   │   ├── priority.ts
 │   │   └── relevance.ts
-│   │
-│   ├── call/ # Provider adapters (OpenAI, Anthropic, Google)
-│   │   └── providers/ # OpenAI, Anthropic, Google, Local
+│   ├── call/                # Provider adapters (OpenAI, Anthropic, Google)
+│   │   └── providers/
 │   │       ├── anthropic.ts
 │   │       ├── openai.ts
 │   │       ├── google.ts
@@ -52,94 +79,59 @@ agent-smagent/
 │   │       ├── interface.ts
 │   │       ├── roles.ts
 │   │       └── utils.ts
-│   ├── cache/ # Raw reversible storage (FS/SQLite/Redis)
+│   ├── cache/               # Raw reversible storage (FS/SQLite/Redis)
 │   │   ├── store.ts
 │   │   └── log.ts
-│   ├── memory/ # Cross-agent memory layer
-│   ├── stats/ # Token metrics, waste detection
-│   ├── output/ # Output token reduction
-│   ├── compress.py # Python entrypoint
-│   ├── compress.ts # TypeScript entrypoint
+│   ├── memory/              # Cross-agent memory layer
+│   ├── stats/               # Token metrics, waste detection
+│   ├── output/              # Output token reduction
+│   ├── compress.py          # Python entrypoint
+│   ├── compress.ts          # TypeScript entrypoint
 │   ├── index.ts
 │   └── __init__.py
 │
-├── ha_proxy/ # Zero‑code‑change HTTP proxy
+├── ha_proxy/                # Zero‑code‑change HTTP proxy
 │   ├── utils/
-│   │   ├── messages.ts
-│   │   └── router.ts
 │   ├── html/
-│   │   ├── layout.ts # shared HTML wrapper
-│   │   ├── anchors.ts # HTML renderer
-│   │   ├── memory.ts # HTML renderer
-│   │   ├── ccr.ts # HTML renderer
-│   │   ├── provider.ts # HTML renderer
-│   │   ├── config.ts # HTML renderer
-│   │   ├── health.ts # HTML renderer
-│   │   └── types.ts
-│   ├── config.ts # Proxy config (port, provider, etc.)
-│   ├──middleware.ts
-│   ├──router.ts
-│   ├──server.ts # Proxy entrypoint
-│   ├── test-provider.ts # Test provider adapter
-│   └── test-proxy.ts # Test proxy
+│   ├── config.ts
+│   ├── middleware.ts
+│   ├── router.ts
+│   ├── server.ts
+│   ├── test-provider.ts
+│   └── test-proxy.ts
 │
-├── ha_mcp/ # MCP server exposing: compress, retrieve, stats
-│   │
-│   ├── server.ts      # MCP server entrypoint
+├── ha_mcp/                  # MCP server exposing: compress, retrieve, stats
+│   ├── server.ts
 │   ├── tools/
 │   │   ├── compress.ts
 │   │   ├── retrieve.ts
 │   │   └── stats.ts
-│   └── protocol/     # type defs / helpers
+│   └── protocol/
 │
-├── ha_wrap/ # Agent wrappers (claude, aider, cursor, copilot, etc.)
-│   │
+├── ha_wrap/                 # Agent wrappers (claude, aider, cursor, copilot, etc.)
 │   ├── claude/
-│   │     ├──wrapper.ts
-│   │     ├──persona.md
-│   │     └──tools.ts
 │   ├── aider/
-│   │     ├── wrapper.ts
-│   │     ├── persona.md
-│   │     └── tools.ts
 │   ├── cursor/
-│   │     ├── wrapper.ts
-│   │     └── persona.md
 │   ├── copilot/
-│   │     ├── wrapper.ts
-│   │     └── persona.md
 │   ├── opencode/
-│   │     ├── wrapper.ts
-│   │     └── persona.md
 │   ├── shared/
-│   │     ├── baseWrapper.ts
-│   │     ├── personaLoader.ts
-│   │     └── toolBinder.ts
-│   │
-│   ├── agent.ts          # main wrapper class
-│   ├── mcp-client.ts     # JSON-RPC client for MCP server
-│   └── types.ts          # shared types
+│   ├── agent.ts
+│   ├── mcp-client.ts
+│   └── types.ts
 │
-├── ha_learn/ # Failure mining + CLAUDE.md / AGENTS.md updates
-│   │
-│   ├── engine.ts # Main learning cycle
-│   ├── miner.ts  # Collect samples, mine signals
-│   ├── types.ts  # LearningSample, LearningSignal, LearningUpdate
-│   └── test-learn.ts # Test script for learning cycle
+├── ha_learn/                # Failure mining + CLAUDE.md / AGENTS.md updates
+│   ├── engine.ts
+│   ├── miner.ts
+│   ├── types.ts
+│   └── test-learn.ts
 │
-├── ha_cli/ # Unified CLI
-│   │
+├── ha_cli/                  # Unified CLI
 │   ├── commands/
-│   │   ├── learn.ts
-│   │   ├── proxy.ts
-│   │   ├── agent.ts
-│   │   ├── docs.ts
-│   │   └── docs-html.ts
-│   └── main.ts # CLI entrypoint
+│   └── main.ts
 │
-├── docs/ # Architecture, CCR, Memory, Proxy, MCP, Learn, Roadmap
-├── tests/ # Core + proxy + MCP + wrappers + learning
-├── examples/ # Python, TypeScript, Proxy usage
+├── docs/                    # Architecture, CCR, Memory, Proxy, MCP, Learn, Roadmap
+├── tests/
+├── examples/
 └── README.md
 ```
 
@@ -233,12 +225,12 @@ humanAuction stats
 - compress
 - retrieve
 - stats
-- ha_wrap
+- `ha_wrap`
 - agent wrappers
-- ha_learn
+- `ha_learn`
 - failure miner
 - `CLAUDE.md` / `AGENTS.md` writer
-- ha_cli
+- `ha_cli`
 - unify everything
 - docs
 - architecture
@@ -249,7 +241,8 @@ humanAuction stats
 
 ### 1. ha_core
 
-- ✔ Complete enough to support CCR, providers, memory, output, cache
+- ✔ functional
+- ⬆ CCR internals in progress
 
 ### 2. Message model
 
@@ -260,52 +253,57 @@ humanAuction stats
 - ✔ cache/store.ts
 - ✔ cache/log.ts
 - ✔ Reversible logging API unified
+- ⬆ multi‑backend pending
 
 ### 4. CCR pipeline — Current Stage
 
 - Implementing:
-- anchors
-- dedupe
-- relevance
-- priority
-- window
-- reconstruction
-- payload compression
-- output reduction
-- memory mining
-- memory injection
-- reversible logging at each stage
+- ⬆ anchors
+- ⬆ dedupe
+- ⬆ relevance
+- ⬆ priority
+- ⬆ window
+- ⬆ reconstruction
+- ⬆ payload compression
+- ⬆ memory injection
+- ⬆ memory mining
+- ⬆ output reduction
+- ✔ reversible logging at each stage
 
 ### 5. compress() Python + TS
 
-- ✔ Already implemented (TS + Python entrypoints exist)
+- ✔ Implemented (TS + Python entrypoints exist)
 
 ### 6. Provider adapters
 
-- ✔ OpenAI, Anthropic, Google, Local — unified and logging correctly
+- ✔ OpenAI, Anthropic, Google, Local
+- ✔ unified
+- ✔ logging
+- ✔ shape‑correct
 
 ### 7. Reversible logging
 
-- ✔ Fully integrated across:
-- providers
-- CCR
-- MCP
-- learning engine
-- proxy
+- ✔ Fully integrated
+- ✔ providers
+- ✔ CCR
+- ✔ MCP
+- ✔ learning engine
+- ✔ proxy
 
 ### 8. ha_proxy
 
 - ✔ HTTP server exists
 - ✔ Provider routing exists
-- ⬆ Will benefit from CCR improvements, but not blocked
+- ✔ HTML views
+- ⬆ CCR improvements pending
 
 ### 9. Provider adapters (proxy layer)
 
-- ✔ Already wired
+- ✔ wired
 
 ### 10. Reversible logging (proxy layer)
 
-- ✔ Already wired
+- ✔ wired
 
 ### 11. ha_mcp
 
@@ -316,9 +314,11 @@ humanAuction stats
 - ✔ agent loop
 - ✔ heartbeat
 - ✔ JSON‑RPC dispatch
+- ✔ stable dist execution
 
 ### 12. ha_wrap (agent wrappers)
 
+- ✔ SMAGEAgent
 - ⬆ Next stage after CCR
 
 ### 13. ha_learn
@@ -327,18 +327,95 @@ humanAuction stats
 - ⬆ CLAUDE.md / AGENTS.md writer pending
 - ⬆ signal weighting pending
 - ⬆ session scoring pending
+- ⬆ auto‑tuning pending
 
 ### 14. ha_cli
 
 - ✔ CLI exists
-- ⬆ Will be expanded after wrappers + learning
+- ⬆ Expansion after wrappers + learning
 
 ### 15. docs
 
 - Pending:
-- Architecture diagrams
-- Roadmap
-- Usage examples
-- CCR deep dive
-- Proxy + MCP docs
-- Wrapper docs
+- ⬆ Architecture diagrams
+- ⬆ Roadmap
+- ⬆ Usage examples
+- ⬆ CCR deep dive
+- ⬆ Proxy + MCP docs
+- ⬆ Wrapper docs
+
+## Quick Commands
+
+Dev mode (tsx MCP)
+
+```Code
+ts dev
+```
+
+Build dist
+
+```Code
+ts bd
+```
+
+Run tests
+
+```Code
+ts tst
+```
+
+Run learning engine tests
+
+```Code
+ts learn
+```
+
+Run proxy
+
+```Code
+humanAuction proxy
+```
+
+Run agent wrapper
+
+```Code
+humanAuction wrap aider
+```
+
+Generate docs
+
+```Code
+humanAuction docs
+```
+
+### Useful One‑Liners
+
+Run MCP directly:
+
+```Code
+tsx ha_mcp/server.ts
+```
+
+Run MCP from dist:
+
+```Code
+node dist/ha_mcp/server.js
+```
+
+Run provider test:
+
+```Code
+node dist/ha_proxy/test-provider.js
+```
+
+Run learn test:
+
+```Code
+node dist/ha_learn/test-learn.js
+```
+
+Rebuild clean:
+
+```Code
+rm -rf dist && ts bd
+```
