@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from '../index.js';
+import type { SMAGEMessage } from "../index.js";
 
 // Priority levels for messages.
 export interface Anchor {
@@ -21,4 +21,25 @@ export function extractAnchor(messages: SMAGEMessage[]): Anchor {
     }
 
     return anchor;
+}
+
+export function applyAnchor(
+    messages: SMAGEMessage[],
+    anchor: Anchor,
+): SMAGEMessage[] {
+    const result: SMAGEMessage[] = [];
+
+    // Add system messages first.
+    result.push(...anchor.system);
+
+    // Add the last user message if it exists.
+    if (anchor.lastUser) result.push(anchor.lastUser);
+
+    // Add the last assistant message if it exists.
+    if (anchor.lastAssistant) result.push(anchor.lastAssistant);
+
+    // Add the last tool message if it exists.
+    if (anchor.lastTool) result.push(anchor.lastTool);
+
+    return result;
 }
