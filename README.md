@@ -68,7 +68,8 @@ agent-smagent/
 │   │   ├── dedupe.ts
 │   │   ├── payload.ts
 │   │   ├── priority.ts
-│   │   └── relevance.ts
+│   │   ├── relevance.ts
+│   │   └── anchor.test.ts
 │   ├── call/                # Provider adapters (OpenAI, Anthropic, Google)
 │   │   └── providers/
 │   │       ├── anthropic.ts
@@ -214,6 +215,12 @@ humanAuction stats
 - message model
 - cache
 - CCR pipeline
+  anchors (next)
+  dedupe
+  relevance
+  priority
+  window
+  reconstruction
 - `compress()` Python + TS
 - provider adapters
 - reversible logging

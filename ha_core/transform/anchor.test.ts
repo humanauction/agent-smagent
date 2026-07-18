@@ -51,7 +51,7 @@ test("applyAnchor reconstructs anchor messages", () => {
 
     const reconstructed = applyAnchor(crushed, anchor);
 
-    assert(reconstructed[0].content === "sys", "system not restored");
-    assert(reconstructed[1].content === "u1", "user not restored");
-    assert(reconstructed[2].content === "a1", "assistant not restored");
+    assert(reconstructed[0]?.content === "sys", "system not restored");
+    assert(reconstructed[1]?.content === "u1", "user not restored");
+    assert(reconstructed[2]?.content === "a1", "assistant not restored");
 });

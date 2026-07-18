@@ -43,8 +43,10 @@ tasks:
         desc: "Run tests against compiled JS"
         cmds:
             - task bd
+            - arch -arm64 node dist/ha_core/transform/anchor.test.js
             - arch -arm64 node dist/ha_proxy/test-provider.js
             - arch -arm64 node dist/ha_learn/test-learn.js
+            - echo "task completed successfully"
 
     # -----------------------------
     # Runtime servers (compiled JS)
