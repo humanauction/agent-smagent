@@ -6,7 +6,15 @@ export interface Anchor {
     lastUser?: SMAGEMessage;
     lastAssistant?: SMAGEMessage;
     lastTool?: SMAGEMessage;
+
+    // TODO: add additional metadata fields for anchors
+    // intent?: string;          // extracted user intent
+    // topic?: string;           // classifier output
+    // summary?: string;         // compressed anchor summary
+    // tokens?: number;          // token weight
+    // priority?: number;        // anchor priority tier
 }
+
 // Extract pinned messages and last messages of each role from the message history.
 export function extractAnchor(messages: SMAGEMessage[]): Anchor {
     const anchor: Anchor = {

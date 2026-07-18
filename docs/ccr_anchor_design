@@ -1,0 +1,149 @@
+# CCR Anchor Design Doc
+
+(SMAGE Core — ha_core/transform/anchor.ts)
+
+## 1. Purpose
+
+Anchors are stable, minimal context markers extracted from message history.
+They survive compression, dedupe, relevance scoring, and window shaping.
+They allow the CCR pipeline to reconstruct essential context without re‑expanding the entire history.
+Anchors are the spine of the CCR pipeline.
+
+## 2. Anchor Responsibilities
+
+Anchors must
+
+- A. Preserve essential context
+  system instructions
+  last user intent
+  last assistant output
+  last tool result
+- B. Survive compression
+  Compression may crush messages into summaries or placeholders.
+  Anchors must remain intact.
+- C. Reconstruct context
+  Anchors must be re‑injectable into the shaped window.
+- D. Be deterministic
+  Same input → same anchors.
+- E. Be minimal
+  Anchors must not include:
+  full history
+  irrelevant messages
+  noise
+  hallucinated content
+- F. Be role‑aware
+  Anchors must track:
+  system
+  user
+  assistant
+  tool
+- G. Be order‑preserving
+  Anchors must preserve the chronological order of roles.
+
+## Anchor Extraction Rules
+
+#### Rule 1 — System messages
+
+Collect all system messages in order.
+
+#### Rule 2 — Last user message
+
+Store the last user message.
+
+#### Rule 3 — Last assistant message
+
+Store the last assistant message.
+
+#### Rule 4 — Last tool message
+
+Store the last tool message.
+
+#### Rule 5 — Deterministic
+
+Extraction must not depend on:
+randomness
+token counts
+classifier output
+relevance scoring
+
+#### Rule 6 — No hallucination
+
+Anchors must only contain content from the original messages.
+
+Anchor Reconstruction Rules
+Given:
+crushed messages
+anchor object
+Reconstruction must:
+Rule 1 — Prepend system anchors
+System anchors always come first.
+Rule 2 — Insert last user
+If present.
+Rule 3 — Insert last assistant
+If present.
+Rule 4 — Insert last tool
+If present.
+Rule 5 — Preserve order
+System → user → assistant → tool.
+Rule 6 — Do not modify anchor content
+Anchors are immutable.
+
+## Anchor Placement in CCR Pipeline
+
+Anchors sit between:
+Before compression
+extractAnchor(messages)
+After dedupe + relevance + priority + window
+applyAnchor(shapedMessages, anchor)
+Before output reduction
+Anchors ensure the final shaped window contains essential context. 7. Anchor Interaction with Other CCR Stages
+Dedupe
+Anchors must not be removed by dedupe.
+Relevance
+Anchors override relevance scoring.
+Priority
+Anchors always have highest priority.
+Window
+Anchors must always fit inside the window.
+Reconstruction
+Anchors are the reconstruction seed.
+
+## Anchor Determinism Requirements
+
+Anchors must produce identical output for identical input.
+This ensures:
+reproducibility
+cache stability
+predictable compression
+safe MCP behaviour
+safe proxy behaviour 9. Anchor Token Budget
+Anchors must be small:
+system: usually 1–3 messages
+lastUser: 1
+lastAssistant: 1
+lastTool: 1
+Total anchor token cost must be < 5% of window. 10. Anchor Test Contract
+
+- Minimal tests already enforce:
+  correct extraction
+  correct reconstruction
+  correct ordering
+  correct role handling
+  correct determinism
+- Later tests will enforce:
+  intent extraction
+  topic extraction
+  anchor summarization
+  anchor priority
+  anchor token budgeting
+
+## Anchor Future Expansion (after CCR MVP)
+
+Later, anchors to include:
+intent extraction
+topic classification
+anchor summarization
+anchor priority tier
+anchor token weight
+anchor relevance override
+anchor dedupe override
