@@ -1,33 +1,72 @@
-import type { SMAGEMessage } from '../index.js';
-// reduce assistant output tokens before returning the response to the caller.
-//TODO: semantic summarization, specific reduction rules: agent, model, tool.
-/**
- * Reduce verbosity in assistant/tool messages.
- * - Collapse repeated whitespace
- * - Remove filler sentences
- * - Trim long paragraphs
- * - Keep first N sentences
- * - Keep last N sentences
- */
+import type { SMAGEMessage } from "../index.js";
+
+function isAnchor(msg: SMAGEMessage): boolean {
+    return msg.meta?.anchor === true;
+}
+
+// Remove CCR metadata but keep meta object shape intact
+function stripCCRMeta(meta: Record<string, unknown> | undefined) {
+    if (!meta) return { reduced: true };
+
+    const cleaned: Record<string, unknown> = {};
+
+    for (const [key, value] of Object.entries(meta)) {
+        // keep only non‑CCR fields
+        if (
+            key !== "score" &&
+            key !== "priority" &&
+            key !== "tokens" &&
+            key !== "compressed" &&
+            key !== "rag" &&
+            key !== "log"
+        ) {
+            cleaned[key] = value;
+        }
+    }
+
+    cleaned.reduced = true;
+    return cleaned;
+}
 
 export function reduceOutput(msg: SMAGEMessage): SMAGEMessage {
-    // Only reduce assistant + tool output
+    // Never reduce system/user or anchors
+    if (msg.role === "system" || msg.role === "user" || isAnchor(msg)) {
+        return {
+            ...msg,
+            meta: stripCCRMeta(msg.meta),
+        };
+    }
+
+    // Only reduce assistant/tool
     if (msg.role !== "assistant" && msg.role !== "tool") {
-        return msg;
+        return {
+            ...msg,
+            meta: stripCCRMeta(msg.meta),
+        };
     }
 
     let text = msg.content;
 
+    // Avoid breaking JSON or code blocks
+    if (text.includes("{") || text.includes("```")) {
+        return {
+            ...msg,
+            meta: stripCCRMeta(msg.meta),
+        };
+    }
+
     // Normalize whitespace
     text = text.replace(/\s+/g, " ").trim();
 
-    // Split into sentences
     const sentences = text.split(/(?<=[.!?])\s+/);
-    // If short, return unchanged
+
     if (sentences.length <= 3) {
-        return msg;
+        return {
+            ...msg,
+            meta: stripCCRMeta(msg.meta),
+        };
     }
-    // Keep first 2 + last 1 sentences
+
     const reduced = [
         sentences[0],
         sentences[1],
@@ -37,12 +76,9 @@ export function reduceOutput(msg: SMAGEMessage): SMAGEMessage {
     return {
         ...msg,
         content: reduced,
-        meta: { ...(msg.meta ?? {}), reduced: true },
+        meta: stripCCRMeta(msg.meta),
     };
 }
-/**
- * Apply reduction to all messages in the final output.
- */
 
 export function applyOutputReduction(messages: SMAGEMessage[]): SMAGEMessage[] {
     return messages.map(reduceOutput);

@@ -1,13 +1,13 @@
-import type { SMAGEMessage, SMAGEOptions } from '../index.js';
+import type { SMAGEMessage, SMAGEOptions } from "../index.js";
 
-import { extractAnchor } from './anchor.js';
-import { dedupeMessages } from './dedupe.js';
-import { scoreMessage } from './relevance.js';
-import { assignPriority } from './priority.js';
-import { applyContextWindow } from './window.js';
-import { reconstruct } from './reconstruct.js';
+import { extractAnchor } from "./anchor.js";
+import { dedupeMessages } from "./dedupe.js";
+import { scoreMessage } from "./relevance.js";
+import { assignPriority } from "./priority.js";
+import { applyContextWindow } from "./window.js";
+import { reconstruct } from "./reconstruct.js";
 
-import { reversibleLog } from '../cache/log.js';
+import { reversibleLog } from "../cache/log.js";
 
 export function applyContextManager(
     messages: SMAGEMessage[],

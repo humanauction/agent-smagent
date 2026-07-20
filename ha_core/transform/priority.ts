@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from '../index.js';
+import type { SMAGEMessage } from "../index.js";
 
 export enum Priority {
     SYSTEM = 0,
@@ -22,18 +22,37 @@ export function priorityOf(msg: SMAGEMessage): Priority {
     return Priority.LOG;
 }
 
+/**
+ * CCR Priority Tiers (MVP)
+ *
+ * Priority is a coarse, structural importance score.
+ * It is NOT the same as relevance.
+ *
+ * Tiers:
+ *   100 – system messages (always keep)
+ *    90 – last user intent (critical)
+ *    80 – assistant replies (context continuity)
+ *    70 – tool messages (medium importance)
+ *    50 – everything else (low importance)
+ *
+ * Deterministic, cheap, compression‑safe.
+ */
+
 export function assignPriority(msg: SMAGEMessage): number {
     if (msg.meta?.anchor) return 0;
-    switch (msg.role) {
-        case "system":
-            return 1;
-        case "user":
-            return 2;
-        case "assistant":
-            return 3;
-        case "tool":
-            return 4;
-        default:
-            return 5;
-    }
+    if (msg.role === "system") return 100;
+    if (msg.role === "user") return 90;
+    if (msg.role === "assistant") return 80;
+    if (msg.role === "tool") return 70;
+    return 50;
+}
+
+/**
+ * Batch priority assignment.
+ */
+export function assignPriorities(messages: SMAGEMessage[]): SMAGEMessage[] {
+    return messages.map((m) => ({
+        ...m,
+        meta: { ...m.meta, priority: assignPriority(m) },
+    }));
 }

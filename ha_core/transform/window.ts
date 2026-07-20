@@ -1,33 +1,57 @@
 import type { SMAGEMessage } from "../index.js";
-import { assignPriority } from "./priority.js";
 import { tokenCount } from "../analyze/tokens.js";
 
-// this function applies a context window to the messages, keeping the most relevant messages within the max token limit.
 /**
- * Responsibilities
- * // enforce token budget
- * // evict low‑priority messages
- * // preserve anchors
- * // preserve high‑relevance messages
+ * Internal view used for windowing:
+ * - pulls priority + score out of meta (if present)
+ * - computes token count
  */
+interface ScoredMessage {
+    message: SMAGEMessage;
+    tokens: number;
+    priority: number;
+    score: number;
+}
 
+/**
+ * CCR Context Window (MVP)
+ *
+ * Rules:
+ * - Always preserve order
+ * - Sort by priority DESC, then relevance DESC
+ * - Fill the token budget until maxTokens
+ * - Deterministic
+ */
 export function applyContextWindow(
     messages: SMAGEMessage[],
     maxTokens: number,
-) {
-    const sorted = messages.sort((a, b) => {
-        return assignPriority(a) - assignPriority(b);
+): SMAGEMessage[] {
+    // 1. Project messages into a scored view
+    const scored: ScoredMessage[] = messages.map((m) => ({
+        message: m,
+        tokens: tokenCount(m.content),
+        priority: (m.meta as any)?.priority ?? 0,
+        score: (m.meta as any)?.score ?? 0,
+    }));
+
+    // 2. Sort by priority DESC, then score DESC
+    const sorted = [...scored].sort((a, b) => {
+        if (a.priority !== b.priority) return b.priority - a.priority;
+        return b.score - a.score;
     });
 
-    const out = [];
-    let total = 0;
+    // 3. Fill window until token budget
+    const windowMessages: SMAGEMessage[] = [];
+    let used = 0;
 
-    for (const msg of sorted) {
-        const t = tokenCount(msg.content);
-        if (total + t > maxTokens && !msg.meta?.anchor) continue;
-        out.push(msg);
-        total += t;
+    for (const item of sorted) {
+        if (used + item.tokens > maxTokens) continue;
+        used += item.tokens;
+        windowMessages.push(item.message);
     }
 
-    return out;
+    // 4. Restore original chronological order
+    const ordered = messages.filter((m) => windowMessages.includes(m));
+
+    return ordered;
 }
