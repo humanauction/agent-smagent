@@ -32,7 +32,7 @@ export function extractAnchor(messages: SMAGEMessage[]): Anchor {
 }
 
 export function applyAnchor(
-    messages: SMAGEMessage[],
+    _messages: SMAGEMessage[],
     anchor: Anchor,
 ): SMAGEMessage[] {
     const result: SMAGEMessage[] = [];
@@ -50,4 +50,14 @@ export function applyAnchor(
     if (anchor.lastTool) result.push(anchor.lastTool);
 
     return result;
+}
+
+// CCR integration Helper: inject anchors at top of shaped window
+
+export function mergeAnchor(
+    anchor: Anchor,
+    shaped: SMAGEMessage[],
+): SMAGEMessage[] {
+    const anchorMsgs = applyAnchor([], anchor);
+    return [...anchorMsgs, ...shaped];
 }

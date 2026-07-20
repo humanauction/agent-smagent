@@ -42,7 +42,7 @@ Anchors must
 
 ## Anchor Extraction Rules
 
-#### Rule 1 — System messages
+### Rule 1 — System messages
 
 Collect all system messages in order.
 
