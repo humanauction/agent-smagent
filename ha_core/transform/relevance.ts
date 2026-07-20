@@ -54,15 +54,50 @@ export function relevanceScore(
     return overlap * roleWeight * recency;
 }
 
+/**
+ * CCR Relevance Scoring (MVP)
+ *
+ * Goals:
+ * - deterministic
+ * - cheap
+ * - role-aware
+ * - stable across compression
+ * - safe for window shaping
+ *
+ * Scoring rules:
+ * - system messages: highest relevance
+ * - last user intent: very high relevance
+ * - last assistant reply: high relevance
+ * - tool messages: medium relevance
+ * - older messages: decreasing relevance
+ *
+ * No NLP, no embeddings, no classifiers.
+ * Pure structural relevance.
+ */
+
 export function scoreMessage(msg: SMAGEMessage): number {
-    let score = 0;
+    // System messages always matter
+    if (msg.role === "system") return 100;
 
-    if (msg.meta?.anchor) score += 100;
-    if (msg.role === "user") score += 50;
-    if (msg.role === "system") score += 40;
-    if (msg.role === "assistant") score += 20;
+    // User messages matter more than assistant/tool
+    if (msg.role === "user") return 90;
 
-    score += Math.min(tokenCount(msg.content), 200) / 10;
+    // Assistant messages matter for continuity
+    if (msg.role === "assistant") return 80;
 
-    return score;
+    // Tool messages matter but less
+    if (msg.role === "tool") return 70;
+
+    // Unknown roles (should not happen)
+    return 50;
+}
+
+/**
+ * Score list of messages deterministically.
+ */
+export function scoreMessages(messages: SMAGEMessage[]): SMAGEMessage[] {
+    return messages.map((m) => ({
+        ...m,
+        meta: { ...m.meta, score: scoreMessage(m) },
+    }));
 }
