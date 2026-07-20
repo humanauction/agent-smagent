@@ -3,7 +3,7 @@ import type { SMAGEMessage, SMAGEOptions } from "../index.js";
 import { mineMemory, injectMemory } from "../memory/memory.js";
 import { applyPayloadCompression } from "./payload.js";
 import { dedupeMessages } from "./dedupe.js";
-import { extractAnchor } from "./anchor.js";
+import { extractAnchor, mergeAnchor } from "./anchor.js";
 import { scoreMessage } from "./relevance.js";
 import { assignPriority } from "./priority.js";
 import { applyContextWindow } from "./window.js";
@@ -11,6 +11,8 @@ import { reconstruct } from "./reconstruct.js";
 import { applyOutputReduction } from "../output/reducer.js";
 
 import { reversibleLog } from "../cache/log.js";
+import { cacheAppend } from "../cache/store.js";
+import { applyContextManager } from "./context.js";
 
 export async function applyCCR(
     messages: SMAGEMessage[],
@@ -25,41 +27,55 @@ export async function applyCCR(
     reversibleLog(session, "ccr_memory_mined", { messages });
 
     //
-    // 2. Payload compression (code folding, log compression, RAG compression, etc.)
+    // 2. Extract anchors BEFORE compression
+    //
+    const anchor = extractAnchor(messages);
+    reversibleLog(session, "ccr_anchor_extracted", anchor);
+
+    //
+    // 3. Payload compression
     //
     const compressedInput = await applyPayloadCompression(messages, options);
     reversibleLog(session, "ccr_compressed_input", compressedInput);
 
     //
-    // 3. Dedupe
+    // 4. Dedupe
     //
     const deduped = dedupeMessages(compressedInput);
     reversibleLog(session, "ccr_dedupe", deduped);
 
     //
-    // 4. Inject memory (agent‑specific)
+    // 5. Inject memory
     //
     const memoryMessages = injectMemory(agent);
     const merged = [...memoryMessages, ...deduped];
     reversibleLog(session, "ccr_memory_injected", merged);
 
     //
-    // 5. Extract anchors
+    // 6. Context manager (priority + relevance + window)
     //
-    const anchors = extractAnchor(merged);
-    reversibleLog(session, "ccr_anchor", anchors);
+    const shaped = applyContextManager(merged, agent, session, options);
+    reversibleLog(session, "ccr_shaped", shaped);
+
+    cacheAppend(session, { stage: "shaped", messages: shaped });
 
     //
-    // 6. Score relevance
+    // 7. Inject anchors AFTER shaping
     //
-    const scored = merged.map((m) => ({
+    const anchored = mergeAnchor(anchor, shaped);
+    reversibleLog(session, "ccr_anchor_merged", anchored);
+
+    //
+    // 8. Score relevance
+    //
+    const scored = anchored.map((m) => ({
         ...m,
         meta: { ...m.meta, score: scoreMessage(m) },
     }));
     reversibleLog(session, "ccr_scored", scored);
 
     //
-    // 7. Assign priority tiers
+    // 9. Assign priority tiers
     //
     const prioritized = scored.map((m) => ({
         ...m,
@@ -68,25 +84,27 @@ export async function applyCCR(
     reversibleLog(session, "ccr_prioritized", prioritized);
 
     //
-    // 8. Apply context window
+    // 10. Apply context window
     //
     const windowed = applyContextWindow(prioritized, options.maxTokens ?? 4000);
     reversibleLog(session, "ccr_windowed", windowed);
 
     //
-    // 9. Reconstruct final message list (anchors + windowed)
+    // 11. Reconstruct final message list (anchors + windowed)
     //
-    const reconstructed = reconstruct(windowed, anchors);
+    const reconstructed = reconstruct(windowed, anchor);
     reversibleLog(session, "ccr_reconstructed", reconstructed);
 
     //
-    // 10. Output reduction (final stage)
+    // 12. Output reduction (final stage)
     //
     const reduced = await applyOutputReduction(reconstructed);
     reversibleLog(session, "ccr_output_reduced", reduced);
 
+    cacheAppend(session, { stage: "reduced", messages: reduced });
+
     //
-    // 11. Return final CCR output
+    // 13. Return final CCR output
     //
     return reduced;
 }
