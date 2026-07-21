@@ -1,66 +1,51 @@
-import type { AgentCallParams, AgentResult } from "./types.js";
-import { MCPClient } from "./mcp-client.js";
+import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index.js";
+import { applyCCR } from "../ha_core/transform/ccr.js";
 import { callProvider } from "../ha_core/call/providers/index.js";
-import type { SMAGEOptions } from "../ha_core/index.js";
 import { reversibleLog } from "../ha_core/cache/log.js";
 
-// this file is the main entry point for the agent wrapper, which handles calls to the MCP and provider
+// this file contains a SMAGEAgent class. can be used to call SMAGE providers with CCR applied and logs I/O for debugging, analysis.
+export interface AgentCallParams {
+    session: string;
+    model: string;
+    provider: string;
+    messages: SMAGEMessage[];
+    options?: SMAGEOptions & Record<string, any>;
+}
+
+export interface AgentResult {
+    role: string;
+    content: string;
+}
+
 export class SMAGEAgent {
-    private mcp: MCPClient;
-
-    constructor() {
-        this.mcp = new MCPClient("node", [
-            "--require=ts-node/register",
-            "dist/ha_mcp/server.js",
-        ]);
-
-        reversibleLog("agent", "mcp_start", {
-            server: "dist/ha_mcp/server.js",
-        });
-    }
-
     async call(params: AgentCallParams): Promise<AgentResult> {
-        const { messages, provider, model, session } = params;
-        const smageOptions = (params.options ?? {}) as SMAGEOptions;
+        const { session, model, provider, messages, options = {} } = params;
 
-        // 1. Run CCR via MCP
-        const shaped = await this.mcp.call("humanAuction_compress", {
-            messages,
-            agent: provider,
+        // 1. Run CCR pipeline
+        const shaped = await applyCCR(messages, provider, session, options);
+
+        // 2. Call provider through SMAGE dispatcher
+        const response = await callProvider({
             session,
-            options: smageOptions,
-        });
-
-        reversibleLog(session, "mcp_compress", {
-            messages_in: messages,
-            messages_out: shaped.messages,
-            stats: shaped.stats,
-        });
-
-        // 2. Call provider with shaped messages
-        const result = await callProvider({
-            messages: shaped.messages,
             model,
-            session,
-            options: smageOptions,
+            messages: shaped,
+            options: { ...options, provider },
         });
 
-        reversibleLog(session, "provider_call", {
+        // 3. Log reversible I/O
+        reversibleLog(session, "agent_call", {
             provider,
             model,
-            result,
+            request: messages,
+            shaped,
+            response,
+            ts: Date.now(),
         });
 
-        // 3. Log via MCP
-        const retrieve = await this.mcp.call("humanAuction_retrieve", {
-            session,
-        });
-
-        reversibleLog(session, "mcp_retrieve", retrieve);
-
+        // 4. Return normalized agent result
         return {
-            role: result.role,
-            content: result.content,
+            role: response.role,
+            content: response.content,
         };
     }
 }
