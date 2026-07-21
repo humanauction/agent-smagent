@@ -1,3 +1,6 @@
+import { SMAGELearningEngine } from "./engine.js";
+
+export const learn = new SMAGELearningEngine();
 export * from "./engine.js";
 export * from "./failMiner.js";
 export * from "./memoryDecay.js";
