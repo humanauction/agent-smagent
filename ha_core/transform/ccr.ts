@@ -35,7 +35,7 @@ export async function applyCCR(
     const userQuery = lastUser?.content ?? "";
 
     const learnedAnchors = learn.scoreRelevance(session, userQuery);
-    const combinedAnchor = { ...anchor, ...learnedAnchors };
+    const combinedAnchor = { ...anchor, learned: learnedAnchors };
     reversibleLog(session, "ccr_learned_anchors", learnedAnchors);
 
     // 4. Payload compression

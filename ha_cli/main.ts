@@ -14,6 +14,8 @@ import { providerCommand } from "./commands/provider.js";
 
 import type { WrapperId } from "../ha_wrap/wrapperRegistry.js";
 
+import { runMultiAgentRR } from "./commands/multi_agent.js";
+
 // this file contains the main CLI entry point for the agentSmagent project
 
 const cmd = process.argv[2];
@@ -65,6 +67,20 @@ async function main() {
         case "docs:html":
             await generateHtmlDocs();
             break;
+
+        case "agents": {
+            const sub = arg; // process.argv[3]
+
+            if (sub === "rr") {
+                const prompt = process.argv.slice(4).join(" ").trim();
+                await runMultiAgentRR("cli-session", prompt);
+                break;
+            }
+
+            console.log("Usage:");
+            console.log("  smage agents rr <prompt>");
+            break;
+        }
 
         default:
             console.error(`Unknown command: ${cmd}`);
