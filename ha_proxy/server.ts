@@ -1,34 +1,92 @@
 import express from "express";
-import { errorMiddleware } from "./middleware.js";
-import { handleLLM } from "./router.js";
-import { config } from "./config.js";
-import { dashboardRouter } from "./dashboard/router.js";
+import cors from "cors";
+import bodyParser from "body-parser";
 
-// this file is the entry point for the HA Proxy server, which sets up the Express app and routes.
-async function startServer() {
-    try {
-        console.log("[proxy] starting SMAGE proxy...");
+import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index.js";
+import { callProvider } from "../ha_core/call/providers/index.js";
 
-        const app = express();
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
 
-        app.use(express.json());
-
-        app.use("/dashboard", dashboardRouter);
-
-        app.post("/v1/chat/completions", handleLLM);
-
-        app.use(errorMiddleware);
-
-        app.listen(config.port, () => {
-            console.log(`SMAGE proxy running on port ${config.port}`);
-        });
-    } catch (err) {
-        console.error("[proxy] failed to start:", err);
-        process.exit(1);
-    }
+function toSMAGEMessages(
+    messages: Array<{ role: string; content: string }>,
+): SMAGEMessage[] {
+    return messages.map((m) => ({
+        role: m.role as SMAGEMessage["role"],
+        content: m.content,
+        name: m.role === "assistant" ? "assistant" : (undefined as any),
+        meta: {},
+    }));
 }
 
-startServer();
+function fromSMAGEMessage(msg: SMAGEMessage) {
+    return {
+        role: msg.role,
+        content: msg.content,
+    };
+}
 
-// export handleLLM for testing purposes
-export { handleLLM };
+app.post("/v1/chat/completions", async (req, res) => {
+    try {
+        const {
+            model,
+            messages,
+            smage_options,
+            provider, // <-- provider comes from top-level request
+        }: {
+            model: string;
+            messages: Array<{ role: string; content: string }>;
+            smage_options?: SMAGEOptions;
+            provider?: string;
+        } = req.body;
+
+        const session = (req.headers["x-smage-session"] as string) || "default";
+
+        const providerName = provider ?? "openai";
+
+        const smageMessages = toSMAGEMessages(messages);
+
+        const response = await callProvider({
+            session,
+            model,
+            messages: smageMessages,
+            options: {
+                ...(smage_options ?? {}),
+                provider: providerName, // <-- provider lives here
+            },
+        });
+
+        const assistantMsg = fromSMAGEMessage({
+            role: "assistant",
+            content: response.content,
+            name: "assistant",
+            meta: {},
+        });
+
+        res.json({
+            id: `smage-${Date.now()}`,
+            object: "chat.completion",
+            model,
+            choices: [
+                {
+                    index: 0,
+                    message: assistantMsg,
+                    finish_reason: "stop",
+                },
+            ],
+        });
+    } catch (err) {
+        console.error("SMAGE proxy error:", err);
+        res.status(500).json({
+            error: {
+                message: "SMAGE proxy error",
+            },
+        });
+    }
+});
+
+const port = process.env.SMAGE_PROXY_PORT || 8080;
+app.listen(port, () => {
+    console.log(`SMAGE proxy listening on :${port}`);
+});
