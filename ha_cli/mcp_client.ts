@@ -1,5 +1,7 @@
 import { spawn } from "child_process";
 
+// this file contains a client for the MCP server used to call SMAGE providers from a separate process.
+// Useful for - isolating provider calls from main application; running MCP server in a separate process.
 interface MCPRequest {
     id: number;
     method: string;
