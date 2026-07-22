@@ -1,5 +1,5 @@
 import express from "express";
-import { getWrapper } from "../../ha_wrap/wrapperRegistry.js";
+import { getProviderWrapper } from "../../ha_wrap/wrapperRegistry.js";
 import { loadWrapperMemory } from "../../ha_wrap/shared/memoryLoader.js";
 import { scoreMemory } from "../../ha_learn/memoryScore.js";
 import { decayMemory } from "../../ha_learn/memoryDecay.js";
@@ -22,7 +22,7 @@ export const dashboardRouter = express.Router();
 
 // GET /dashboard/:wrapper/anchors
 dashboardRouter.get("/:wrapper/anchors", (req, res) => {
-    const wrapper = getWrapper(req.params.wrapper as any);
+    const wrapper = getProviderWrapper(req.params.wrapper as any);
     const anchors = wrapper["prepareWrapperAnchors"]();
     res.json({ anchors });
 });
@@ -73,7 +73,7 @@ dashboardRouter.get("/:wrapper/memory", (req, res) => {
 
 // GET /dashboard/:wrapper/ccr?prompt=hello
 dashboardRouter.get("/:wrapper/ccr", async (req, res) => {
-    const wrapper = getWrapper(req.params.wrapper as any);
+    const wrapper = getProviderWrapper(req.params.wrapper as any);
     const prompt = req.query.prompt?.toString() ?? "test prompt";
 
     const anchors = wrapper["prepareWrapperAnchors"]();
@@ -91,7 +91,7 @@ dashboardRouter.get("/:wrapper/ccr", async (req, res) => {
 
 // GET /dashboard/:wrapper/provider?prompt=hello
 dashboardRouter.get("/:wrapper/provider", async (req, res) => {
-    const wrapper = getWrapper(req.params.wrapper as any);
+    const wrapper = getProviderWrapper(req.params.wrapper as any);
     const prompt = req.query.prompt?.toString() ?? "test prompt";
 
     const response = await wrapper.debugProvider(
@@ -105,7 +105,7 @@ dashboardRouter.get("/:wrapper/provider", async (req, res) => {
 
 // GET /dashboard/:wrapper/config
 dashboardRouter.get("/:wrapper/config", (req, res) => {
-    const wrapper = getWrapper(req.params.wrapper as any);
+    const wrapper = getProviderWrapper(req.params.wrapper as any);
     res.json({ config: wrapper["config"] });
 });
 
@@ -134,7 +134,7 @@ dashboardRouter.get("/:wrapper/health", (req, res) => {
 
 // GET /dashboard/:wrapper/anchors/html
 dashboardRouter.get("/:wrapper/anchors/html", (req, res) => {
-    const wrapper = getWrapper(req.params.wrapper as any);
+    const wrapper = getProviderWrapper(req.params.wrapper as any);
     const anchors = wrapper["prepareWrapperAnchors"]();
     res.send(renderAnchors(anchors));
 });
@@ -179,7 +179,7 @@ dashboardRouter.get("/:wrapper/memory/html", (req, res) => {
 
 // GET /dashboard/:wrapper/ccr/html
 dashboardRouter.get("/:wrapper/ccr/html", async (req, res) => {
-    const wrapper = getWrapper(req.params.wrapper as any);
+    const wrapper = getProviderWrapper(req.params.wrapper as any);
     const prompt = req.query.prompt?.toString() ?? "test prompt";
 
     const anchors = wrapper["prepareWrapperAnchors"]();
@@ -199,7 +199,7 @@ dashboardRouter.get("/:wrapper/ccr/html", async (req, res) => {
 
 // GET /dashboard/:wrapper/provider/html
 dashboardRouter.get("/:wrapper/provider/html", async (req, res) => {
-    const wrapper = getWrapper(req.params.wrapper as any);
+    const wrapper = getProviderWrapper(req.params.wrapper as any);
     const prompt = req.query.prompt?.toString() ?? "test prompt";
 
     const response = await wrapper.debugProvider(
@@ -213,7 +213,7 @@ dashboardRouter.get("/:wrapper/provider/html", async (req, res) => {
 
 // GET /dashboard/:wrapper/config/html
 dashboardRouter.get("/:wrapper/config/html", (req, res) => {
-    const wrapper = getWrapper(req.params.wrapper as any);
+    const wrapper = getProviderWrapper(req.params.wrapper as any);
     res.send(renderConfig(wrapper["config"]));
 });
 

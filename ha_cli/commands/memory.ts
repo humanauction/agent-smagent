@@ -1,7 +1,7 @@
 import { loadWrapperMemory } from '../../ha_wrap/shared/memoryLoader.js';
 import { printSection, printJSON } from '../utils/printer.js';
 
-import type { WrapperId } from '../../ha_wrap/wrapperRegistry.js';
+import type { ProviderWrapperId } from '../../ha_wrap/wrapperRegistry.js';
 import type { SMAGEMessage } from '../../ha_core/index.js';
 
 import { scoreMemory } from '../../ha_learn/memoryScore.js';
@@ -11,7 +11,7 @@ import { pruneMemory } from '../../ha_learn/memoryPrune.js';
 import { resolveConflicts } from '../../ha_learn/memoryResolve.js';
 
 export async function memoryCommand(wrapperId: string) {
-    const raw = loadWrapperMemory(wrapperId as WrapperId);
+    const raw = loadWrapperMemory(wrapperId as ProviderWrapperId);
 
     printSection("Raw Memory");
     printJSON(raw);

@@ -5,6 +5,8 @@ export * from "./docs-html.js";
 export * from "./docs.js";
 export * from "./learn.js";
 export * from "./memory.js";
+export * from "./multi_agent.js";
 export * from "./provider.js";
 export * from "./proxy.js";
 export * from "./run.js";
+export * from "../../ha_wrap/wrapperRegistry.js";

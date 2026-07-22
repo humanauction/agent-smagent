@@ -12,7 +12,7 @@ import { memoryCommand } from "./commands/memory.js";
 import { ccrCommand } from "./commands/ccr.js";
 import { providerCommand } from "./commands/provider.js";
 
-import type { WrapperId } from "../ha_wrap/wrapperRegistry.js";
+import type { ProviderWrapperId } from "../ha_wrap/wrapperRegistry.js";
 
 import { runMultiAgentRR } from "./commands/multi_agent.js";
 
@@ -20,8 +20,8 @@ import { runMultiAgentRR } from "./commands/multi_agent.js";
 
 const cmd = process.argv[2];
 const arg = process.argv[3];
-const wrapper = (process.argv[3] ?? "claude") as WrapperId;
-// const w = getWrapper(wrapper as WrapperId);
+const wrapper = (process.argv[3] ?? "claude") as ProviderWrapperId;
+// const w = getProviderWrapper(wrapper as ProviderWrapperId);
 const prompt = process.argv.slice(4).join(" ").trim();
 
 // this function is the entry point for the CLI, handles learning, proxy, and agent commands

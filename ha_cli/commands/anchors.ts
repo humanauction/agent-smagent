@@ -1,10 +1,11 @@
-import { getWrapper } from '../../ha_wrap/wrapperRegistry.js';
-import { printSection, printJSON } from '../utils/printer.js';
-
-import type { WrapperId } from '../../ha_wrap/wrapperRegistry.js';
+import {
+    getProviderWrapper,
+    ProviderWrapperId,
+} from "../../ha_wrap/wrapperRegistry.js";
+import { printSection, printJSON } from "../utils/printer.js";
 
 export async function anchorsCommand(wrapperId: string) {
-    const wrapper = getWrapper(wrapperId as WrapperId);
+    const wrapper = getProviderWrapper(wrapperId as ProviderWrapperId);
 
     const anchors = wrapper["prepareWrapperAnchors"]();
 

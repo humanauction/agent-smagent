@@ -1,10 +1,10 @@
-import { getWrapper } from '../../ha_wrap/wrapperRegistry.js';
+import { getProviderWrapper } from '../../ha_wrap/wrapperRegistry.js';
 import { printSection, printJSON } from '../utils/printer.js';
 
-import type { WrapperId } from '../../ha_wrap/wrapperRegistry.js';
+import type { ProviderWrapperId } from '../../ha_wrap/wrapperRegistry.js';
 
 export async function providerCommand(wrapperId: string, prompt: string) {
-    const wrapperObj = getWrapper(wrapperId as WrapperId);
+    const wrapperObj = getProviderWrapper(wrapperId as ProviderWrapperId);
 
     const response = await wrapperObj.debugProvider(
         "cli-session",
