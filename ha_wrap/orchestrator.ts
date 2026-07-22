@@ -5,6 +5,7 @@ import { learn } from "../ha_learn/index.js";
 import { ProviderSelector } from "./providerSelection.js";
 import { ProviderFallback } from "./providerFallback.js";
 import { ResponseBlender } from "./responseBlender.js";
+import { MemoryRouter } from "./memoryRouting.js";
 
 /*
 this file defines the orchestrator class, responsible for orchestrating multiple agents based on a given strategy.
@@ -35,6 +36,7 @@ export class SMAGEOrchestrator {
     private selector = new ProviderSelector();
     private fallback = new ProviderFallback();
     private blender = new ResponseBlender();
+    private router = new MemoryRouter();
 
     constructor(config: OrchestratorConfig) {
         if (config.agents.length === 0) {
@@ -52,9 +54,11 @@ export class SMAGEOrchestrator {
         const lastUser = [...messages].reverse().find((m) => m.role === "user");
         const userQuery = lastUser?.content ?? "";
         const learnedAnchors = learn.scoreRelevance(session, userQuery);
+        const routing = this.router.decide({ session, messages });
+        const effectiveStrategy = routing.strategy;
 
         // AUTO STRATEGY
-        if (strategy === "auto") {
+        if (effectiveStrategy === "auto") {
             const primary = agents[0];
             const secondary = agents[1] ?? agents[0];
 
@@ -95,19 +99,19 @@ export class SMAGEOrchestrator {
         }
 
         // SINGLE
-        if (strategy === "single") {
+        if (effectiveStrategy === "single") {
             const primary = agents[0];
             if (!primary) throw new Error("Orchestrator: no agent configured.");
             return this.callAgent(primary, messages);
         }
 
         // ROUND ROBIN
-        if (strategy === "round_robin") {
+        if (effectiveStrategy === "round_robin") {
             return this.multi.roundRobin(session, messages);
         }
 
         // FAN OUT
-        if (strategy === "fan_out") {
+        if (effectiveStrategy === "fan_out") {
             const results = await this.multi.fanOut(session, messages);
 
             if (results.length === 0) {
@@ -123,7 +127,7 @@ export class SMAGEOrchestrator {
             };
         }
 
-        throw new Error(`Unknown strategy: ${strategy}`);
+        throw new Error(`Unknown Strategy: ${effectiveStrategy}`);
     }
 
     private async callAgent(
