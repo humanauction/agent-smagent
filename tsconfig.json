@@ -23,7 +23,16 @@
         "strict": true,
         "ignoreDeprecations": "6.0",
         "noUncheckedSideEffectImports": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "paths": {
+            "@core/*": ["./ha_core/*"],
+            "@proxy/*": ["./ha_proxy/*"],
+            "@mcp/*": ["./ha_mcp/*"],
+            "@wrap/*": ["./ha_wrap/*"],
+            "@docs/*": ["./ha_docs/*"],
+            "@learn/*": ["./ha_learn/*"],
+            "@cli/*": ["./ha_cli/*"]
+        }
     },
     "include": [
         "ha_core/**/*",
@@ -34,14 +43,5 @@
         "ha_docs/**/*",
         "ha_learn/**/*"
     ],
-    "exclude": ["node_modules"],
-    "paths": {
-        "@core/*": ["ha_core/*"],
-        "@proxy/*": ["ha_proxy/*"],
-        "@mcp/*": ["ha_mcp/*"],
-        "@wrap/*": ["ha_wrap/*"],
-        "@docs/*": ["ha_docs/*"],
-        "@learn/*": ["ha_learn/*"],
-        "@cli/*": ["ha_cli/*"]
-    }
+    "exclude": ["node_modules"]
 }

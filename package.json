@@ -5,6 +5,7 @@
     "description": "HumanAuction SMAGE pipeline.",
     "main": "./dist/index.js",
     "scripts": {
+        "build": "tsc",
         "proxy": "node --loader ts-node/esm ha_proxy/server.ts",
         "mcp": "node --loader ts-node/esm ha_mcp/server.ts",
         "cli": "node --loader ts-node/esm ha_cli/main.ts"
@@ -31,5 +32,8 @@
     "dependencies": {
         "cors": "^2.8.6",
         "express": "^5.2.1"
+    },
+    "bin": {
+        "smage": "./dist/ha_cli/main.js"
     }
 }

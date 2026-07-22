@@ -1,4 +1,4 @@
-#!/usr/bin/env tsx
+#!/usr/bin/env node
 
 import { runLearn } from "./commands/learn.js";
 import { startProxy } from "./commands/proxy.js";
