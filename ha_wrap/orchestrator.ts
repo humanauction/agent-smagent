@@ -2,6 +2,9 @@ import type { SMAGEMessage } from "../ha_core/index.js";
 import { SMAGEAgent } from "./agent.js";
 import { SMAGEMultiAgent } from "./multi_agent.js";
 import { learn } from "../ha_learn/index.js";
+import { ProviderSelector } from "./providerSelection.js";
+import { ProviderFallback } from "./providerFallback.js";
+import { ResponseBlender } from "./responseBlender.js";
 
 /*
 this file defines the orchestrator class, responsible for orchestrating multiple agents based on a given strategy.
@@ -29,6 +32,9 @@ export class SMAGEOrchestrator {
     private config: OrchestratorConfig;
     private single: SMAGEAgent;
     private multi: SMAGEMultiAgent;
+    private selector = new ProviderSelector();
+    private fallback = new ProviderFallback();
+    private blender = new ResponseBlender();
 
     constructor(config: OrchestratorConfig) {
         if (config.agents.length === 0) {
@@ -57,14 +63,35 @@ export class SMAGEOrchestrator {
             }
 
             const top = learnedAnchors[0];
-            const chosen =
-                top && top.text.includes("deep") ? secondary : primary;
+            const chosen = this.selector.select({
+                session,
+                messages,
+                providers: this.config.agents,
+            });
 
             if (!chosen) {
                 throw new Error("Orchestrator: selected agent undefined.");
             }
 
-            return this.callAgent(chosen, messages);
+            try {
+                return await this.callAgent(chosen, messages);
+            } catch (err) {
+                const fb = this.fallback.handle(
+                    {
+                        session,
+                        messages,
+                        provider: chosen,
+                        attempt: 1,
+                        error: err,
+                    },
+                    this.config.agents,
+                );
+
+                if (fb.retry) {
+                    return await this.callAgent(fb.provider, messages);
+                }
+                throw err;
+            }
         }
 
         // SINGLE
@@ -82,11 +109,18 @@ export class SMAGEOrchestrator {
         // FAN OUT
         if (strategy === "fan_out") {
             const results = await this.multi.fanOut(session, messages);
-            const first = results[0];
-            if (!first) {
+
+            if (results.length === 0) {
                 throw new Error("Fan-out returned no results.");
             }
-            return first;
+
+            const blended = this.blender.blend({ results });
+
+            return {
+                agentId: blended.sources[0]?.agentId ?? "unknown",
+                role: "assistant",
+                content: blended.content,
+            };
         }
 
         throw new Error(`Unknown strategy: ${strategy}`);
