@@ -23,4 +23,4 @@ export function msg(m: SMAGEMessage): SMAGEMessage {
     return m;
 }
 
-export { compress } from './compress.js';
+export { compress } from "./compress.js";

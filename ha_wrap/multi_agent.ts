@@ -1,18 +1,19 @@
 import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index.js";
 import { SMAGEAgent } from "./agent.js";
 
-// this file contains the implementation of the multi-agent orchestration logic for the SMAGE framework
 export interface AgentDescriptor {
     id: string;
     provider: string;
     model: string;
     options?: (SMAGEOptions & Record<string, unknown>) | undefined;
+    reliability?: number; // injected by orchestrator
 }
 
 export interface OrchestratedResult {
     agentId: string;
     role: string;
     content: string;
+    reliability?: number; // optional reliability score
 }
 
 export class SMAGEMultiAgent {
@@ -46,6 +47,7 @@ export class SMAGEMultiAgent {
                 agentId: agent.id,
                 role: res.role,
                 content: res.content,
+                reliability: agent.reliability ?? 0,
             };
         });
 
@@ -70,6 +72,7 @@ export class SMAGEMultiAgent {
                 agentId: agent.id,
                 role: res.role,
                 content: res.content,
+                reliability: agent.reliability ?? 0,
             };
 
             if (predicate(wrapped)) {
@@ -91,6 +94,7 @@ export class SMAGEMultiAgent {
                 `No agent found for round-robin call. index failure ${idx}`,
             );
         }
+
         this.rrIndex++;
 
         const res = await this.core.call({
@@ -105,6 +109,7 @@ export class SMAGEMultiAgent {
             agentId: agent.id,
             role: res.role,
             content: res.content,
+            reliability: agent.reliability ?? 0,
         };
     }
 }

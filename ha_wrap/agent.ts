@@ -1,63 +1,61 @@
 import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index.js";
-import { applyCCR } from "../ha_core/transform/ccr.js";
-import { callProvider } from "../ha_core/call/providers/index.js";
-import { reversibleLog } from "../ha_core/cache/log.js";
-import { SMAGELearningEngine } from "../ha_learn/engine.js";
+import { SMAGEMCPClient } from "../ha_cli/mcp_client.js";
 
-// this file contains a SMAGEAgent class. can be used to call SMAGE providers with CCR applied and logs I/O for debugging, analysis.
-export interface AgentCallParams {
+export interface SMAGECallInput {
     session: string;
     model: string;
     provider: string;
     messages: SMAGEMessage[];
-    options?: SMAGEOptions & Record<string, any>;
+    options?: (SMAGEOptions & Record<string, unknown>) | undefined;
 }
 
-export interface AgentResult {
+export interface SMAGECallResult {
     role: string;
     content: string;
+    durationMs: number;
+    empty: boolean;
 }
 
-const learn = new SMAGELearningEngine();
 export class SMAGEAgent {
-    async call(params: AgentCallParams): Promise<AgentResult> {
-        const { session, model, provider, messages, options = {} } = params;
+    private mcp: SMAGEMCPClient;
 
-        // 1. Run CCR pipeline
-        const shaped = await applyCCR(messages, provider, session, options);
+    constructor() {
+        // You may adjust args depending on how you spawn your MCP server
+        this.mcp = new SMAGEMCPClient("node", [
+            "--require=ts-node/register",
+            "ha_mcp/server.ts",
+        ]);
+    }
 
-        // 2. Call provider through SMAGE dispatcher
-        const response = await callProvider({
-            session,
-            model,
-            messages: shaped,
-            options: { ...options, provider },
-        });
+    async call(input: SMAGECallInput): Promise<SMAGECallResult> {
+        const start = Date.now();
 
-        // 3. Log reversible I/O
-        reversibleLog(session, "agent_call", {
-            provider,
-            model,
-            request: messages,
-            shaped,
-            response,
-            ts: Date.now(),
-        });
+        const response = await this.mcp.smageCall(
+            input.session,
+            input.model,
+            input.messages.map((m) => ({
+                role: m.role,
+                content: m.content,
+            })),
+            {
+                ...(input.options ?? {}),
+                provider: input.provider,
+            },
+        );
 
-        // 4. Ingest learning event
-        learn.ingest({
-            session,
-            provider,
-            model,
-            messages,
-            response: { role: response.role, content: response.content },
-            ts: Date.now(),
-        });
+        const durationMs = Date.now() - start;
 
-        // 5. Return normalized agent result
+        const role = response.result?.role ?? "assistant";
+        const content = response.result?.content ?? "";
+
+        const trimmed = content.trim();
+        const empty = trimmed === "" || trimmed.includes("[empty response]");
+
         return {
-            role: response.role,
-            content: response.content,
+            role,
+            content,
+            durationMs,
+            empty,
         };
     }
 }

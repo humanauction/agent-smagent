@@ -1,6 +1,5 @@
 import type { OrchestratedResult } from "./multi_agent.js";
 
-/// ResponseBlender blends multiple agent responses into a single coherent one.
 export interface BlendInput {
     results: OrchestratedResult[];
 }
@@ -27,7 +26,7 @@ export class ResponseBlender {
 
         // --- Case: single result ---
         if (results.length === 1) {
-            const single = results.at(0);
+            const single = results[0];
             if (!single) {
                 return {
                     content: "[no response]",
@@ -48,24 +47,38 @@ export class ResponseBlender {
         }[] = [];
 
         for (const r of results) {
+            const reliability = r.reliability ?? 0;
+            const contentScore = this.scoreContent(r.content);
+            const combined = contentScore + reliability * 1.5;
+
             scored.push({
                 agentId: r.agentId,
                 content: r.content,
-                weight: this.score(r.content),
+                weight: combined,
             });
         }
 
-        const total = scored.reduce((sum, r) => sum + r.weight, 0) || 1;
+        let total = 0;
+        for (const s of scored) total += s.weight;
+        if (total === 0) total = 1;
 
-        const normalized = scored.map((r) => ({
-            agentId: r.agentId,
-            content: r.content,
-            weight: r.weight / total,
-        }));
+        const normalized: {
+            agentId: string;
+            content: string;
+            weight: number;
+        }[] = [];
 
-        const sorted = [...normalized].sort((a, b) => b.weight - a.weight);
+        for (const s of scored) {
+            normalized.push({
+                agentId: s.agentId,
+                content: s.content,
+                weight: s.weight / total,
+            });
+        }
 
-        const primary = sorted.at(0);
+        const sorted = normalized.slice().sort((a, b) => b.weight - a.weight);
+
+        const primary = sorted[0];
         if (!primary) {
             return {
                 content: "[no response]",
@@ -76,7 +89,7 @@ export class ResponseBlender {
         let output = primary.content.trim();
 
         for (let i = 1; i < sorted.length; i++) {
-            const o = sorted.at(i);
+            const o = sorted[i];
             if (!o) continue;
 
             const trimmed = o.content.trim();
@@ -89,14 +102,16 @@ export class ResponseBlender {
 
         return {
             content: output,
-            sources: sorted.map((n) => ({
-                agentId: n.agentId,
-                weight: Number(n.weight.toFixed(3)),
-            })),
+            sources: sorted
+                .filter((n) => !!n)
+                .map((n) => ({
+                    agentId: n.agentId,
+                    weight: Number(n.weight.toFixed(3)),
+                })),
         };
     }
 
-    private score(content: string): number {
+    private scoreContent(content: string): number {
         if (
             !content ||
             content.trim() === "" ||
@@ -106,8 +121,9 @@ export class ResponseBlender {
         }
 
         let score = 1;
+        const len = content.length;
 
-        score += Math.min(content.length / 200, 2);
+        score += Math.min(len / 200, 2);
         if (content.includes("\n")) score += 0.5;
         if (content.includes(":")) score += 0.3;
         if (content.includes("- ")) score += 0.3;
