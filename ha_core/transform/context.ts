@@ -18,8 +18,8 @@ export function applyContextManager(
     const maxTokens = options.maxTokens ?? 4000;
 
     // 1. Extract anchors
-    const anchors = extractAnchor(messages);
-    reversibleLog(session, "ccr_anchor", anchors);
+    const anchor = extractAnchor(messages);
+    reversibleLog(session, "ccr_anchor", anchor);
 
     // 2. Dedupe
     const deduped = dedupeMessages(messages);
@@ -43,7 +43,7 @@ export function applyContextManager(
     reversibleLog(session, "ccr_windowed", windowed);
 
     // 6. Reconstruct final message list
-    const reconstructed = reconstruct(windowed, anchors);
+    const reconstructed = reconstruct(windowed, anchor);
     reversibleLog(session, "ccr_reconstructed", reconstructed);
 
     return reconstructed;
