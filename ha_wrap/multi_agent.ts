@@ -6,7 +6,7 @@ export interface AgentDescriptor {
     id: string;
     provider: string;
     model: string;
-    options?: SMAGEOptions & Record<string, any>;
+    options?: (SMAGEOptions & Record<string, unknown>) | undefined;
 }
 
 export interface OrchestratedResult {

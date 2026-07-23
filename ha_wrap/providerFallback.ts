@@ -1,5 +1,5 @@
 import type { SMAGEMessage } from "../ha_core/index.js";
-import type { ProviderMetadata } from "./providerSelection.js";
+import type { ProviderMetadata } from "./providerMetadata.js";
 
 export interface FallbackContext {
     session: string;
@@ -18,18 +18,13 @@ export interface FallbackResult {
 export class ProviderFallback {
     private readonly maxAttempts = 3;
 
-    /**
-     * Main fallback entry point.
-     * Decides whether to retry the same provider, switch provider,
-     * or escalate to a deeper model.
-     */
     handle(
         ctx: FallbackContext,
         allProviders: ProviderMetadata[],
     ): FallbackResult {
         const { provider, attempt, error } = ctx;
 
-        // 1. If provider returned empty or malformed output → retry once
+        // 1. Empty/malformed → retry same provider (bounded)
         if (this.isEmptyResponse(error) && attempt < this.maxAttempts) {
             return {
                 provider,
@@ -38,7 +33,7 @@ export class ProviderFallback {
             };
         }
 
-        // 2. If provider timed out → switch to fastest provider
+        // 2. Timeout → switch to fastest provider
         if (this.isTimeout(error)) {
             const fast = this.pickBest(allProviders, "speed");
             return {
@@ -48,7 +43,7 @@ export class ProviderFallback {
             };
         }
 
-        // 3. If provider failed due to API error → switch to highest quality
+        // 3. API error → switch to highest quality
         if (this.isApiError(error)) {
             const quality = this.pickBest(allProviders, "quality");
             return {
@@ -58,7 +53,7 @@ export class ProviderFallback {
             };
         }
 
-        // 4. If provider failed due to rate limit → switch to cheapest
+        // 4. Rate limit → switch to cheapest
         if (this.isRateLimit(error)) {
             const cheap = this.pickBest(allProviders, "cost");
             return {
@@ -68,7 +63,17 @@ export class ProviderFallback {
             };
         }
 
-        // 5. If all else fails → escalate to deepest reasoning model
+        // 5. Reliability-aware fallback: prefer most reliable
+        const reliable = this.pickBest(allProviders, "reliability");
+        if (reliable) {
+            return {
+                provider: reliable,
+                retry: true,
+                reason: "Unknown failure, switching to most reliable provider",
+            };
+        }
+
+        // 6. Final fallback: deepest reasoning model
         const deep = this.pickBest(allProviders, "depth");
         return {
             provider: deep,
@@ -76,10 +81,6 @@ export class ProviderFallback {
             reason: "Unknown failure, escalating to deepest provider",
         };
     }
-
-    // ------------------------
-    // Error classification
-    // ------------------------
 
     private isEmptyResponse(err: unknown): boolean {
         return typeof err === "string" && err.includes("[empty response]");
@@ -97,10 +98,6 @@ export class ProviderFallback {
         return typeof err === "string" && err.toLowerCase().includes("rate");
     }
 
-    // ------------------------
-    // Safe provider selection
-    // ------------------------
-
     private pickBest(
         providers: ProviderMetadata[],
         metric: keyof ProviderMetadata,
@@ -112,8 +109,8 @@ export class ProviderFallback {
                 best = p;
                 continue;
             }
-            const current = p[metric] ?? 0;
-            const previous = best[metric] ?? 0;
+            const current = (p[metric] as number | undefined) ?? 0;
+            const previous = (best[metric] as number | undefined) ?? 0;
             if (current > previous) {
                 best = p;
             }

@@ -6,6 +6,7 @@ export interface ProviderMetadata {
     cost?: number;
     quality?: number;
     reliability?: number;
+    depth?: number;
 }
 
 export interface ProviderScore {

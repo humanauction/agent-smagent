@@ -13,7 +13,7 @@ export interface ProviderSelectionInput {
         cost?: number;
         quality?: number;
         reliability?: number;
-        options?: Record<string, unknown>;
+        options?: Record<string, unknown> | undefined;
     }[];
     hints: CCRRoutingHints;
 }
