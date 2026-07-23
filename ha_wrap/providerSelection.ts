@@ -1,93 +1,94 @@
 import type { SMAGEMessage } from "../ha_core/index.js";
-import { learn } from "../ha_learn/index.js";
-
-export interface ProviderMetadata {
-    id: string;
-    provider: string;
-    model: string;
-    // metadata for selection logic
-    cost?: number; // relative cost index
-    speed?: number; // relative speed index
-    depth?: number; // reasoning depth index
-    quality?: number; // output quality index
-}
+import type { CCRRoutingHints } from "./ccrRouting.js";
+import { ProviderMetadataScorer } from "./providerMetadata.js";
 
 export interface ProviderSelectionInput {
     session: string;
     messages: SMAGEMessage[];
-    providers: ProviderMetadata[];
+    providers: {
+        id: string;
+        provider: string;
+        model: string;
+        speed?: number;
+        cost?: number;
+        quality?: number;
+        reliability?: number;
+        options?: Record<string, unknown>;
+    }[];
+    hints: CCRRoutingHints;
 }
 
 export interface ProviderSelectionResult {
     id: string;
     provider: string;
     model: string;
+    options?: Record<string, unknown> | undefined;
 }
 
 export class ProviderSelector {
-    select(input: ProviderSelectionInput): ProviderSelectionResult {
-        const { session, messages, providers } = input;
+    private scorer = new ProviderMetadataScorer();
 
+    select(input: ProviderSelectionInput): ProviderSelectionResult | null {
+        const { providers, hints } = input;
+
+        // Strict-safe: no providers → no selection
         if (providers.length === 0) {
-            throw new Error("ProviderSelector: no providers available.");
+            return null;
         }
 
-        // 1. Extract user query
-        const lastUser = [...messages].reverse().find((m) => m.role === "user");
-        const userQuery = lastUser?.content ?? "";
-        // --- Helper: safe reducer ---
-        const pickBest = (metric: keyof ProviderMetadata): ProviderMetadata => {
-            let best: ProviderMetadata | null = null;
+        // 1. Score providers (strict-safe: scorer accepts optional booleans)
+        const scored = this.scorer.score(providers, {
+            preferDeep: hints.preferDeep,
+            preferFast: hints.preferFast,
+            preferCheap: hints.preferCheap,
+            preferHighQuality: hints.preferHighQuality,
+        });
 
-            for (const p of providers) {
-                if (!best) {
-                    best = p;
-                    continue;
-                }
-                const current = p[metric] ?? 0;
-                const previous = best[metric] ?? 0;
-                if (current > previous) {
-                    best = p;
-                }
+        // 2. Pick best score (no .at(), no destructuring)
+        let bestId: string | null = null;
+        let bestScore = -Infinity;
+
+        for (const s of scored) {
+            if (s.score > bestScore) {
+                bestScore = s.score;
+                bestId = s.id;
             }
+        }
 
-            // best is guaranteed non-null because providers.length > 0
-            return best!;
-        };
+        // 3. Fallback: first provider (strict-safe)
+        const first = providers[0];
+        if (!first) {
+            return null;
+        }
 
-        // --- Deep reasoning anchor ---
-        // 2. Score learned anchors
-        const learnedAnchors = learn.scoreRelevance(session, userQuery);
-        const top = learnedAnchors[0];
-
-        // 3. If anchor indicates deep reasoning → pick highest depth provider
-        if (top && top.text.includes("deep")) {
-            const deepProvider = pickBest("depth");
-
+        // If scoring failed to produce an ID, fallback to first provider
+        if (!bestId) {
             return {
-                id: deepProvider.id,
-                provider: deepProvider.provider,
-                model: deepProvider.model,
+                id: first.id,
+                provider: first.provider,
+                model: first.model,
+                options: first.options,
             };
         }
 
-        // 4. If anchor indicates speed → pick fastest provider
-        if (top && top.text.includes("fast")) {
-            const fastProvider = pickBest("speed");
+        // 4. Find chosen provider (strict-safe)
+        const chosen = providers.find((p) => p.id === bestId);
 
+        if (!chosen) {
             return {
-                id: fastProvider.id,
-                provider: fastProvider.provider,
-                model: fastProvider.model,
+                id: first.id,
+                provider: first.provider,
+                model: first.model,
+                options: first.options,
             };
         }
 
-        // 5. Default: pick highest quality provider
-        const bestQuality = pickBest("quality");
+        // 5. Final strict-safe return
         return {
-            id: bestQuality.id,
-            provider: bestQuality.provider,
-            model: bestQuality.model,
+            id: chosen.id,
+            provider: chosen.provider,
+            model: chosen.model,
+            options: chosen.options,
         };
     }
 }
