@@ -1,0 +1,15 @@
+{
+    "input": "./dist/smage/smage.js",
+    "output": "smage",
+    "bundle": true,
+    "targets": ["macos-x64-18.0.0"],
+    "resources": [
+        "./dist/ha_mcp/**/*",
+        "./dist/ha_core/**/*",
+        "./dist/ha_wrap/**/*",
+        "./dist/ha_cli/**/*",
+        "./dist/ha_proxy/**/*",
+        "./dist/ha_learn/**/*",
+        "./dist/smage/**/*"
+    ]
+}

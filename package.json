@@ -25,6 +25,7 @@
         "@types/cors": "^2.8.19",
         "@types/express": "^5.0.6",
         "@types/node": "^26.1.1",
+        "nexe": "^5.0.0-beta.4",
         "ts-node": "^10.9.2",
         "tsx": "^4.23.1",
         "typescript": "^6.0.3"
@@ -35,5 +36,21 @@
     },
     "bin": {
         "smage": "./dist/ha_cli/main.js"
+    },
+    "pkg": {
+        "scripts": "dist/**/*.js",
+        "assets": [
+            "dist/ha_mcp/**/*",
+            "dist/ha_core/**/*",
+            "dist/ha_wrap/**/*",
+            "dist/ha_cli/**/*",
+            "dist/ha_proxy/**/*",
+            "dist/ha_learn/**/*"
+        ],
+        "targets": [
+            "node18-linux-x64",
+            "node18-macos-x64",
+            "node18-win-x64"
+        ]
     }
 }
