@@ -41,7 +41,8 @@
         "ha_wrap/**/*",
         "ha_cli/**/*",
         "ha_docs/**/*",
-        "ha_learn/**/*"
+        "ha_learn/**/*",
+        "smage/**/*"
     ],
     "exclude": ["node_modules"]
 }

@@ -1,3 +1,5 @@
+import { ProviderReliabilityTracker } from "./providerReliability.js";
+
 import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index.js";
 import { SMAGEMCPClient } from "../ha_cli/mcp_client.js";
 import { applyCCR } from "../ha_core/transform/ccr.js";
@@ -21,6 +23,7 @@ export interface SMAGECallResult {
 
 export class SMAGEAgent {
     private mcp: SMAGEMCPClient;
+    private tracker = new ProviderReliabilityTracker();
 
     constructor() {
         this.mcp = new SMAGEMCPClient("node", [
@@ -45,26 +48,60 @@ export class SMAGEAgent {
         const start = Date.now();
 
         // 2. MCP call with shaped messages
-        const response = await this.mcp.smageCall(
-            session,
-            model,
-            shapedMessages.map((m) => ({
-                role: m.role,
-                content: m.content,
-            })),
-            {
-                ...options,
+        let response;
+        try {
+            response = await this.mcp.smageCall(
+                session,
+                model,
+                shapedMessages.map((m) => ({
+                    role: m.role,
+                    content: m.content,
+                })),
+                {
+                    ...options,
+                    provider,
+                },
+            );
+        } catch (err) {
+            this.tracker.record({
+                providerId: provider,
                 provider,
-            },
-        );
+                model,
+                session,
+                kind: "error",
+                timestamp: Date.now(),
+            });
+            throw err;
+        }
 
         const durationMs = Date.now() - start;
 
+        if (durationMs > 2000) {
+            this.tracker.record({
+                providerId: provider,
+                provider,
+                model,
+                session,
+                kind: "slow",
+                timestamp: Date.now(),
+            });
+        }
+
         const role = response.result?.role ?? "assistant";
         const content = response.result?.content ?? "";
-
         const trimmed = content.trim();
         const empty = trimmed === "" || trimmed.includes("[empty response]");
+
+        if (empty) {
+            this.tracker.record({
+                providerId: provider,
+                provider,
+                model,
+                session,
+                kind: "empty",
+                timestamp: Date.now(),
+            });
+        }
 
         // 3. Reversible log of full I/O
         reversibleLog(session, "agent_call", {
