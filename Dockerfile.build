@@ -28,7 +28,7 @@ RUN npm run build
 RUN npx nexe ./dist/smage/smage.js \
     --build \
     --python /usr/bin/python3 \
-    --output smage \
+    --output smage-linux \
     --bundle \
     --target linux-x64-18.0.0 \
     --resource "./dist/ha_mcp/**/*" \
