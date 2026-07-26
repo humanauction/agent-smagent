@@ -1,5 +1,5 @@
 import { spawn } from "child_process";
-import { reversibleLog } from '../../ha_core/cache/log.js';
+import { reversibleLog } from "../../ha_core/cache/log.js";
 
 interface AgentProcess {
     proc: ReturnType<typeof spawn>;
@@ -40,11 +40,9 @@ function startAgent(): AgentProcess {
         restarts: metrics.restarts,
     });
 
-    const proc = spawn(
-        "node",
-        ["--require", "ts-node/register", "ha_mcp/server.ts"],
-        { stdio: ["pipe", "pipe", "inherit"] },
-    );
+    const proc = spawn("node", ["dist/ha_mcp/server.js"], {
+        stdio: ["pipe", "pipe", "inherit"],
+    });
 
     const agentProc: AgentProcess = {
         proc,

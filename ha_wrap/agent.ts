@@ -26,10 +26,7 @@ export class SMAGEAgent {
     private tracker = new ProviderReliabilityTracker();
 
     constructor() {
-        this.mcp = new SMAGEMCPClient("node", [
-            "--require=ts-node/register",
-            "ha_mcp/server.ts",
-        ]);
+        this.mcp = new SMAGEMCPClient("node", ["dist/ha_mcp/server.js"]);
     }
 
     async call(input: SMAGECallInput): Promise<SMAGECallResult> {

@@ -1,32 +1,43 @@
-FROM --platform=linux/amd64 ubuntu:22.04
+# ---------------------------
+# Stage 1 — Build Node once
+# ---------------------------
+FROM --platform=linux/amd64 ubuntu:22.04 AS node-builder
 
-# Install build essentials
 RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-distutils \
-    build-essential \
-    curl \
-    git
+    python3 python3-distutils build-essential curl git
 
-# Install Node 18 (nexe-compatible)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
-# Create working directory
 WORKDIR /app
 
-# Copy your project
+# nexe requires an input file even for pure Node builds
+RUN echo "console.log('node build')" > dummy.js
+
+RUN npx nexe -i dummy.js \
+    --build \
+    --no-bundle \
+    --python /usr/bin/python3 \
+    --target linux-x64-18.0.0
+
+# ---------------------------
+# Stage 2 — Build SMAGE fast
+# ---------------------------
+FROM --platform=linux/amd64 ubuntu:22.04 AS smage-builder
+
+RUN apt-get update && apt-get install -y curl \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
+
+WORKDIR /app
+
 COPY . .
+COPY --from=node-builder /root/.nexe /root/.nexe
 
-# Install dependencies
 RUN npm install
-
-# Build TypeScript
 RUN npm run build
 
-# Build SMAGE binary with nexe
-RUN npx nexe ./dist/smage/smage.js \
-    --build \
+RUN npx nexe -i ./dist/smage/smage.js \
     --python /usr/bin/python3 \
     --output smage-linux \
     --bundle \
