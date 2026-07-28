@@ -1,0 +1,71 @@
+name: SMAGE Multi-Platform Build
+
+on:
+    workflow_dispatch:
+    push:
+        branches: [main]
+
+jobs:
+    linux-x64:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Build project
+              run: npm run build
+
+            - name: Build SMAGE Linux x64 binary
+              run: |
+                  npx nexe -i ./dist/smage/smage.js \
+                    --build \
+                    --bundle \
+                    --target linux-x64-18.0.0 \
+                    --output smage-linux-x64 \
+                    --resource "./dist/**/*"
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: smage-linux-x64
+                  path: smage-linux-x64
+
+    windows-x64:
+        runs-on: windows-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Build project
+              run: npm run build
+
+            - name: Build SMAGE Windows x64 binary
+              run: |
+                  npx nexe -i ./dist/smage/smage.js ^
+                    --build ^
+                    --bundle ^
+                    --target windows-x64-18.0.0 ^
+                    --output smage-windows-x64.exe ^
+                    --resource "./dist/**/*"
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: smage-windows-x64
+                  path: smage-windows-x64.exe
