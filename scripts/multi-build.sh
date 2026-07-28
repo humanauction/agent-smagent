@@ -40,13 +40,13 @@ build_target() {
 }
 
 # Linux ARM64
-build_target "linux-arm64-18.0.0" "smage-linux-arm64"
+# build_target "linux-arm64-18.0.0" "smage-linux-arm64"
 
 # macOS ARM64
 build_target "macos-arm64-18.0.0" "smage-macos-arm64"
 
 # Windows x64
-build_target "windows-x64-18.0.0" "smage-windows-x64.exe"
+# build_target "windows-x64-18.0.0" "smage-windows-x64.exe"
 
 echo "============================================================"
 echo "All SMAGE binaries built successfully."
