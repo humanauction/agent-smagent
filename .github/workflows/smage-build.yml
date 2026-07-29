@@ -55,7 +55,7 @@ jobs:
                   npx nexe -i ./dist/smage/smage.js \
                     --build \
                     --bundle \
-                    --target macos-arm64-20.0.0 \
+                    --target macos-arm64-18.0.0 \
                     --output smage-macos-arm64 \
                     --resource "./dist/**/*"
             - name: Upload artifact
@@ -83,11 +83,11 @@ jobs:
 
             - name: Build SMAGE Windows x64 binary
               run: |
-                  npx nexe -i ./dist/smage/smage.js ^
-                    --build ^
-                    --bundle ^
-                    --target windows-x64-18.0.0 ^
-                    --output smage-windows-x64.exe ^
+                  npx nexe -i ./dist/smage/smage.js `
+                    --build `
+                    --bundle `
+                    --target windows-x64-18.0.0 `
+                    --output smage-windows-x64.exe `
                     --resource "./dist/**/*"
 
             - name: Upload artifact
