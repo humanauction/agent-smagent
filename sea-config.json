@@ -1,5 +1,5 @@
 {
-    "main": "./dist/smage/smage.js",
+    "main": "./dist/smage/smage.mjs",
     "output": "smage.blob",
-    "useSnapshot": true
+    "useSnapshot": false
 }
