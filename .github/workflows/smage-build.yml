@@ -14,17 +14,17 @@ jobs:
                     - os: macos-latest
                       exe_name: smage-macos-arm64
                       copy_cmd: cp "$(which node)" smage-macos-arm64
-                      inject_cmd: ./node_modules/.bin/postject smage-macos-arm64 NODE_SEA_BLOB smage.blob --sentinel-fuse NODE_SEA_FUSE
+                      inject_cmd: npx postject smage-macos-arm64 NODE_SEA_BLOB smage.blob --sentinel-fuse NODE_SEA_FUSE
 
                     - os: ubuntu-latest
                       exe_name: smage-linux-x64
                       copy_cmd: cp "$(which node)" smage-linux-x64
-                      inject_cmd: ./node_modules/.bin/postject smage-linux-x64 NODE_SEA_BLOB smage.blob --sentinel-fuse NODE_SEA_FUSE
+                      inject_cmd: npx postject smage-linux-x64 NODE_SEA_BLOB smage.blob --sentinel-fuse NODE_SEA_FUSE
 
                     - os: windows-latest
                       exe_name: smage-windows-x64.exe
                       copy_cmd: copy "%NODE_EXE%" smage-windows-x64.exe
-                      inject_cmd: .\\node_modules\\.bin\\postject.cmd smage-windows-x64.exe NODE_SEA_BLOB smage.blob --sentinel-fuse NODE_SEA_FUSE
+                      inject_cmd: npx postject smage-windows-x64.exe NODE_SEA_BLOB smage.blob --sentinel-fuse NODE_SEA_FUSE
 
         runs-on: ${{ matrix.os }}
 
