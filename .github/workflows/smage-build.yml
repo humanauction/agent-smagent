@@ -44,7 +44,7 @@ jobs:
               run: npm run build
 
             - name: Install postject (pinned)
-              run: npm install postject --no-save postject@1.0.0-alpha.6
+              run: npm install postject --no-save postject@latest
 
             - name: Convert dist JS → MJS
               if: matrix.os != 'windows-latest'
