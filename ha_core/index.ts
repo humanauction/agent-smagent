@@ -1,3 +1,4 @@
+export * from "./providerMetadata.js";
 export interface SMAGEOptions {
     ast?: boolean;
     maxAge?: number; // ms

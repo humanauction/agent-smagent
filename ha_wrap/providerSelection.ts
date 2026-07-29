@@ -1,6 +1,7 @@
 import type { SMAGEMessage } from "../ha_core/index.js";
 import type { CCRRoutingHints } from "./ccrRouting.js";
-import { ProviderMetadataScorer } from "./providerMetadata.js";
+
+import { ProviderMetadataScorer } from "../ha_core/index.js";
 
 export interface ProviderSelectionInput {
     session: string;

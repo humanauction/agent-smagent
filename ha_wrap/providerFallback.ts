@@ -1,5 +1,4 @@
-import type { SMAGEMessage } from "../ha_core/index.js";
-import type { ProviderMetadata } from "./providerMetadata.js";
+import type { SMAGEMessage, ProviderMetadata } from "../ha_core/index.js";
 
 export interface FallbackContext {
     session: string;
