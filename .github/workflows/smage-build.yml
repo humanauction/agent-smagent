@@ -26,7 +26,7 @@ jobs:
             - name: Build project
               run: npm run build
 
-            - name: Build SMAGE macOS ARM64 binary (pkg)
+            - name: Build SMAGE macOS ARM64 binary
               run: pkg ./dist/smage/smage.js --targets node20-macos-arm64 --output smage-macos-arm64
 
             - name: Upload artifact
@@ -55,7 +55,7 @@ jobs:
             - name: Build project
               run: npm run build
 
-            - name: Build SMAGE Linux x64 binary (pkg)
+            - name: Build SMAGE Linux x64 binary
               run: pkg ./dist/smage/smage.js --targets node20-linux-x64 --output smage-linux-x64
 
             - name: Upload artifact
@@ -84,7 +84,7 @@ jobs:
             - name: Build project
               run: npm run build
 
-            - name: Build SMAGE Windows x64 binary (pkg)
+            - name: Build SMAGE Windows x64 binary
               run: pkg ./dist/smage/smage.js --targets node20-win-x64 --output smage-windows-x64.exe
 
             - name: Upload artifact
