@@ -1,4 +1,4 @@
-name: SMAGE Multi-Platform Build (pkg)
+name: SMAGE Multi-Platform Build (SEA, Node 24)
 
 on:
     push:
@@ -8,26 +8,33 @@ on:
 jobs:
     macos-arm64:
         runs-on: macos-latest
+
         steps:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Setup Node
+            - name: Setup Node 24
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 24
 
             - name: Install dependencies
               run: npm install
 
-            - name: Install pkg
-              run: npm install -g pkg
-
             - name: Build project
               run: npm run build
 
-            - name: Build SMAGE macOS ARM64 binary
-              run: pkg ./dist/smage/smage.js --targets node20-macos-arm64 --output smage-macos-arm64
+            - name: Install postject
+              run: npm install postject
+
+            - name: Generate SEA blob
+              run: node --experimental-sea-config sea-config.json
+
+            - name: Copy Node binary
+              run: cp "$(which node)" smage-macos-arm64
+
+            - name: Inject SEA blob into Node binary
+              run: npx postject smage-macos-arm64 NODE_SEA_BLOB smage.blob --sentinel-fuse NODE_SEA_FUSE
 
             - name: Upload artifact
               uses: actions/upload-artifact@v4
@@ -37,26 +44,33 @@ jobs:
 
     linux-x64:
         runs-on: ubuntu-latest
+
         steps:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Setup Node
+            - name: Setup Node 24
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 24
 
             - name: Install dependencies
               run: npm install
 
-            - name: Install pkg
-              run: npm install -g pkg
-
             - name: Build project
               run: npm run build
 
-            - name: Build SMAGE Linux x64 binary
-              run: pkg ./dist/smage/smage.js --targets node20-linux-x64 --output smage-linux-x64
+            - name: Install postject
+              run: npm install postject
+
+            - name: Generate SEA blob
+              run: node --experimental-sea-config sea-config.json
+
+            - name: Copy Node binary
+              run: cp "$(which node)" smage-linux-x64
+
+            - name: Inject SEA blob into Node binary
+              run: npx postject smage-linux-x64 NODE_SEA_BLOB smage.blob --sentinel-fuse NODE_SEA_FUSE
 
             - name: Upload artifact
               uses: actions/upload-artifact@v4
@@ -66,26 +80,35 @@ jobs:
 
     windows-x64:
         runs-on: windows-latest
+
         steps:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Setup Node
+            - name: Setup Node 24
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 24
 
             - name: Install dependencies
               run: npm install
 
-            - name: Install pkg
-              run: npm install -g pkg
-
             - name: Build project
               run: npm run build
 
-            - name: Build SMAGE Windows x64 binary
-              run: pkg ./dist/smage/smage.js --targets node20-win-x64 --output smage-windows-x64.exe
+            - name: Install postject
+              run: npm install postject
+
+            - name: Generate SEA blob
+              run: node --experimental-sea-config sea-config.json
+
+            - name: Copy Node binary
+              run: copy "%NODE_EXE%" smage-windows-x64.exe
+              env:
+                  NODE_EXE: ${{ env.NODE_EXE }}
+
+            - name: Inject SEA blob into Node binary
+              run: npx postject smage-windows-x64.exe NODE_SEA_BLOB smage.blob --sentinel-fuse NODE_SEA_FUSE
 
             - name: Upload artifact
               uses: actions/upload-artifact@v4
