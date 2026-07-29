@@ -1,5 +1,13 @@
 {
     "main": "./dist/smage/smage.mjs",
     "output": "smage.blob",
-    "useSnapshot": false
+    "useSnapshot": false,
+    "disableExperimentalSEAWarning": true,
+    "useCodeCache": false,
+    "assets": {},
+    "execArgv": [],
+    "execArgvExtension": "none",
+    "defines": {
+        "NODE_SEA_FUSE": "1"
+    }
 }
