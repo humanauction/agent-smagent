@@ -37,6 +37,32 @@ jobs:
               with:
                   name: smage-linux-x64
                   path: smage-linux-x64
+    macos-arm64:
+        runs-on: macos-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+            - name: Install dependencies
+              run: npm install
+            - name: Build project
+              run: npm run build
+            - name: Build SMAGE macOS ARM64 binary
+              run: |
+                  npx nexe -i ./dist/smage/smage.js \
+                    --build \
+                    --bundle \
+                    --target macos-arm64-20.0.0 \
+                    --output smage-macos-arm64 \
+                    --resource "./dist/**/*"
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: smage-macos-arm64
+                  path: smage-macos-arm64
 
     windows-x64:
         runs-on: windows-latest
