@@ -1,0 +1,42 @@
+# this file is a release workflow for the SMAGE project. triggered on new tag push to repository. The workflow:
+# builds a Docker image for the SMAGE project;
+# pushes it to GitHub Container Registry;
+# creates a GitHub release with the build artifacts.
+
+name: SMAGE Release
+
+on:
+    push:
+        tags:
+            - "v*.*.*"
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Download build artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  path: ./dist
+
+            - name: Build Docker image
+              run: docker build -t ghcr.io/${{ github.repository }}/smage:${{ github.ref_name }} .
+
+            - name: Push Docker image
+              run: |
+                  echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+                  docker push ghcr.io/${{ github.repository }}/smage:${{ github.ref_name }}
+
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@v1
+              with:
+                  tag_name: ${{ github.ref_name }}
+                  name: "SMAGE ${{ github.ref_name }}"
+                  files: |
+                      dist/smage-linux
+                      dist/smage-macos
+                      dist/smage-windows.exe

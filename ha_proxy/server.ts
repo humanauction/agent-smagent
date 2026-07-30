@@ -87,6 +87,11 @@ app.post("/v1/chat/completions", async (req, res) => {
 });
 
 const port = process.env.SMAGE_PROXY_PORT || 8080;
+
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
+
 app.listen(port, () => {
     console.log(`SMAGE proxy listening on :${port}`);
 });
