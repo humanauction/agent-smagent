@@ -4,11 +4,13 @@
         "outDir": "dist",
         "esModuleInterop": true,
         "resolveJsonModule": true,
+        "noImplicitAny": true,
+        "useDefineForClassFields": false,
 
         "module": "esnext",
         "target": "esnext",
         "types": ["node", "express"],
-        "lib": ["esnext"],
+        "lib": ["dom", "es2022"],
         "allowJs": true,
 
         "sourceMap": true,
@@ -16,7 +18,7 @@
         "declarationMap": true,
 
         "noUncheckedIndexedAccess": true,
-        "exactOptionalPropertyTypes": true,
+        "exactOptionalPropertyTypes": false,
 
         "moduleResolution": "bundler",
         "rewriteRelativeImportExtensions": true,

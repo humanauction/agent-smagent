@@ -7,29 +7,57 @@ I found solutions like Headroom, started reading the code, didnt know why a bunc
 
 ---
 
+## Roadmap
+
+1. MVP baseline (current)
+
+- CCR Stage 1
+- reversible logging
+- proxy/MCP/CLI
+- binary builds
+- Docker + Compose
+- baseline token tests
+
+2. Learning engine
+
+- failure miner
+- CLAUDE.md / AGENTS.md writer
+- memory scoring
+- auto‑tuning
+
+3. UI
+
+- dashboard
+- CCR visualiser
+- memory visualiser
+- provider routing visualiser
+
+4. Crush‑Tech Zone
+
+- entity dictionary compression
+- schema factoring
+- AST compression
+- provider‑adaptive compression
+- semantic anchors
+- relevance‑tier chunking
+
 ## Overview
 
-Full CCR (Cache–Crush–Reconstruct) pipeline with:
+A transparent, testable compression + context‑management engine for LLMs, with:
+deterministic CCR pipeline
+reversible logging
+multi‑agent routing
+provider adapters
+proxy + MCP servers
+agent wrappers
+learning engine
+unified CLI
+binary builds (Bun)
+Docker + Compose runtime
 
-- deterministic compression
-- reversible caching
-- priority‑tier context windows
-- anchors
-- dedupe
-- relevance scoring
-- cross‑agent memory
-- output token reduction
-- provider adapters
-- zero‑code‑change proxy
-- MCP server
-- agent wrappers
-- failure mining
-- provider selection
-- provider fallback
-- response blending
-- memory‑influenced routing
-
-Everything is explicit. Nothing is hidden.
+Everything is explicit.
+Everything is logged.
+Everything is reversible.
 
 ---
 
@@ -55,20 +83,33 @@ Everything is explicit. Nothing is hidden.
 
 ---
 
-## What’s Being Built Now (current milestone)
+## What’s Being Built Now (active milestone)
 
-CCR pipeline internals:
+Current Stage: CCR Upgrade Stage 1
 
-- anchors
-- dedupe
-- relevance scoring
-- priority tiers
-- window shaping
-- reconstruction
-- payload compression
-- memory injection
-- memory mining
-- output reduction
+In progress (MVP‑critical):
+
+- relevance.ts
+- priority.ts
+- window.ts
+- reconstruct.ts
+- payload.ts
+- context.ts
+
+Complete:
+
+- anchor.ts
+- dedupe.ts
+- basic compressor (compressors/basic.ts)
+- reversible logging
+- provider adapters
+- proxy server
+- MCP server
+- wrappers
+- CLI
+- binary builds
+- Docker + Compose
+- multi‑platform CI
 
 ---
 
@@ -79,8 +120,11 @@ agent-smagent/
 │
 ├── ha_core/
 │   ├── analyze/
+│   │   ├── classifier.ts
+│   │   └── tokens.ts
 │   ├── transform/
 │   │   ├── compressors/
+│   │   │   └── basic.ts
 │   │   ├── anchor.ts
 │   │   ├── ccr.ts
 │   │   ├── context.ts
@@ -88,44 +132,92 @@ agent-smagent/
 │   │   ├── payload.ts
 │   │   ├── priority.ts
 │   │   ├── relevance.ts
+│   │   ├── reconstruct.ts
+│   │   ├── window.ts
 │   │   └── anchor.test.ts
 │   ├── call/
 │   │   └── providers/
+│   │       ├── anthropic.ts
+│   │       ├── google.ts
+│   │       ├── index.ts
+│   │       ├── interface.ts
+│   │       ├── local.ts
+│   │       ├── openai.ts
+│   │       ├── roles.ts
+│   │       └── utils.ts
 │   ├── cache/
+│   │   ├── logs.ts
+│   │   └── store.ts
 │   ├── memory/
+│   │   └── memory.ts
 │   ├── stats/
 │   ├── output/
+│   │   └── reducer.ts
 │   ├── compress.py
 │   ├── compress.ts
-│   └── index.ts
+│   ├── index.ts
+│   └── providerMetadata.ts
 │
 ├── ha_proxy/
-│   ├── utils/
-│   ├── html/
+│   ├── dashboard/
+│   │   ├── html/
+│   │   │   ├── anchors.ts
+│   │   │   ├── ccr.ts
+│   │   │   ├── config.ts
+│   │   │   ├── health.ts
+│   │   │   ├── index.ts
+│   │   │   ├── layout.ts
+│   │   │   ├── memory.ts
+│   │   │   ├── provider.ts
+│   │   │   └── types.ts
+│   │   ├── utils/
+│   │   │   ├── index.ts
+│   │   │   └── messages.ts
+│   │   └── router.ts
 │   ├── config.ts
+│   ├── index.ts
 │   ├── middleware.ts
 │   ├── router.ts
 │   ├── server.ts
 │   ├── test-provider.ts
 │   └── test-proxy.ts
-│
+
 ├── ha_mcp/
 │   ├── server.ts
-│   ├── tools/
-│   └── protocol/
+│   ├── index.ts
+│   │
+│   └── tools/
+│       ├── compress.ts
+│       ├── index.ts
+│       ├── retrieve.ts
+│       └── stats.ts
 │
 ├── ha_wrap/
 │   ├── claude/
+│   │   └── claudeWrapper.ts
 │   ├── aider/
+│   │   └── aiderWrapper.ts
 │   ├── cursor/
+│   │   └── cursorWrapper.ts
 │   ├── copilot/
+│   │   └── copilotWrapper.ts
 │   ├── opencode/
+│   │   └── opencodeWrapper.ts
 │   ├── shared/
+│   │   ├── baseWrapper.ts
+│   │   ├── index.ts
+│   │   ├── memoryLoader.ts
+│   │   ├── personaLoader.ts
+│   │   └── toolBinder.ts
 │   ├── agent.ts
+│   ├── ccrRouting.ts
+│   ├── index.ts
 │   ├── multi_agent.ts
 │   ├── orchestrator.ts
 │   ├── providerSelection.ts
 │   ├── providerFallback.ts
+│   ├── providerMetadata.ts
+│   ├── providerReliability.ts
 │   ├── responseBlender.ts
 │   ├── memoryRouting.ts
 │   ├── wrapperRegistry.ts
@@ -134,19 +226,114 @@ agent-smagent/
 │
 ├── ha_learn/
 │   ├── engine.ts
+│   ├── failMiner.ts
+│   ├── index.ts
+│   ├── memoryDecay.ts
+│   ├── memoryPrune.ts
+│   ├── memoryResolve.ts
+│   ├── memoryScore.ts
+│   ├── memoryStore.ts
+│   ├── memoryWeight.ts
 │   ├── miner.ts
-│   ├── types.ts
-│   └── test-learn.ts
+│   ├── test-learn.ts
+│   └── types.ts
 │
 ├── ha_cli/
 │   ├── commands/
+│   │   ├── agent.ts
+│   │   ├── anchors.ts
+│   │   ├── ccr.ts
+│   │   ├── docs-html.ts
+│   │   ├── docs.ts
+│   │   ├── index.ts
+│   │   ├── learn.ts
+│   │   ├── memory.ts
+│   │   ├── multi_agent.ts
+│   │   ├── provider.ts
+│   │   ├── proxy.ts
+│   │   └── run.ts
+│   ├── utils/
+│   │   ├── args.ts
+│   │   └── printer.ts
+│   ├── mcp_client.ts
 │   └── main.ts
 │
-├── docs/
-├── tests/
-├── examples/
+├── ha_docs/
+│   ├── docsite.ts
+│   ├── generator.ts
+│   ├── index.ts
+│   ├── types.ts
+│   └── walk.ts
+│
+├── dist/           # Bun-compiled JS output (tsc) + binary staging
+├── docs/           # Documentation (pending expansion)
+├── tests/          # Test suite (Vitest recommended)
+├── smage/          # Binary output directory (CI artifacts)
+│   ├── __init__.py
+│   ├── config.ts
+│   └── smage.ts
+├── scripts/# Utility scripts
+├── Taskfile.dev.yml
+├── Taskfile.prod.yml
+├── Taskfile.yml
+├── tsconfig.json
+├── package.json
+├── Dockerfile      # Minimal runtime image (binary only)
+├── compose.yaml    # Multi-service runtime (proxy/agent/docs/test)
 └── README.md
 ```
+
+## Current Stage
+
+CCR Upgrade Stage 1 (MVP-critical)
+
+## MVP Definition (testable baseline)
+
+The MVP is not full CCR. The MVP is a testable baseline for token consumption. Includes:
+
+- Core
+- anchors
+- dedupe
+- relevance scoring
+- priority tiers
+- window shaping
+- reconstruction
+- payload shaping
+- reversible logging
+- Runtime
+- proxy (/v1/chat/completions, /health)
+- MCP server
+- CLI commands
+- provider adapters
+- binary builds (Linux/macOS/Windows)
+- Docker runtime
+- Compose multi‑service runtime
+- Testing
+- deterministic CCR modules
+- provider selection
+- provider fallback
+- response blending
+- memory routing
+- multi‑agent routing
+
+## Next Stage
+
+Implement CCR Stage 1 baseline tests:
+
+- before compression
+- after compression
+- compression ratio
+- provider cost delta
+- latency delta
+
+## Tech Debt (links to md files)
+
+- entity dictionary compression
+- schema factoring
+- AST compression
+- provider-adaptive compression
+- semantic anchors
+- relevance-tier chunking
 
 ## Module Boundaries
 
@@ -371,6 +558,48 @@ humanAuction stats
 - ⬆ Proxy + MCP docs
 - ⬆ Wrapper docs
 
+## Running SMAGE
+
+CLI
+
+```Code
+smage proxy
+smage anchors
+smage ccr
+smage agent
+smage multi_agent
+smage docs
+smage learn
+```
+
+Proxy
+
+```Code
+POST /v1/chat/completions
+GET  /health
+```
+
+MCP
+Claude Desktop / Cursor connect via MCP server.
+Docker
+
+```Code
+docker build -t smage .
+docker run --rm smage proxy
+```
+
+Compose
+
+```Code
+docker compose up
+```
+
+Services:
+proxy
+agent
+docs
+test
+
 ## Quick Commands
 
 Dev mode (tsx MCP)
@@ -461,3 +690,26 @@ docker compose run smage-proxy
 docker compose run smage-agent
 docker compose run smage-docs
 ```
+
+## Testing
+
+Use Vitest:
+
+```Code
+npm i -D vitest
+npm test
+```
+
+First tests:
+
+- anchor.ts
+- dedupe.ts
+- relevance.ts
+- priority.ts
+- window.ts
+- reconstruct.ts
+- provider selection
+- provider fallback
+- response blending
+- memory routing
+- multi‑agent routing

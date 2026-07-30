@@ -101,3 +101,32 @@ export function scoreMessages(messages: SMAGEMessage[]): SMAGEMessage[] {
         meta: { ...m.meta, score: scoreMessage(m) },
     }));
 }
+
+export function scoreRelevance(
+    msg: SMAGEMessage,
+    index: number,
+    total: number,
+): number {
+    let score = 0;
+
+    // Role weighting
+    if (msg.role === "system") score += 50;
+    else if (msg.role === "user") score += 40;
+    else if (msg.role === "assistant") score += 30;
+    else score += 10;
+
+    // Recency weighting
+    const recency = (index + 1) / total;
+    score += recency * 20;
+
+    // Explicit markers
+    if (msg.content.includes("IMPORTANT")) score += 25;
+
+    // Token density
+    const MAX_TOKENS: number = 50;
+    const tokens = Math.min(tokenCount(msg.content) ?? 0, MAX_TOKENS);
+
+    score += tokens / 5;
+
+    return score;
+}
