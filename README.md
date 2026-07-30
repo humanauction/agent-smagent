@@ -446,3 +446,18 @@ Rebuild clean:
 ```bash
 rm -rf dist && ts bd
 ```
+
+Run docker commands locally:
+override commands automatically:
+
+```bash
+docker compose up
+```
+
+Or run specific services:
+
+```bash
+docker compose run smage-proxy
+docker compose run smage-agent
+docker compose run smage-docs
+```

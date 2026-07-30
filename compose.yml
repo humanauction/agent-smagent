@@ -1,5 +1,4 @@
 # this file is used to run the smage-proxy, smage-agent, and smage-docs services.
-
 services:
     smage-proxy:
         build:
@@ -10,8 +9,9 @@ services:
         command: ["proxy"]
         ports:
             - "8080:8080"
+        networks: [smage-net]
         healthcheck:
-            test: ["CMD", "smage", "anchors"]
+            test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
             interval: 10s
             timeout: 3s
             retries: 3
@@ -27,6 +27,7 @@ services:
         container_name: smage-agent
         restart: unless-stopped
         command: ["agent"]
+        networks: [smage-net]
         healthcheck:
             test: ["CMD", "smage", "anchors"]
             interval: 10s
@@ -44,6 +45,7 @@ services:
         container_name: smage-docs
         restart: unless-stopped
         command: ["docs"]
+        networks: [smage-net]
         healthcheck:
             test: ["CMD", "smage", "anchors"]
             interval: 10s
@@ -58,15 +60,7 @@ services:
         container_name: smage-test
         command: ["sh", "-c", "smage anchors && smage docs && smage agent"]
         restart: "no"
+        networks: [smage-net]
 
 networks:
     smage-net:
-        services:
-            smage-proxy:
-                networks: [smage-net]
-            smage-agent:
-                networks: [smage-net]
-            smage-docs:
-                networks: [smage-net]
-            smage-test:
-                networks: [smage-net]

@@ -1,0 +1,12 @@
+services:
+    smage-proxy:
+        command: ["proxy"]
+
+    smage-agent:
+        command: ["agent"]
+
+    smage-docs:
+        command: ["docs:html"]
+
+    smage-test:
+        command: ["sh", "-c", "smage anchors && smage docs && smage agent"]
