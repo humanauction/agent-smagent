@@ -1,4 +1,4 @@
-name: SMAGE Multi-Platform Build (SEA, Node 24)
+name: SMAGE Multi-Platform Build (Bun, Node 24)
 
 on:
     push:
@@ -9,22 +9,14 @@ jobs:
     build:
         strategy:
             matrix:
-                os: [macos-latest, ubuntu-latest, windows-latest]
+                os: [ubuntu-latest, macos-latest, windows-latest]
                 include:
-                    - os: macos-latest
-                      exe_name: smage-macos-arm64
-                      copy_cmd: cp "$(which node)" smage-macos-arm64
-                      inject_cmd: npx --no-install postject smage-macos-arm64 NODE_SEA_BLOB smage.blob --sentinel-fuse NODE_SEA_FUSE --macho-segment-name NODE_SEA
-
                     - os: ubuntu-latest
-                      exe_name: smage-linux-x64
-                      copy_cmd: cp "$(which node)" smage-linux-x64
-                      inject_cmd: npx --no-install postject smage-linux-x64 NODE_SEA_BLOB smage.blob --sentinel-fuse NODE_SEA_FUSE
-
+                      exe_name: smage-linux
+                    - os: macos-latest
+                      exe_name: smage-macos
                     - os: windows-latest
-                      exe_name: smage-windows-x64.exe
-                      copy_cmd: copy "%NODE_EXE%" smage-windows-x64.exe
-                      inject_cmd: npx --no-install postject smage-windows-x64.exe NODE_SEA_BLOB smage.blob --sentinel-fuse NODE_SEA_FUSE
+                      exe_name: smage-windows.exe
 
         runs-on: ${{ matrix.os }}
 
@@ -37,36 +29,23 @@ jobs:
               with:
                   node-version: 24
 
+            - name: Install Bun
+              run: |
+                  curl -fsSL https://bun.sh/install | bash
+              shell: bash
+
+            - name: Add Bun to PATH
+              run: echo "$HOME/.bun/bin" >> $GITHUB_PATH
+              shell: bash
+
             - name: Install dependencies
               run: npm install
 
-            - name: Install postject
-              run: npm i -D postject@latest
+            - name: Build TypeScript
+              run: npx tsc
 
-            - name: Build project
-              run: npm run build
-
-            - name: Convert dist JS → MJS
-              if: matrix.os != 'windows-latest'
-              run: find dist -type f -name "*.js" -exec bash -c 'mv "$1" "${1%.js}.mjs"' _ {} \;
-
-            - name: Convert dist JS → MJS (Windows)
-              if: matrix.os == 'windows-latest'
-              run: |
-                  for /r dist %f in (*.js) do (
-                    ren "%f" "%~nf.mjs"
-                  )
-
-            - name: Generate SEA blob
-              run: node --experimental-sea-config sea-config.json
-
-            - name: Copy Node binary
-              run: ${{ matrix.copy_cmd }}
-              env:
-                  NODE_EXE: ${{ env.NODE_EXE }}
-
-            - name: Inject SEA blob
-              run: ${{ matrix.inject_cmd }}
+            - name: Build SMAGE binary with Bun
+              run: bun build ha_cli/main.ts --compile --outfile ${{ matrix.exe_name }}
 
             - name: Upload artifact
               uses: actions/upload-artifact@v4
