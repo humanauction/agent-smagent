@@ -2,25 +2,29 @@ import type { SMAGEMessage } from "../index.js";
 import { scoreRelevance } from "./relevance.js";
 
 export enum Priority {
-    SYSTEM = 0,
-    USER = 1,
-    ASSISTANT = 2,
-    TOOL = 3,
-    LOG = 4,
+    SYSTEM = 100,
+    USER = 90,
+    ASSISTANT = 80,
+    TOOL = 70,
+    LOG = 50,
+    ANCHOR = 100,
 }
-export function priorityOf(msg: SMAGEMessage): Priority {
-    if (msg.role === "system") return Priority.SYSTEM;
-    if (msg.role === "user") return Priority.USER;
-    if (msg.role === "assistant") return Priority.ASSISTANT;
 
-    // tool messages may include meta, changing priority based on the meta content.
-    // For example, a tool message with meta indicating it is a log message should have a lower priority than a regular tool message.
-    if (msg.role === "tool") {
-        if (msg.meta?.log === true) return Priority.LOG;
-        if (msg.meta?.rag === true) return Priority.LOG;
-        return Priority.TOOL;
+export function priorityOf(msg: SMAGEMessage): Priority {
+    if (msg.meta?.anchor) return Priority.ANCHOR;
+    switch (msg.role) {
+        case "system":
+            return Priority.SYSTEM;
+        case "user":
+            return Priority.USER;
+        case "assistant":
+            return Priority.ASSISTANT;
+        case "tool": // tool messages may include meta, changing priority based on the meta content.
+            if (msg.meta?.log || msg.meta?.rag) return Priority.LOG;
+            return Priority.TOOL;
+        default:
+            return Priority.LOG; // For example, a tool message with meta indicating it is a log message should have a lower priority than a regular tool message.
     }
-    return Priority.LOG;
 }
 
 /**
@@ -40,12 +44,7 @@ export function priorityOf(msg: SMAGEMessage): Priority {
  */
 
 export function assignPriority(msg: SMAGEMessage): number {
-    if (msg.meta?.anchor) return 0; // pinned anchor messages are always kept
-    if (msg.role === "system") return 100;
-    if (msg.role === "user") return 90;
-    if (msg.role === "assistant") return 80;
-    if (msg.role === "tool") return 70;
-    return 50;
+    return priorityOf(msg);
 }
 
 /**
@@ -65,9 +64,9 @@ export interface PriorityScore {
 }
 
 export function assignPriorityTier(relevance: number): 1 | 2 | 3 {
-    if (relevance >= 80) return 1; // critical
-    if (relevance >= 40) return 2; // important
-    return 3; // background
+    if (relevance >= 80) return 1; // critical, maps to SYSTEM/USER/ASSISTANT
+    if (relevance >= 60) return 2; // important, maps to TOOL
+    return 3; // background, maps to LOG
 }
 
 export function scorePriority(messages: SMAGEMessage[]): PriorityScore[] {
