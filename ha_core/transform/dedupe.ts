@@ -36,7 +36,9 @@ export function dedupeMessages(messages: SMAGEMessage[]): SMAGEMessage[] {
     const seen = new Set<string>();
     const out: SMAGEMessage[] = [];
 
-    for (const msg of messages) {
+    for (let i = 0; i < messages.length; i++) {
+        const msg = messages[i];
+        if (!msg) continue;
         const hash = stableHash(msg);
 
         // System messages: never dedupe
