@@ -1,4 +1,5 @@
 import type { SMAGEMessage } from "../index.js";
+import { scoreRelevance } from "./relevance.js";
 
 export enum Priority {
     SYSTEM = 0,
@@ -39,7 +40,7 @@ export function priorityOf(msg: SMAGEMessage): Priority {
  */
 
 export function assignPriority(msg: SMAGEMessage): number {
-    if (msg.meta?.anchor) return 0;
+    if (msg.meta?.anchor) return 0; // pinned anchor messages are always kept
     if (msg.role === "system") return 100;
     if (msg.role === "user") return 90;
     if (msg.role === "assistant") return 80;
@@ -55,4 +56,25 @@ export function assignPriorities(messages: SMAGEMessage[]): SMAGEMessage[] {
         ...m,
         meta: { ...m.meta, priority: assignPriority(m) },
     }));
+}
+
+export interface PriorityScore {
+    message: SMAGEMessage;
+    relevance: number;
+    tier: 1 | 2 | 3;
+}
+
+export function assignPriorityTier(relevance: number): 1 | 2 | 3 {
+    if (relevance >= 80) return 1; // critical
+    if (relevance >= 40) return 2; // important
+    return 3; // background
+}
+
+export function scorePriority(messages: SMAGEMessage[]): PriorityScore[] {
+    return messages.map((m, i) => {
+        const relevance = scoreRelevance(m, i, messages.length);
+        const tier = assignPriorityTier(relevance);
+
+        return { message: m, relevance, tier };
+    });
 }
