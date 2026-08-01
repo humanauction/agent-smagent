@@ -1,6 +1,7 @@
 import type { ProviderAdapter } from "./interface.js";
 import { shapeOutput, logProviderIO } from "./utils.js";
 import { mapProviderRole } from "./roles.js";
+import { normalizeProviderResponse } from "./providerNormalize.js";
 
 export const LocalAdapter: ProviderAdapter = {
     name: "local",
@@ -15,7 +16,7 @@ export const LocalAdapter: ProviderAdapter = {
         };
 
         // TODO: integrate local model / llama.cpp / python bridge
-        const response = shapeOutput("assistant", "[local placeholder]");
+        const response = normalizeProviderResponse("[local placeholder]");
 
         logProviderIO(req.session, "local", req, response);
         return response;

@@ -32,7 +32,7 @@ export const AnthropicAdapter: ProviderAdapter = {
 
         const response = shapeOutput("assistant", content);
 
-        logProviderIO(req.session, "google", req, response);
+        logProviderIO(req.session, "anthropic", req, response);
         return response;
     },
 };
