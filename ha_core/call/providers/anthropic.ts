@@ -1,6 +1,7 @@
 import type { ProviderAdapter } from "./interface.js";
-import { shapeOutput, logProviderIO } from "./utils.js";
+import { logProviderIO } from "./utils.js";
 import { mapProviderRole } from "./roles.js";
+import { normalizeProviderResponse } from "./providerNormalize.js";
 
 export const AnthropicAdapter: ProviderAdapter = {
     name: "anthropic",
@@ -15,22 +16,21 @@ export const AnthropicAdapter: ProviderAdapter = {
         };
 
         // TODO: fill in actual Anthropic request
-        const res = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${req.model}:generateContent?key=${process.env.GOOGLE_API_KEY}`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-api-key": process.env.ANTHROPIC_API_KEY ?? "",
+                "anthropic-version": "2023-06-01",
             },
-        );
+            body: JSON.stringify(payload),
+        });
 
         const json = (await res.json()) as any;
 
-        const content =
-            json?.candidates?.[0]?.content?.parts?.[0]?.text ??
-            "[empty response]";
+        const raw = json?.content?.[0]?.text ?? "[empty response]";
 
-        const response = shapeOutput("assistant", content);
+        const response = normalizeProviderResponse(raw, "assistant");
 
         logProviderIO(req.session, "anthropic", req, response);
         return response;

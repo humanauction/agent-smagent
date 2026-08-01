@@ -1,6 +1,7 @@
-import type { ProviderAdapter } from "./interface.js";
-import { shapeOutput, logProviderIO } from "./utils.js";
+import { normalizeProviderResponse } from "./providerNormalize.js";
+import { logProviderIO } from "./utils.js";
 import { mapProviderRole } from "./roles.js";
+import type { ProviderAdapter } from "./interface.js";
 
 export const OpenAIAdapter: ProviderAdapter = {
     name: "openai",
@@ -14,7 +15,6 @@ export const OpenAIAdapter: ProviderAdapter = {
             })),
         };
 
-        // TODO: fill in actual OpenAI request
         const res = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -24,12 +24,14 @@ export const OpenAIAdapter: ProviderAdapter = {
             body: JSON.stringify(payload),
         });
 
-        const json = (await res.json()) as any;
+        const json = await res.json();
 
-        const content =
-            json?.choices?.[0]?.message?.content ?? "[empty response]";
+        const raw =
+            json?.choices?.[0]?.message?.content ??
+            json?.choices?.[0]?.text ??
+            "[empty response]";
 
-        const response = shapeOutput("assistant", content);
+        const response = normalizeProviderResponse(raw, "assistant");
 
         logProviderIO(req.session, "openai", req, response);
         return response;

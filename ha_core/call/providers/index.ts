@@ -7,6 +7,7 @@ import { OpenAIAdapter } from "./openai.js";
 import { AnthropicAdapter } from "./anthropic.js";
 import { GoogleAdapter } from "./google.js";
 import { LocalAdapter } from "./local.js";
+import { normalizeProviderResponse } from "./providerNormalize.js";
 
 export * from "./anthropic.js";
 export * from "./google.js";
@@ -15,6 +16,7 @@ export * from "./local.js";
 export * from "./openai.js";
 export * from "./roles.js";
 export * from "./utils.js";
+export * from "./providerNormalize.js";
 
 // this file defines available provider adapters
 

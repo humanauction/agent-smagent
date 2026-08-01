@@ -1,6 +1,7 @@
 import type { ProviderAdapter } from "./interface.js";
-import { shapeOutput, logProviderIO } from "./utils.js";
+import { logProviderIO } from "./utils.js";
 import { mapProviderRole } from "./roles.js";
+import { normalizeProviderResponse } from "./providerNormalize.js";
 
 export const GoogleAdapter: ProviderAdapter = {
     name: "google",
@@ -26,11 +27,11 @@ export const GoogleAdapter: ProviderAdapter = {
 
         const json = (await res.json()) as any;
 
-        const content =
+        const raw =
             json?.candidates?.[0]?.content?.parts?.[0]?.text ??
             "[empty response]";
 
-        const response = shapeOutput("assistant", content);
+        const response = normalizeProviderResponse(raw, "assistant");
 
         logProviderIO(req.session, "google", req, response);
         return response;
