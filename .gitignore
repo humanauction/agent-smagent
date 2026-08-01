@@ -4,6 +4,7 @@ npm-debug.log*
 yarn-error.log*
 dist/
 build/
+*.tsbuildinfo
 
 # Python
 __pycache__/
@@ -15,11 +16,10 @@ venv/
 env/
 env.py
 
-# TypeScript
-*.tsbuildinfo
-
 # Logs
 *.log
+logs/
+*.pid
 
 # VSCode
 .vscode/
@@ -31,7 +31,20 @@ Thumbs.db
 # Environment
 .env
 .env.*
+.env.local
 
+# Taskfile
+.task/
+.cache/
 
-# agent.mds
+# SMAGE
+smage.db
+reversible_logs/
+cache/
+coverage/
+
+# Docker
+docker-compose.override.yml
+
+# GitHub agents
 .github/agents/askTutor.agent.md
