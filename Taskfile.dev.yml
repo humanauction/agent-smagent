@@ -1,24 +1,74 @@
-version: '3'
+# ============================================================
+# SMAGE .dev Taskfile — Development Mode
+# ============================================================
+# Core Commands
+#   task help            → Show all available tasks
+#   task list            → Alias for help
+#
+# Build
+#   task bd              → Build TypeScript → dist/
+#
+# Dev Runtime (TS directly)
+#   task dev:mcp         → Start MCP server (tsx)
+#   task dev:proxy       → Start proxy server (tsx)
+#   task dev:agent       → Run agent wrapper (tsx)
+#
+# Tests (TS or JS)
+#   task tst             → Run provider + learn tests
+#   task learn           → Run learning engine tests
+# ============================================================
+
+version: "3"
 
 tasks:
-  bd:
-    desc: Build dist
-    cmds:
-      - arch -arm64 npx tsc
+    help:
+        desc: "Show all available tasks"
+        cmds:
+            - echo "Available tasks:"
+            - task --list
 
-  dev:
-    desc: Run SMAGE agent + MCP in dev mode (tsx)
-    cmds:
-      - tsx ha_mcp/server.ts
+    list:
+        desc: "Alias for help"
+        cmds:
+            - task help
 
-  tst:
-    desc: Run provider + MCP tests
-    cmds:
-      - task bd
-      - arch -arm64 node dist/ha_proxy/test-provider.js
+    # -----------------------------
+    # Build (optional in dev)
+    # -----------------------------
+    bd:
+        desc: "Build dist"
+        cmds:
+            - arch -arm64 npx tsc
 
-  learn:
-    desc: Run SMAGE learn tests
-    cmds:
-      - task bd
-      - arch -arm64 node dist/ha_learn/test-learn.js
+    # -----------------------------
+    # Dev-mode servers (tsx)
+    # -----------------------------
+    dev:mcp:
+        desc: "Run MCP server in dev mode (tsx)"
+        cmds:
+            - tsx ha_mcp/server.ts
+
+    dev:proxy:
+        desc: "Run SMAGE proxy server in dev mode (tsx)"
+        cmds:
+            - tsx ha_proxy/server.ts
+
+    dev:agent:
+        desc: "Run agent wrapper in dev mode (tsx)"
+        cmds:
+            - tsx ha_cli/main.ts agent
+
+    # -----------------------------
+    # Tests (TS or JS)
+    # -----------------------------
+    tst:
+        desc: "Run provider + MCP tests"
+        cmds:
+            - task bd
+            - arch -arm64 node dist/ha_proxy/test-provider.js
+
+    learn:
+        desc: "Run SMAGE learn tests"
+        cmds:
+            - task bd
+            - arch -arm64 node dist/ha_learn/test-learn.js

@@ -1,24 +1,120 @@
-version: '3'
+# ============================================================
+# SMAGE .prod Taskfile — Production Mode
+# ============================================================
+# Core Commands
+#   task help            → Show all available tasks
+#   task list            → Alias for help
+#
+# Build
+#   task clean           → Remove dist/
+#   task bd              → Build TypeScript → dist/
+#   task rebuild         → Clean + build
+#
+# Runtime (compiled JS)
+#   task proxy           → Start SMAGE proxy server (dist)
+#   task mcp             → Start MCP server (dist)
+#   task agent           → Run agent wrapper (dist)
+#   task learn           → Run learning engine (dist)
+#
+# Tests (compiled JS)
+#   task tst             → Run all JS tests
+#
+# Full System
+#   task chk             → Full system check (build + test + learn + proxy)
+#
+# Documentation
+#   task docs            → Generate SMAGE documentation
+#   task docsite         → Generate SMAGE HTML documentation
+# ============================================================
+
+version: "3"
 
 tasks:
-  bd:
-    desc: Build dist
-    cmds:
-      - arch -arm64 npx tsc
+    help:
+        desc: "Show all available tasks"
+        cmds:
+            - echo "Available tasks:"
+            - task --list
 
-  prod:
-    desc: Run SMAGE agent + MCP in production mode
-    cmds:
-      - arch -arm64 node dist/ha_mcp/server.js
+    list:
+        desc: "Alias for help"
+        cmds:
+            - task help
 
-  tst:
-    desc: Run provider + MCP tests (prod)
-    cmds:
-      - task bd
-      - arch -arm64 node dist/ha_proxy/test-provider.js
+    # -----------------------------
+    # Build
+    # -----------------------------
+    clean:
+        desc: "Remove dist/ build output"
+        cmds:
+            - rm -rf dist
 
-  learn:
-    desc: Run SMAGE learn tests (prod)
-    cmds:
-      - task bd
-      - arch -arm64 node dist/ha_learn/test-learn.js
+    bd:
+        desc: "Build TypeScript → dist/"
+        cmds:
+            - arch -arm64 npx tsc
+
+    rebuild:
+        desc: "Clean + build"
+        cmds:
+            - task clean
+            - task bd
+
+    # -----------------------------
+    # Tests (compiled JS)
+    # -----------------------------
+    tst:
+        desc: "Run tests against compiled JS"
+        cmds:
+            - task bd
+            - arch -arm64 node dist/ha_core/transform/anchor.test.js
+            - arch -arm64 node dist/ha_proxy/test-provider.js
+            - arch -arm64 node dist/ha_learn/test-learn.js
+            - echo "Tests completed successfully"
+
+    # -----------------------------
+    # Runtime servers (compiled JS)
+    # -----------------------------
+    proxy:
+        desc: "Start SMAGE proxy server (dist)"
+        cmds:
+            - arch -arm64 node dist/ha_proxy/server.js
+
+    mcp:
+        desc: "Start MCP server (dist)"
+        cmds:
+            - arch -arm64 node dist/ha_mcp/server.js
+
+    agent:
+        desc: "Run agent wrapper test (dist)"
+        cmds:
+            - arch -arm64 node dist/ha_cli/main.js agent
+
+    learn:
+        desc: "Run learning engine (dist)"
+        cmds:
+            - arch -arm64 node dist/ha_cli/main.js learn test-session
+
+    # -----------------------------
+    # Full system checks
+    # -----------------------------
+    chk:
+        desc: "Run full system check"
+        cmds:
+            - task rebuild
+            - task tst
+            - task learn
+            - task proxy
+
+    # -----------------------------
+    # Documentation
+    # -----------------------------
+    docs:
+        desc: "Generate SMAGE documentation"
+        cmds:
+            - arch -arm64 node dist/ha_cli/main.js docs
+
+    docsite:
+        desc: "Generate SMAGE HTML documentation"
+        cmds:
+            - arch -arm64 node dist/ha_cli/main.js docs:html
