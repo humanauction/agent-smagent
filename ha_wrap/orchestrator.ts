@@ -7,6 +7,7 @@ import { ProviderFallback } from "./providerFallback.js";
 import { ResponseBlender } from "./responseBlender.js";
 import { MemoryRouter } from "./memoryRouting.js";
 import { ProviderReliabilityTracker } from "./providerReliability.js";
+import { ProviderRouter } from "../ha_core/call/providers/router.js";
 
 export interface OrchestratorConfig {
     session: string;
@@ -34,6 +35,7 @@ export class SMAGEOrchestrator {
     private blender = new ResponseBlender();
     private router = new MemoryRouter();
     private tracker = new ProviderReliabilityTracker();
+    private providerRouter: ProviderRouter;
 
     constructor(config: OrchestratorConfig) {
         if (config.agents.length === 0) {
@@ -43,11 +45,19 @@ export class SMAGEOrchestrator {
         this.config = config;
         this.single = new SMAGEAgent();
         this.multi = new SMAGEMultiAgent(config.agents);
+
+        // initialize router with primary + fallback
+        const primary = config.agents[0]?.provider ?? "openai";
+        const fallbackProvider =
+            typeof config.agents[0]?.options?.fallback === "string"
+                ? config.agents[0].options.fallback
+                : "anthropic";
+
+        this.providerRouter = new ProviderRouter(primary, fallbackProvider);
     }
 
     async orchestrate(messages: SMAGEMessage[]): Promise<OrchestratorResult> {
         const { session, strategy, agents } = this.config;
-
         const lastUser = [...messages].reverse().find((m) => m.role === "user");
         const userQuery = lastUser?.content ?? "";
         const learnedAnchors = learn.scoreRelevance(session, userQuery);
@@ -178,10 +188,17 @@ export class SMAGEOrchestrator {
         agent: OrchestratorConfig["agents"][0],
         messages: SMAGEMessage[],
     ): Promise<OrchestratorResult> {
-        const res = await this.single.call({
+        const primary = agent.provider ?? "openai";
+        const fallbackProvider =
+            typeof agent.options?.fallback === "string"
+                ? agent.options.fallback
+                : "anthropic";
+
+        const router = new ProviderRouter(primary, fallbackProvider);
+
+        const res = await router.call({
             session: this.config.session,
             model: agent.model,
-            provider: agent.provider,
             messages,
             options: agent.options ?? {},
         });
