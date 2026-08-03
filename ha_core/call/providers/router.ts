@@ -7,6 +7,7 @@ import type {
 import { providers } from "./index.js";
 import { normalizeProviderResponse } from "./providerNormalize.js";
 import { logProviderIO } from "./utils.js";
+import { providerError, ProviderError } from "./errors.js";
 
 /**
  * ProviderRouter:
@@ -40,30 +41,51 @@ export class ProviderRouter {
             const res = await adapter.call(req);
             return res;
         } catch (err: any) {
+            const pe: ProviderError = err?.type
+                ? err
+                : providerError(
+                      "internal",
+                      this.primary,
+                      req.model,
+                      req.session,
+                      String(err?.message ?? err),
+                      err,
+                      false,
+                  );
             // 2. Log primary failure
             logProviderIO(req.session, this.primary, req, {
                 role: "assistant",
-                content: `[provider error: ${String(err?.message ?? err)}]`,
+                content: `[provider error: ${pe.type} - ${pe.message}]`,
             });
 
             // 3. If no fallback → return normalized error
-            if (!this.fallback) {
+            if (!this.fallback || !pe.retryable) {
                 return normalizeProviderResponse(
-                    `[provider failure: ${this.primary}]`,
+                    `[provider failure: ${this.primary} - ${pe.type}]`,
                     "assistant",
                 );
             }
-
             // 4. Fallback attempt
             try {
                 const adapter = this.getAdapter(this.fallback);
                 const res = await adapter.call(req);
                 return res;
             } catch (err2: any) {
+                const pe2: ProviderError = err2?.type
+                    ? err2
+                    : providerError(
+                          "internal",
+                          this.fallback,
+                          req.model,
+                          req.session,
+                          String(err2?.message ?? err2),
+                          err2,
+                          false,
+                      );
                 // 5. Log fallback failure
                 logProviderIO(req.session, this.fallback, req, {
                     role: "assistant",
-                    content: `[fallback provider error: ${String(err2?.message ?? err2)}]`,
+                    content: `[fallback provider error: ${pe2.type} - ${pe2.message}]`,
                 });
 
                 // 6. Final normalized error
