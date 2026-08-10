@@ -8,6 +8,8 @@ import { ResponseBlender } from "./responseBlender.js";
 import { MemoryRouter } from "./memoryRouting.js";
 import { ProviderReliabilityTracker } from "./providerReliability.js";
 import { ProviderRouter } from "../ha_core/call/providers/router.js";
+import { providerError } from "../ha_core/call/providers/errors.js";
+import { ProviderChainRouter } from "@core/call/providers/chainRouter.js";
 
 export interface OrchestratorConfig {
     session: string;
@@ -194,9 +196,17 @@ export class SMAGEOrchestrator {
                 ? agent.options.fallback
                 : "anthropic";
 
-        const router = new ProviderRouter(primary, fallbackProvider);
+        const chain = new ProviderChainRouter({
+            order: ["openai", "anthropic", "google", "local"],
+            reliability: {
+                openai: this.tracker.snapshot("openai").reliability,
+                anthropic: this.tracker.snapshot("anthropic").reliability,
+                google: this.tracker.snapshot("google").reliability,
+                local: this.tracker.snapshot("local").reliability,
+            },
+        });
 
-        const res = await router.call({
+        const res = await chain.call({
             session: this.config.session,
             model: agent.model,
             messages,
