@@ -9,13 +9,6 @@ import { normalizeProviderResponse } from "./providerNormalize.js";
 import { logProviderIO } from "./utils.js";
 import { providerError, ProviderError } from "./errors.js";
 
-/**
- * ProviderRouter:
- * - primary provider
- * - fallback provider
- * - strict-mode safe
- * - deterministic
- */
 export class ProviderRouter {
     primary: string;
     fallback: string | null;
@@ -35,11 +28,9 @@ export class ProviderRouter {
     }
 
     async call(req: ProviderRequest): Promise<ProviderResponse> {
-        // 1. Primary provider attempt
         try {
             const adapter = this.getAdapter(this.primary);
-            const res = await adapter.call(req);
-            return res;
+            return await adapter.call(req);
         } catch (err: any) {
             const pe: ProviderError = err?.type
                 ? err
@@ -50,26 +41,44 @@ export class ProviderRouter {
                       req.session,
                       String(err?.message ?? err),
                       err,
-                      false,
                   );
-            // 2. Log primary failure
+
             logProviderIO(req.session, this.primary, req, {
                 role: "assistant",
                 content: `[provider error: ${pe.type} - ${pe.message}]`,
             });
 
-            // 3. If no fallback → return normalized error
-            if (!this.fallback || !pe.retryable) {
+            // Retry same provider
+            if (pe.retryable && (pe.retryCount ?? 0) < 2) {
+                const nextRetry = providerError(
+                    pe.type,
+                    pe.provider,
+                    pe.model,
+                    pe.session,
+                    pe.message,
+                    pe.cause,
+                    (pe.retryCount ?? 0) + 1,
+                );
+
+                await new Promise((r) =>
+                    setTimeout(r, nextRetry.retryDelay ?? 0),
+                );
+
+                return this.call(req);
+            }
+
+            // No fallback configured
+            if (!this.fallback) {
                 return normalizeProviderResponse(
                     `[provider failure: ${this.primary} - ${pe.type}]`,
                     "assistant",
                 );
             }
-            // 4. Fallback attempt
+
+            // Fallback attempt
             try {
                 const adapter = this.getAdapter(this.fallback);
-                const res = await adapter.call(req);
-                return res;
+                return await adapter.call(req);
             } catch (err2: any) {
                 const pe2: ProviderError = err2?.type
                     ? err2
@@ -80,15 +89,13 @@ export class ProviderRouter {
                           req.session,
                           String(err2?.message ?? err2),
                           err2,
-                          false,
                       );
-                // 5. Log fallback failure
+
                 logProviderIO(req.session, this.fallback, req, {
                     role: "assistant",
                     content: `[fallback provider error: ${pe2.type} - ${pe2.message}]`,
                 });
 
-                // 6. Final normalized error
                 return normalizeProviderResponse(
                     `[provider failure: ${this.primary}, fallback failure: ${this.fallback}]`,
                     "assistant",

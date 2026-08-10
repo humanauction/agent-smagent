@@ -1,5 +1,4 @@
 import type { SMAGEMessage } from "../index.js";
-
 /**
  * Stable hash for dedupe.
  * - Ignores metadata
