@@ -17,21 +17,49 @@ import { logProviderIO } from "./utils.js";
 // depth
 // quality
 
+export interface ProviderMetrics {
+    speed: number;
+    cost: number;
+    depth: number;
+    quality: number;
+    reliability: number;
+}
+
 export interface ProviderChainConfig {
-    order: string[]; // provider names in priority order
-    reliability: Record<string, number>; // dynamic reliability weights
+    metrics: Record<string, Partial<ProviderMetrics>>;
+    weights: ProviderMetrics;
+}
+
+function safeMetric(value: number | undefined): number {
+    return typeof value === "number" && !Number.isNaN(value) ? value : 0;
+}
+
+function scoreProvider(
+    metrics: Partial<ProviderMetrics>,
+    weights: ProviderMetrics,
+): number {
+    return (
+        safeMetric(metrics.speed) * weights.speed +
+        safeMetric(metrics.cost) * weights.cost +
+        safeMetric(metrics.depth) * weights.depth +
+        safeMetric(metrics.quality) * weights.quality +
+        safeMetric(metrics.reliability) * weights.reliability
+    );
 }
 
 export class ProviderChainRouter {
     private chain: string[];
 
     constructor(config: ProviderChainConfig) {
-        // Sort providers by reliability weight (descending)
-        this.chain = [...config.order].sort((a, b) => {
-            const ra = config.reliability[a] ?? 0;
-            const rb = config.reliability[b] ?? 0;
-            return rb - ra;
-        });
+        const entries = Object.entries(config.metrics);
+
+        this.chain = entries
+            .map(([providerName, metrics]) => ({
+                providerName,
+                score: scoreProvider(metrics, config.weights),
+            }))
+            .sort((a, b) => b.score - a.score)
+            .map((x) => x.providerName);
     }
 
     private getAdapter(name: string): ProviderAdapter {
@@ -69,7 +97,6 @@ export class ProviderChainRouter {
                     content: `[chain provider error: ${pe.type} - ${pe.message}]`,
                 });
 
-                // Retry same provider if retryable
                 if (pe.retryable && (pe.retryCount ?? 0) < 2) {
                     const retryErr = providerError(
                         pe.type,
@@ -90,15 +117,12 @@ export class ProviderChainRouter {
                         const res = await adapter.call(req);
                         return res;
                     } catch {
-                        // continue to next provider in chain
+                        // continue to next provider
                     }
                 }
-
-                // Otherwise continue to next provider
             }
         }
 
-        // All providers failed
         return normalizeProviderResponse(
             `[provider chain failure: ${this.chain.join(" → ")}]`,
             "assistant",

@@ -18,6 +18,10 @@ export interface OrchestratorConfig {
         id: string;
         provider: string;
         model: string;
+        speed?: number;
+        cost?: number;
+        depth?: number;
+        quality?: number;
         options?: Record<string, unknown> | undefined;
     }[];
 }
@@ -197,12 +201,42 @@ export class SMAGEOrchestrator {
                 : "anthropic";
 
         const chain = new ProviderChainRouter({
-            order: ["openai", "anthropic", "google", "local"],
-            reliability: {
-                openai: this.tracker.snapshot("openai").reliability,
-                anthropic: this.tracker.snapshot("anthropic").reliability,
-                google: this.tracker.snapshot("google").reliability,
-                local: this.tracker.snapshot("local").reliability,
+            metrics: {
+                openai: {
+                    speed: agent.speed,
+                    cost: agent.cost,
+                    depth: agent.depth,
+                    quality: agent.quality,
+                    reliability: this.tracker.snapshot("openai").reliability,
+                },
+                anthropic: {
+                    speed: agent.speed,
+                    cost: agent.cost,
+                    depth: agent.depth,
+                    quality: agent.quality,
+                    reliability: this.tracker.snapshot("anthropic").reliability,
+                },
+                google: {
+                    speed: agent.speed,
+                    cost: agent.cost,
+                    depth: agent.depth,
+                    quality: agent.quality,
+                    reliability: this.tracker.snapshot("google").reliability,
+                },
+                local: {
+                    speed: agent.speed,
+                    cost: agent.cost,
+                    depth: agent.depth,
+                    quality: agent.quality,
+                    reliability: this.tracker.snapshot("local").reliability,
+                },
+            },
+            weights: {
+                speed: 0.25,
+                cost: 0.15,
+                depth: 0.2,
+                quality: 0.25,
+                reliability: 0.15,
             },
         });
 
