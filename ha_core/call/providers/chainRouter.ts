@@ -3,19 +3,13 @@ import type {
     ProviderRequest,
     ProviderResponse,
 } from "./interface.js";
+
 import { providers } from "./index.js";
 import { providerError, ProviderError } from "./errors.js";
 import { normalizeProviderResponse } from "./providerNormalize.js";
 import { logProviderIO } from "./utils.js";
-
-// this file defines the multi‑fallback chain with automatic degradation when a provider fails.
-// openai → anthropic → google → local
-// dynamic ordering based on:
-// reliability
-// speed
-// cost
-// depth
-// quality
+import { ProviderChainCache } from "./chainCache.js";
+import { ProviderChainMemory } from "./chainMemory.js";
 
 export interface ProviderMetrics {
     speed: number;
@@ -49,15 +43,29 @@ function scoreProvider(
 
 export class ProviderChainRouter {
     private chain: string[];
+    private cache = new ProviderChainCache();
+    private memory = new ProviderChainMemory();
+    private config: ProviderChainConfig;
+    private session: string;
 
-    constructor(config: ProviderChainConfig) {
+    constructor(config: ProviderChainConfig, session: string) {
+        this.config = config;
+        this.session = session;
+
         const entries = Object.entries(config.metrics);
+        const mem = this.memory.recall(session);
 
         this.chain = entries
-            .map(([providerName, metrics]) => ({
-                providerName,
-                score: scoreProvider(metrics, config.weights),
-            }))
+            .map(([providerName, metrics]) => {
+                const score = scoreProvider(metrics, config.weights);
+
+                const boosted =
+                    mem && mem.provider === providerName
+                        ? score + mem.score * 0.5
+                        : score;
+
+                return { providerName, score: boosted };
+            })
             .sort((a, b) => b.score - a.score)
             .map((x) => x.providerName);
     }
@@ -72,9 +80,19 @@ export class ProviderChainRouter {
         let lastError: ProviderError | null = null;
 
         for (const providerName of this.chain) {
+            if (this.cache.isCached(providerName)) {
+                continue;
+            }
+
             try {
                 const adapter = this.getAdapter(providerName);
                 const res = await adapter.call(req);
+
+                // Strict‑mode safe metrics lookup
+                const metrics = this.config.metrics[providerName] ?? {};
+                const score = scoreProvider(metrics, this.config.weights);
+
+                this.memory.remember(req.session, providerName, score);
 
                 logProviderIO(req.session, providerName, req, res);
                 return res;
@@ -90,7 +108,7 @@ export class ProviderChainRouter {
                           err,
                       );
 
-                lastError = pe;
+                this.cache.markFailure(providerName, pe.message);
 
                 logProviderIO(req.session, providerName, req, {
                     role: "assistant",
