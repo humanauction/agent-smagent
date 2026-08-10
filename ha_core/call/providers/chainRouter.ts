@@ -10,6 +10,7 @@ import { normalizeProviderResponse } from "./providerNormalize.js";
 import { logProviderIO } from "./utils.js";
 import { ProviderChainCache } from "./chainCache.js";
 import { ProviderChainMemory } from "./chainMemory.js";
+import { ChainScoringUI } from "./chainScoreUI.js";
 
 export interface ProviderMetrics {
     speed: number;
@@ -24,11 +25,11 @@ export interface ProviderChainConfig {
     weights: ProviderMetrics;
 }
 
-function safeMetric(value: number | undefined): number {
+export function safeMetric(value: number | undefined): number {
     return typeof value === "number" && !Number.isNaN(value) ? value : 0;
 }
 
-function scoreProvider(
+export function scoreProvider(
     metrics: Partial<ProviderMetrics>,
     weights: ProviderMetrics,
 ): number {
@@ -54,10 +55,18 @@ export class ProviderChainRouter {
 
         const entries = Object.entries(config.metrics);
         const mem = this.memory.recall(session);
+        const debug = ChainScoringUI.build(
+            config,
+            session,
+            this.cache,
+            this.memory,
+        );
+        console.log(ChainScoringUI.print(debug));
 
         this.chain = entries
             .map(([providerName, metrics]) => {
-                const score = scoreProvider(metrics, config.weights);
+                const safeMetrics = metrics ?? {};
+                const score = scoreProvider(safeMetrics, config.weights);
 
                 const boosted =
                     mem && mem.provider === providerName
