@@ -45,7 +45,8 @@
         "ha_cli/**/*",
         "ha_docs/**/*",
         "ha_learn/**/*",
-        "smage/**/*"
+        "smage/**/*",
+        "tests/**/*"
     ],
     "exclude": ["node_modules"]
 }
