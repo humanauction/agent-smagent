@@ -12,6 +12,7 @@ import { ProviderChainCache } from "./chainCache.js";
 import { ProviderChainMemory } from "./chainMemory.js";
 import { ChainScoringUI } from "./chainScoreUI.js";
 import { ProviderChainTelemetry } from "./chainTelemetry.js";
+import { ChainScoreDashboard } from "./chainScoreDashboard.js";
 
 export interface ProviderMetrics {
     speed: number;
@@ -65,7 +66,11 @@ export class ProviderChainRouter {
             this.cache,
             this.memory,
         );
+        // CLI output
         console.log(ChainScoringUI.print(debug));
+        // HTML output
+        const html = ChainScoreDashboard.html(debug);
+        console.log(html);
 
         for (const entry of debug) {
             this.telemetry.record({

@@ -8,8 +8,7 @@ import { ResponseBlender } from "./responseBlender.js";
 import { MemoryRouter } from "./memoryRouting.js";
 import { ProviderReliabilityTracker } from "./providerReliability.js";
 import { ProviderRouter } from "../ha_core/call/providers/router.js";
-import { providerError } from "../ha_core/call/providers/errors.js";
-import { ProviderChainRouter } from "@core/call/providers/chainRouter.js";
+import { ProviderChainRouter } from "../ha_core/call/providers/chainRouter.js";
 
 export interface OrchestratorConfig {
     session: string;
@@ -200,45 +199,51 @@ export class SMAGEOrchestrator {
                 ? agent.options.fallback
                 : "anthropic";
 
-        const chain = new ProviderChainRouter({
-            metrics: {
-                openai: {
-                    speed: agent.speed,
-                    cost: agent.cost,
-                    depth: agent.depth,
-                    quality: agent.quality,
-                    reliability: this.tracker.snapshot("openai").reliability,
+        const chain = new ProviderChainRouter(
+            {
+                metrics: {
+                    openai: {
+                        speed: agent.speed,
+                        cost: agent.cost,
+                        depth: agent.depth,
+                        quality: agent.quality,
+                        reliability:
+                            this.tracker.snapshot("openai").reliability,
+                    },
+                    anthropic: {
+                        speed: agent.speed,
+                        cost: agent.cost,
+                        depth: agent.depth,
+                        quality: agent.quality,
+                        reliability:
+                            this.tracker.snapshot("anthropic").reliability,
+                    },
+                    google: {
+                        speed: agent.speed,
+                        cost: agent.cost,
+                        depth: agent.depth,
+                        quality: agent.quality,
+                        reliability:
+                            this.tracker.snapshot("google").reliability,
+                    },
+                    local: {
+                        speed: agent.speed,
+                        cost: agent.cost,
+                        depth: agent.depth,
+                        quality: agent.quality,
+                        reliability: this.tracker.snapshot("local").reliability,
+                    },
                 },
-                anthropic: {
-                    speed: agent.speed,
-                    cost: agent.cost,
-                    depth: agent.depth,
-                    quality: agent.quality,
-                    reliability: this.tracker.snapshot("anthropic").reliability,
-                },
-                google: {
-                    speed: agent.speed,
-                    cost: agent.cost,
-                    depth: agent.depth,
-                    quality: agent.quality,
-                    reliability: this.tracker.snapshot("google").reliability,
-                },
-                local: {
-                    speed: agent.speed,
-                    cost: agent.cost,
-                    depth: agent.depth,
-                    quality: agent.quality,
-                    reliability: this.tracker.snapshot("local").reliability,
+                weights: {
+                    speed: 0.25,
+                    cost: 0.15,
+                    depth: 0.2,
+                    quality: 0.25,
+                    reliability: 0.15,
                 },
             },
-            weights: {
-                speed: 0.25,
-                cost: 0.15,
-                depth: 0.2,
-                quality: 0.25,
-                reliability: 0.15,
-            },
-        });
+            this.config.session,
+        );
 
         const res = await chain.call({
             session: this.config.session,
