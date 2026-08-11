@@ -13,6 +13,6 @@ export interface ProviderResponse {
 }
 
 export interface ProviderAdapter {
-    name: string;
+    name?: string;
     call(req: ProviderRequest): Promise<ProviderResponse>;
 }

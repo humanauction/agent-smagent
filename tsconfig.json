@@ -46,7 +46,8 @@
         "ha_docs/**/*",
         "ha_learn/**/*",
         "smage/**/*",
-        "tests/**/*"
+        "tests/**/*",
+        "vitest.config.mts"
     ],
     "exclude": ["node_modules"]
 }

@@ -77,14 +77,14 @@ tasks:
         cmds:
             - arch -arm64 npx tsc
 
-    rebd:
+    rbd:
         desc: "Clean + build"
         cmds:
             - task cln
             - task bd
 
     # -----------------------------
-    # Tests (compiled JS)
+    # Tests
     # -----------------------------
     tst:
         desc: "Run tests against compiled JS"
@@ -94,6 +94,17 @@ tasks:
             - arch -arm64 node dist/ha_proxy/test-provider.js
             - arch -arm64 node dist/ha_learn/test-learn.js
             - echo "Tests completed successfully"
+
+    tst:ts:
+        desc: "Run Vitest test suite (TypeScript)"
+        cmds:
+            - echo "Running Vitest test suite..."
+            - arch -arm64 npx vitest --run
+
+    tst:vw:
+        desc: "Run Vitest in watch mode"
+        cmds:
+            - arch -arm64 npx vitest --watch
 
     # -----------------------------
     # Provider / Router checks
