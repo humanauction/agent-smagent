@@ -296,7 +296,7 @@ agent-smagent/
 │   │   ├── mockMessages.ts
 │   │   └── mockConfig.ts
 │   │
-│   ├── jest.config.js
+│   ├── vitest.config.js
 │   └── tsconfig.test.json
 │
 │

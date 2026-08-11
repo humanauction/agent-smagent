@@ -9,7 +9,7 @@
 
         "module": "esnext",
         "target": "esnext",
-        "types": ["node", "express"],
+        "types": ["node", "express", "vitest", "vitest/globals"],
         "lib": ["dom", "es2022"],
         "allowJs": true,
 
