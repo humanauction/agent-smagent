@@ -9,7 +9,7 @@ I found solutions like Headroom, started reading the code, didnt know why a bunc
 
 ## Roadmap
 
-1. MVP baseline (current)
+1.MVP baseline (current)
 
 - CCR Stage 1
 - reversible logging
@@ -18,21 +18,21 @@ I found solutions like Headroom, started reading the code, didnt know why a bunc
 - Docker + Compose
 - baseline token tests
 
-2. Learning engine
+    2.Learning engine
 
 - failure miner
 - CLAUDE.md / AGENTS.md writer
 - memory scoring
 - auto‑tuning
 
-3. UI
+    3.UI
 
 - dashboard
 - CCR visualiser
 - memory visualiser
 - provider routing visualiser
 
-4. Crush‑Tech Zone
+    4.Crush‑Tech Zone
 
 - entity dictionary compression
 - schema factoring
@@ -138,12 +138,21 @@ agent-smagent/
 │   ├── call/
 │   │   └── providers/
 │   │       ├── anthropic.ts
+│   │       ├── chainCache.ts
+│   │       ├── chainMemory.ts
+│   │       ├── chainRouter.ts
+│   │       ├── chainScoreDashboard.ts
+│   │       ├── chainScoreUI.ts
+│   │       ├── chainTelemetry.ts
+│   │       ├── errors.ts
 │   │       ├── google.ts
 │   │       ├── index.ts
 │   │       ├── interface.ts
 │   │       ├── local.ts
 │   │       ├── openai.ts
+│   │       ├── providerNormalize.ts
 │   │       ├── roles.ts
+│   │       ├── router.ts
 │   │       └── utils.ts
 │   ├── cache/
 │   │   ├── logs.ts
@@ -267,7 +276,36 @@ agent-smagent/
 │
 ├── dist/           # Bun-compiled JS output (tsc) + binary staging
 ├── docs/           # Documentation (pending expansion)
-├── tests/          # Test suite (Vitest recommended)
+│
+├── tests/          # Test suite (Vitest)
+│   ├── providers/
+│   │   ├── openai.test.ts
+│   │   ├── anthropic.test.ts
+│   │   ├── google.test.ts
+│   │   └── local.test.ts
+│   │
+│   ├── chain/
+│   │   ├── chainRouter.test.ts
+│   │   ├── chainTelemetry.test.ts
+│   │   └── chainScore.test.ts
+│   │
+│   ├── orchestrator/
+│   │   └── orchestrator.test.ts
+│   │
+│   ├── utils/
+│   │   ├── mockMessages.ts
+│   │   └── mockConfig.ts
+│   │
+│   ├── jest.config.js
+│   └── tsconfig.test.json
+│
+│
+├
+
+
+
+
+
 ├── smage/          # Binary output directory (CI artifacts)
 │   ├── __init__.py
 │   ├── config.ts
