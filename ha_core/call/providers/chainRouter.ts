@@ -87,7 +87,7 @@ export class ProviderChainRouter {
         }
 
         // Build chain order
-        this.chain = entries
+        const sorted = entries
             .map(([providerName, metrics]) => {
                 const safeMetrics = metrics ?? {};
                 const score = scoreProvider(safeMetrics, config.weights);
@@ -99,8 +99,20 @@ export class ProviderChainRouter {
 
                 return { providerName, score: boosted };
             })
-            .sort((a, b) => b.score - a.score)
-            .map((x) => x.providerName);
+            .sort((a, b) => b.score - a.score);
+
+        // selection telemetry
+        const top = sorted[0];
+        if (top) {
+            this.telemetry.record({
+                session,
+                provider: top.providerName,
+                stage: "selection",
+                score: top.score,
+            });
+        }
+
+        this.chain = sorted.map((x) => x.providerName);
     }
 
     private getAdapter(name: string): ProviderAdapter {
@@ -133,23 +145,37 @@ export class ProviderChainRouter {
 
             try {
                 const adapter = this.getAdapter(providerName);
-                const res = await adapter.call(req);
+                const raw = await adapter.call(req);
 
                 // Score + memory
                 const metrics = this.config.metrics[providerName] ?? {};
                 const score = scoreProvider(metrics, this.config.weights);
                 this.memory.remember(req.session, providerName, score);
 
+                // call telemetry
                 this.telemetry.record({
                     session: req.session,
                     provider: providerName,
                     stage: "call",
                     finalScore: score,
-                    response: res,
+                    response: raw,
                 });
 
-                logProviderIO(req.session, providerName, req, res);
-                return res;
+                // normalize step
+                const normalized = normalizeProviderResponse(
+                    raw.content,
+                    raw.role,
+                );
+
+                this.telemetry.record({
+                    session: req.session,
+                    provider: providerName,
+                    stage: "normalize",
+                    response: normalized,
+                });
+
+                logProviderIO(req.session, providerName, req, normalized);
+                return normalized;
             } catch (err: any) {
                 const pe: ProviderError = err?.type
                     ? err
@@ -207,7 +233,25 @@ export class ProviderChainRouter {
                     try {
                         const adapter = this.getAdapter(providerName);
                         const res = await adapter.call(req);
-                        return res;
+                        const normalized = normalizeProviderResponse(
+                            res.content,
+                            res.role,
+                        );
+
+                        this.telemetry.record({
+                            session: req.session,
+                            provider: providerName,
+                            stage: "normalize",
+                            response: normalized,
+                        });
+
+                        logProviderIO(
+                            req.session,
+                            providerName,
+                            req,
+                            normalized,
+                        );
+                        return normalized;
                     } catch {
                         // continue to next provider
                     }
@@ -222,7 +266,13 @@ export class ProviderChainRouter {
             stage: "failure",
             error: `provider chain failure: ${this.chain.join(" → ")}`,
         });
-
+        // normalization telemetry
+        this.telemetry.record({
+            session: req.session,
+            provider: "chain",
+            stage: "normalize",
+            response: `[provider chain failure: ${this.chain.join(" → ")}]`,
+        });
         return normalizeProviderResponse(
             `[provider chain failure: ${this.chain.join(" → ")}]`,
             "assistant",

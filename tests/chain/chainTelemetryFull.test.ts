@@ -1,8 +1,27 @@
 import { ProviderChainRouter } from "../../ha_core/call/providers/chainRouter.js";
-import { installMockProviders } from "../_setup/providerRegistry.js";
+import { providers } from "../../ha_core/call/providers/index.js";
+import { installFailureMocks } from "../_setup/providerRegistry.js";
 
 describe("ChainRouter Telemetry", () => {
-    beforeEach(() => installMockProviders());
+    beforeEach(() => {
+        installFailureMocks();
+
+        providers["openai"] = {
+            async call() {
+                throw new Error("forced failure");
+            },
+        };
+        providers["anthropic"] = {
+            async call() {
+                throw new Error("forced failure");
+            },
+        };
+        providers["google"] = {
+            async call() {
+                throw new Error("forced failure");
+            },
+        };
+    });
 
     it("records scoring, selection, call, and normalization events", async () => {
         const chain = new ProviderChainRouter(
@@ -10,6 +29,20 @@ describe("ChainRouter Telemetry", () => {
                 metrics: {
                     openai: {
                         speed: 1,
+                        cost: 0,
+                        depth: 0,
+                        quality: 0,
+                        reliability: 0,
+                    },
+                    anthropic: {
+                        speed: 0.5,
+                        cost: 0,
+                        depth: 0,
+                        quality: 0,
+                        reliability: 0,
+                    },
+                    google: {
+                        speed: 0.8,
                         cost: 0,
                         depth: 0,
                         quality: 0,

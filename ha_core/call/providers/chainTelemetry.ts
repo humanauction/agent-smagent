@@ -2,7 +2,15 @@
 export interface ChainTelemetryEvent {
     session: string;
     provider: string;
-    stage: "scoring" | "call" | "retry" | "fallback" | "cache_skip" | "failure";
+    stage:
+        | "scoring"
+        | "call"
+        | "retry"
+        | "fallback"
+        | "cache_skip"
+        | "failure"
+        | "normalize"
+        | "selection";
     score?: number;
     metrics?: Record<string, number>;
     weighted?: Record<string, number>;
