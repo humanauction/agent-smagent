@@ -1,42 +1,33 @@
 import { ProviderChainRouter } from "../../ha_core/call/providers/chainRouter.js";
-import { providers } from "../../ha_core/call/providers/index.js";
-import type {
-    ProviderRequest,
-    ProviderResponse,
-} from "../../ha_core/call/providers/interface.js";
-
-// Monkey-patch a provider to force retryable errors
-providers["openai"] = {
-    async call(req: ProviderRequest): Promise<ProviderResponse> {
-        throw {
-            type: "retryable",
-            provider: "openai",
-            model: req.model,
-            session: req.session,
-            message: "forced retry",
-            retryable: true,
-            retryCount: 0,
-            retryDelay: 10,
-        };
-    },
-};
-
-providers["anthropic"] = {
-    async call(req: ProviderRequest): Promise<ProviderResponse> {
-        return {
-            role: "assistant",
-            content: "anthropic fallback success",
-        };
-    },
-};
+import { installFallbackMocks } from "../_setup/providerRegistry.js";
 
 describe("ChainRouter Retry Logic", () => {
+    beforeEach(() => installFallbackMocks());
     it("retries a retryable provider and then falls through to next provider", async () => {
         const chain = new ProviderChainRouter(
             {
                 metrics: {
-                    openai: { speed: 1 },
-                    anthropic: { speed: 0.5 },
+                    openai: {
+                        speed: 1,
+                        cost: 0,
+                        depth: 0,
+                        quality: 0,
+                        reliability: 0,
+                    },
+                    anthropic: {
+                        speed: 0.5,
+                        cost: 0,
+                        depth: 0,
+                        quality: 0,
+                        reliability: 0,
+                    },
+                    google: {
+                        speed: 0.3,
+                        cost: 0,
+                        depth: 0,
+                        quality: 0,
+                        reliability: 0,
+                    },
                 },
                 weights: {
                     speed: 1,
@@ -56,6 +47,6 @@ describe("ChainRouter Retry Logic", () => {
             options: {},
         });
 
-        expect(res.content).toBe("anthropic fallback success");
+        expect(res.content).toContain("anthropic success");
     });
 });

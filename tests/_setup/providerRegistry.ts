@@ -4,7 +4,7 @@ import {
     mockFailure,
     mockRetry,
     mockFallback,
-} from "../_mocks/providers.test.js";
+} from "../_mocks/providers.js";
 
 // Default: everything succeeds
 export function installMockProviders() {
@@ -45,5 +45,11 @@ export function installOrchestratorFallbackMocks() {
 export function installFailureMocks() {
     providers["openai"] = mockFailure("openai");
     providers["anthropic"] = mockFailure("anthropic");
+    providers["google"] = mockFailure("google");
+}
+
+export function installSuccessMocks() {
+    providers["openai"] = mockSuccess("openai", "openai success");
+    providers["anthropic"] = mockSuccess("anthropic", "anthropic success");
     providers["google"] = mockSuccess("google", "google success");
 }

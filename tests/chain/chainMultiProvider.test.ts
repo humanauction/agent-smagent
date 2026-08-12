@@ -30,6 +30,13 @@ describe("ChainRouter Multi-Provider Selection", () => {
                         quality: 0,
                         reliability: 0,
                     },
+                    google: {
+                        speed: 0.3,
+                        cost: 0,
+                        depth: 0,
+                        quality: 0,
+                        reliability: 0,
+                    },
                 },
                 weights: {
                     speed: 1,

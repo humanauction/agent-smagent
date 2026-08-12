@@ -1,25 +1,9 @@
 import { SMAGEOrchestrator } from "../../ha_wrap/orchestrator.js";
-import { providers } from "../../ha_core/call/providers/index.js";
-import type {
-    ProviderRequest,
-    ProviderResponse,
-} from "../../ha_core/call/providers/interface.js";
-
-// Force primary provider to fail
-providers["openai"] = {
-    async call(req: ProviderRequest): Promise<ProviderResponse> {
-        throw new Error("forced orchestrator failure");
-    },
-};
-
-// Fallback provider succeeds
-providers["anthropic"] = {
-    async call(req: ProviderRequest): Promise<ProviderResponse> {
-        return { role: "assistant", content: "fallback success" };
-    },
-};
+import { installFallbackMocks } from "../_setup/providerRegistry.js";
 
 describe("SMAGEOrchestrator Fallback", () => {
+    beforeEach(() => installFallbackMocks());
+
     it("uses fallback provider when primary fails", async () => {
         const orch = new SMAGEOrchestrator({
             session: "test-session",
@@ -42,6 +26,6 @@ describe("SMAGEOrchestrator Fallback", () => {
             { role: "user", content: "hello" },
         ]);
 
-        expect(res.content).toBe("fallback success");
+        expect(res.content).toContain("anthropic success");
     });
 });
