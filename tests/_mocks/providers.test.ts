@@ -5,43 +5,40 @@ import type {
 } from "../../ha_core/call/providers/interface.js";
 
 // ---------------------------------------------
-// Base mock response
+// Utility
 // ---------------------------------------------
 export function mockResponse(content: string): ProviderResponse {
-    return {
-        role: "assistant",
-        content,
-    };
+    return { role: "assistant", content };
 }
 
 // ---------------------------------------------
 // Success provider
 // ---------------------------------------------
-export function mockSuccessProvider(name: string): ProviderAdapter {
-    return {
-        name,
-        async call(req: ProviderRequest): Promise<ProviderResponse> {
-            return mockResponse(`[${name}] success`);
-        },
-    };
-}
-
-// ---------------------------------------------
-// Failure provider (non-retryable)
-// ---------------------------------------------
-export function mockFailureProvider(name: string): ProviderAdapter {
+export function mockSuccess(name: string, content?: string): ProviderAdapter {
     return {
         name,
         async call(): Promise<ProviderResponse> {
-            throw new Error(`[${name}] forced failure`);
+            return mockResponse(content ?? `[${name}] success`);
         },
     };
 }
 
 // ---------------------------------------------
-// Retryable provider
+// Forced failure provider
 // ---------------------------------------------
-export function mockRetryableProvider(name: string): ProviderAdapter {
+export function mockFailure(name: string): ProviderAdapter {
+    return {
+        name,
+        async call(): Promise<ProviderResponse> {
+            throw new Error(`${name} forced failure`);
+        },
+    };
+}
+
+// ---------------------------------------------
+// Forced retry provider
+// ---------------------------------------------
+export function mockRetry(name: string): ProviderAdapter {
     return {
         name,
         async call(req: ProviderRequest): Promise<ProviderResponse> {
@@ -50,7 +47,7 @@ export function mockRetryableProvider(name: string): ProviderAdapter {
                 provider: name,
                 model: req.model,
                 session: req.session,
-                message: `[${name}] forced retry`,
+                message: `${name} forced retry`,
                 retryable: true,
                 retryCount: 0,
                 retryDelay: 10,
@@ -60,29 +57,26 @@ export function mockRetryableProvider(name: string): ProviderAdapter {
 }
 
 // ---------------------------------------------
-// Slow provider (simulate latency)
+// Forced fallback provider
 // ---------------------------------------------
-export function mockSlowProvider(
-    name: string,
-    delayMs: number,
-): ProviderAdapter {
+export function mockFallback(name: string): ProviderAdapter {
     return {
         name,
-        async call(req: ProviderRequest): Promise<ProviderResponse> {
-            await new Promise((r) => setTimeout(r, delayMs));
-            return mockResponse(`[${name}] slow success`);
+        async call(): Promise<ProviderResponse> {
+            return mockResponse("fallback success");
         },
     };
 }
 
 // ---------------------------------------------
-// Deep provider (simulate high-quality output)
+// Slow provider
 // ---------------------------------------------
-export function mockDeepProvider(name: string): ProviderAdapter {
+export function mockSlow(name: string, delayMs: number): ProviderAdapter {
     return {
         name,
         async call(): Promise<ProviderResponse> {
-            return mockResponse(`[${name}] deep reasoning output`);
+            await new Promise((r) => setTimeout(r, delayMs));
+            return mockResponse(`[${name}] slow success`);
         },
     };
 }

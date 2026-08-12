@@ -1,37 +1,43 @@
 import { providers } from "../../ha_core/call/providers/index.js";
 import {
-    mockSuccessProvider,
-    mockFailureProvider,
-    mockRetryableProvider,
-    mockSlowProvider,
-    mockDeepProvider,
-} from "../_mocks/providers.js";
+    mockSuccess,
+    mockFailure,
+    mockRetry,
+    mockFallback,
+} from "../_mocks/providers.test.js";
 
-// Reset all providers before each test suite
+// Default: everything succeeds
 export function installMockProviders() {
-    providers["openai"] = mockSuccessProvider("openai");
-    providers["anthropic"] = mockSuccessProvider("anthropic");
-    providers["google"] = mockSuccessProvider("google");
-    providers["local"] = mockSuccessProvider("local");
+    providers["openai"] = mockSuccess("openai");
+    providers["anthropic"] = mockSuccess("anthropic");
+    providers["google"] = mockSuccess("google");
+    providers["local"] = mockSuccess("local");
 }
 
-// Optional: install special-case mocks
+// Fallback tests
+export function installFallbackMocks() {
+    providers["openai"] = mockFailure("openai");
+    providers["anthropic"] = mockSuccess("anthropic", "anthropic success");
+}
+
+// Multi-provider selection tests
+export function installMultiProviderMocks() {
+    providers["openai"] = mockSuccess("openai", "[openai] success");
+    providers["anthropic"] = mockSuccess("anthropic", "[anthropic] success");
+    providers["google"] = mockSuccess("google", "[google] success");
+}
+
+// Retry tests
 export function installRetryMocks() {
-    providers["openai"] = mockRetryableProvider("openai");
-    providers["anthropic"] = mockSuccessProvider("anthropic");
+    providers["openai"] = mockRetry("openai");
+    providers["anthropic"] = mockSuccess(
+        "anthropic",
+        "anthropic fallback success",
+    );
 }
 
-export function installFailureMocks() {
-    providers["openai"] = mockFailureProvider("openai");
-    providers["anthropic"] = mockSuccessProvider("anthropic");
-}
-
-export function installSlowMocks() {
-    providers["openai"] = mockSlowProvider("openai", 200);
-    providers["anthropic"] = mockSuccessProvider("anthropic");
-}
-
-export function installDeepMocks() {
-    providers["openai"] = mockDeepProvider("openai");
-    providers["anthropic"] = mockSuccessProvider("anthropic");
+// Orchestrator fallback tests
+export function installOrchestratorFallbackMocks() {
+    providers["openai"] = mockFailure("openai");
+    providers["anthropic"] = mockFallback("anthropic");
 }
