@@ -4,11 +4,10 @@ export default defineConfig({
     test: {
         globals: true,
         environment: "node",
+        setupFiles: ["./tests/setup.ts"],
+        include: ["tests/**/*.test.ts"], // Only run tests in /tests
 
-        // Only run tests in /tests
-        include: ["tests/**/*.test.ts"],
-
-        // Exclude dist and internal test files
+        // Excludes dist, internal test files
         exclude: [
             "**/*.integration.test.ts", // stage 2 integration test. npx vitest --run --include tests/providers/openai.integration.test.ts
             "dist",
