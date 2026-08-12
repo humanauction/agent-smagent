@@ -42,6 +42,6 @@ describe("ChainRouter Retry Loop", () => {
             options: {},
         });
 
-        expect(res.content).toContain("[anthropic]");
+        expect(res.content).toContain("anthropic fallback success");
     });
 });

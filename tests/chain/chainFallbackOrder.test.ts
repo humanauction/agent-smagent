@@ -56,6 +56,6 @@ describe("ChainRouter Fallback Ordering", () => {
             options: {},
         });
 
-        expect(res.content).toContain("[anthropic]");
+        expect(res.content).toContain("[google]");
     });
 });

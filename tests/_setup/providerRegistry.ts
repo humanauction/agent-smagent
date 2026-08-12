@@ -41,3 +41,9 @@ export function installOrchestratorFallbackMocks() {
     providers["openai"] = mockFailure("openai");
     providers["anthropic"] = mockFallback("anthropic");
 }
+
+export function installFailureMocks() {
+    providers["openai"] = mockFailure("openai");
+    providers["anthropic"] = mockFailure("anthropic");
+    providers["google"] = mockSuccess("google", "google success");
+}

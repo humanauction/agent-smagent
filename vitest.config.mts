@@ -19,6 +19,8 @@ export default defineConfig({
             "ha_docs/**/*",
             "ha_learn/**/*",
             "smage/**/*",
+            "tests/_mocks",
+            "tests/_setup",
         ],
     },
 });

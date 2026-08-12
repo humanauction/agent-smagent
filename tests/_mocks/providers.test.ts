@@ -67,16 +67,3 @@ export function mockFallback(name: string): ProviderAdapter {
         },
     };
 }
-
-// ---------------------------------------------
-// Slow provider
-// ---------------------------------------------
-export function mockSlow(name: string, delayMs: number): ProviderAdapter {
-    return {
-        name,
-        async call(): Promise<ProviderResponse> {
-            await new Promise((r) => setTimeout(r, delayMs));
-            return mockResponse(`[${name}] slow success`);
-        },
-    };
-}
