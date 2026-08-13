@@ -18,6 +18,14 @@ export class ProviderChainCache {
         });
     }
 
+    isHit(provider: string): boolean {
+        const entry = this.cache.get(provider);
+        if (!entry) return false;
+
+        const age = Date.now() - entry.lastFailure;
+        return age < this.ttl;
+    }
+
     isCached(provider: string): boolean {
         const entry = this.cache.get(provider);
         if (!entry) return false;
@@ -28,5 +36,18 @@ export class ProviderChainCache {
 
     getReason(provider: string): string | null {
         return this.cache.get(provider)?.reason ?? null;
+    }
+
+    get(provider: string): ChainCacheEntry | null {
+        const entry = this.cache.get(provider);
+        if (!entry) return null;
+
+        const age = Date.now() - entry.lastFailure;
+        if (age < this.ttl) {
+            return entry;
+        } else {
+            this.cache.delete(provider);
+            return null;
+        }
     }
 }

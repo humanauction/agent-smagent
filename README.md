@@ -491,30 +491,31 @@ humanAuction stats
 
 ## Current Status
 
-### 1. ha_core
+1. ha_core
 
-- ✔ functional
-- ⬆ CCR internals in progress
+- ✔ ProviderChainRouter stable
+- ✔ Telemetry stable (Stage 2 complete)
+- ⬆ CCR internals in progress (Stage 3 next)
 
-### 2. Message model
+2. Message Model
 
 - ✔ Stable (SMAGEMessage, SMAGEOptions, roles, meta)
 
-### 3. Cache
+3. Cache
 
 - ✔ cache/store.ts
 - ✔ cache/log.ts
-- ✔ Reversible logging API unified
+- ✔ reversible logging unified
 - ⬆ multi‑backend pending
 
-### 4. CCR pipeline — Current Stage
+4. CCR Pipeline — Current Stage
 
-- Implementing:
+- Implementing (in order):
 - ⬆ anchors
 - ⬆ dedupe
-- ⬆ relevance
-- ⬆ priority
-- ⬆ window
+- ⬆ relevance scoring
+- ⬆ priority tiers
+- ⬆ window shaping
 - ⬆ reconstruction
 - ⬆ payload compression
 - ⬆ memory injection
@@ -522,42 +523,41 @@ humanAuction stats
 - ⬆ output reduction
 - ✔ reversible logging at each stage
 
-### 5. compress() Python + TS
+5. compress() Python + TS
 
 - ✔ Implemented (TS + Python entrypoints exist)
 
-### 6. Provider adapters
+6. Provider Adapters
 
 - ✔ OpenAI, Anthropic, Google, Local
 - ✔ unified
 - ✔ logging
 - ✔ shape‑correct
 
-### 7. Reversible logging
+7. Reversible Logging
 
-- ✔ Fully integrated
 - ✔ providers
 - ✔ CCR
 - ✔ MCP
 - ✔ learning engine
 - ✔ proxy
 
-### 8. ha_proxy
+8. ha_proxy
 
-- ✔ HTTP server exists
-- ✔ Provider routing exists
+- ✔ HTTP server
+- ✔ provider routing
 - ✔ HTML views
-- ⬆ CCR improvements pending
+- ⬆ CCR integration pending
 
-### 9. Provider adapters (proxy layer)
-
-- ✔ wired
-
-### 10. Reversible logging (proxy layer)
+9. Provider adapters (proxy layer)
 
 - ✔ wired
 
-### 11. ha_mcp
+10. Reversible logging (proxy layer)
+
+- ✔ wired
+
+11. ha_mcp
 
 - ✔ compress
 - ✔ retrieve
@@ -568,25 +568,25 @@ humanAuction stats
 - ✔ JSON‑RPC dispatch
 - ✔ stable dist execution
 
-### 12. ha_wrap (agent wrappers)
+12. ha_wrap (agent wrappers)
 
 - ✔ SMAGEAgent
 - ⬆ Next stage after CCR
 
-### 13. ha_learn
+13. ha_learn
 
 - ✔ failure miner
-- ⬆ CLAUDE.md / AGENTS.md writer pending
-- ⬆ signal weighting pending
-- ⬆ session scoring pending
-- ⬆ auto‑tuning pending
+- ⬆ CLAUDE.md / AGENTS.md writer
+- ⬆ signal weighting
+- ⬆ session scoring
+- ⬆ auto‑tuning
 
-### 14. ha_cli
+14. ha_cli
 
 - ✔ CLI exists
 - ⬆ Expansion after wrappers + learning
 
-### 15. docs
+15. docs
 
 - Pending:
 - ⬆ Architecture diagrams

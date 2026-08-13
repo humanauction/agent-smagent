@@ -3,21 +3,36 @@ export interface ChainTelemetryEvent {
     session: string;
     provider: string;
     stage:
+        | "adapter"
+        | "adapter_error"
+        | "agent_dispatch"
+        | "agent_result"
         | "scoring"
         | "call"
-        | "retry"
-        | "fallback"
+        | "cache_hit"
         | "cache_skip"
         | "failure"
+        | "fallback"
+        | "finalize"
         | "normalize"
+        | "pipeline_start"
+        | "pipeline_end"
+        | "retry"
+        | "routing"
         | "selection";
+
+    agentId?: string;
+    chain?: string;
     score?: number;
+    scores?: Record<string, number>;
     metrics?: Record<string, number>;
     weighted?: Record<string, number>;
     memoryBoost?: number;
     finalScore?: number;
     cached?: boolean;
     error?: string;
+    messageCount?: number;
+    resultSize?: number;
     retryCount?: number;
     retryDelay?: number;
     fallbackTo?: string;

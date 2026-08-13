@@ -59,19 +59,18 @@ export class ProviderChainRouter {
         const entries = Object.entries(config.metrics);
         const mem = this.memory.recall(session);
 
-        // Build scoring debug + telemetry
+        // scoring debug
         const debug = ChainScoringUI.build(
             config,
             session,
             this.cache,
             this.memory,
         );
-        // CLI output
-        console.log(ChainScoringUI.print(debug));
-        // HTML output
-        const html = ChainScoreDashboard.html(debug);
-        console.log(html);
 
+        console.log(ChainScoringUI.print(debug));
+        console.log(ChainScoreDashboard.html(debug));
+
+        // scoring telemetry
         for (const entry of debug) {
             this.telemetry.record({
                 session,
@@ -86,7 +85,7 @@ export class ProviderChainRouter {
             });
         }
 
-        // Build chain order
+        // build chain order
         const sorted = entries
             .map(([providerName, metrics]) => {
                 const safeMetrics = metrics ?? {};
@@ -123,7 +122,18 @@ export class ProviderChainRouter {
 
     async call(req: ProviderRequest): Promise<ProviderResponse> {
         for (const providerName of this.chain) {
-            // Cache skip
+            // cache hit
+            if (this.cache.isHit(providerName)) {
+                this.telemetry.record({
+                    session: req.session,
+                    provider: providerName,
+                    stage: "cache_hit",
+                    cached: true,
+                    response: this.cache.get(providerName),
+                });
+            }
+
+            // cache skip
             if (this.cache.isCached(providerName)) {
                 this.telemetry.record({
                     session: req.session,
@@ -136,7 +146,14 @@ export class ProviderChainRouter {
                 continue;
             }
 
-            // Attempt call
+            // adapter stage
+            this.telemetry.record({
+                session: req.session,
+                provider: providerName,
+                stage: "adapter",
+            });
+
+            // call attempt
             this.telemetry.record({
                 session: req.session,
                 provider: providerName,
@@ -147,10 +164,18 @@ export class ProviderChainRouter {
                 const adapter = this.getAdapter(providerName);
                 const raw = await adapter.call(req);
 
-                // Score + memory
+                // score + memory
                 const metrics = this.config.metrics[providerName] ?? {};
                 const score = scoreProvider(metrics, this.config.weights);
                 this.memory.remember(req.session, providerName, score);
+
+                // routing telemetry
+                this.telemetry.record({
+                    session: req.session,
+                    provider: providerName,
+                    stage: "routing",
+                    metrics,
+                });
 
                 // call telemetry
                 this.telemetry.record({
@@ -161,7 +186,7 @@ export class ProviderChainRouter {
                     response: raw,
                 });
 
-                // normalize step
+                // normalize
                 const normalized = normalizeProviderResponse(
                     raw.content,
                     raw.role,
@@ -177,6 +202,14 @@ export class ProviderChainRouter {
                 logProviderIO(req.session, providerName, req, normalized);
                 return normalized;
             } catch (err: any) {
+                // adapter error
+                this.telemetry.record({
+                    session: req.session,
+                    provider: providerName,
+                    stage: "adapter_error",
+                    error: err?.message ?? String(err),
+                });
+
                 const pe: ProviderError = err?.type
                     ? err
                     : providerError(
@@ -188,7 +221,7 @@ export class ProviderChainRouter {
                           err,
                       );
 
-                // Cache failure
+                // cache failure
                 this.cache.markFailure(providerName, pe.message);
 
                 this.telemetry.record({
@@ -205,7 +238,15 @@ export class ProviderChainRouter {
                     content: `[chain provider error: ${pe.type} - ${pe.message}]`,
                 });
 
-                // Retry logic
+                // fallback
+                this.telemetry.record({
+                    session: req.session,
+                    provider: providerName,
+                    stage: "fallback",
+                    error: pe.message,
+                });
+
+                // retry logic
                 if (pe.retryable && (pe.retryCount ?? 0) < 2) {
                     const retryErr = providerError(
                         pe.type,
@@ -259,20 +300,30 @@ export class ProviderChainRouter {
             }
         }
 
-        // Final failure telemetry
+        // final failure
         this.telemetry.record({
             session: req.session,
             provider: "chain",
             stage: "failure",
             error: `provider chain failure: ${this.chain.join(" → ")}`,
         });
-        // normalization telemetry
+
+        // normalize final
         this.telemetry.record({
             session: req.session,
             provider: "chain",
             stage: "normalize",
             response: `[provider chain failure: ${this.chain.join(" → ")}]`,
         });
+
+        // finalize
+        this.telemetry.record({
+            session: req.session,
+            provider: "chain",
+            stage: "finalize",
+            chain: this.chain.join(" → "),
+        });
+
         return normalizeProviderResponse(
             `[provider chain failure: ${this.chain.join(" → ")}]`,
             "assistant",

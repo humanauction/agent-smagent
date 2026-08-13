@@ -9,6 +9,7 @@ import { MemoryRouter } from "./memoryRouting.js";
 import { ProviderReliabilityTracker } from "./providerReliability.js";
 import { ProviderRouter } from "../ha_core/call/providers/router.js";
 import { ProviderChainRouter } from "../ha_core/call/providers/chainRouter.js";
+import { ProviderChainTelemetry } from "../ha_core/call/providers/chainTelemetry.js";
 
 export interface OrchestratorConfig {
     session: string;
@@ -42,6 +43,9 @@ export class SMAGEOrchestrator {
     private tracker = new ProviderReliabilityTracker();
     private providerRouter: ProviderRouter;
 
+    // Orchestrator-level telemetry
+    private telemetry = new ProviderChainTelemetry();
+
     constructor(config: OrchestratorConfig) {
         if (config.agents.length === 0) {
             throw new Error("Orchestrator requires at least one agent.");
@@ -51,7 +55,6 @@ export class SMAGEOrchestrator {
         this.single = new SMAGEAgent();
         this.multi = new SMAGEMultiAgent(config.agents);
 
-        // initialize router with primary + fallback
         const primary = config.agents[0]?.provider ?? "openai";
         const fallbackProvider =
             typeof config.agents[0]?.options?.fallback === "string"
@@ -63,19 +66,42 @@ export class SMAGEOrchestrator {
 
     async orchestrate(messages: SMAGEMessage[]): Promise<OrchestratorResult> {
         const { session, strategy, agents } = this.config;
+
         const lastUser = [...messages].reverse().find((m) => m.role === "user");
         const userQuery = lastUser?.content ?? "";
+
         const learnedAnchors = learn.scoreRelevance(session, userQuery);
         const routing = this.router.decide({ session, messages });
         const effectiveStrategy = routing.strategy;
 
-        // Build reliability-augmented provider list
+        // reliability-augmented provider list
         const providersWithReliability = agents.map((a) => {
             const snap = this.tracker.snapshot(a.id);
             return {
                 ...a,
                 reliability: snap.reliability,
             };
+        });
+
+        // orchestrator scoring telemetry
+        const providerScoresRecord: Record<string, number> = {};
+        for (const p of providersWithReliability) {
+            providerScoresRecord[p.id] = p.reliability;
+        }
+
+        this.telemetry.record({
+            session,
+            provider: "orchestrator",
+            stage: "scoring",
+            scores: providerScoresRecord,
+        });
+
+        // pipeline_start telemetry (CCR placeholder)
+        this.telemetry.record({
+            session,
+            provider: "orchestrator",
+            stage: "pipeline_start",
+            messageCount: messages.length,
         });
 
         // AUTO STRATEGY
@@ -90,6 +116,13 @@ export class SMAGEOrchestrator {
             if (!chosen) {
                 throw new Error("Orchestrator: selected agent undefined.");
             }
+
+            // orchestrator selection telemetry
+            this.telemetry.record({
+                session,
+                stage: "selection",
+                provider: chosen.provider,
+            });
 
             try {
                 const start = Date.now();
@@ -117,6 +150,14 @@ export class SMAGEOrchestrator {
                         timestamp: Date.now(),
                     });
                 }
+
+                // pipeline_end telemetry (CCR placeholder)
+                this.telemetry.record({
+                    session,
+                    provider: "orchestrator",
+                    stage: "pipeline_end",
+                    resultSize: result.content.length,
+                });
 
                 return result;
             } catch (err) {
@@ -161,6 +202,13 @@ export class SMAGEOrchestrator {
         if (effectiveStrategy === "single") {
             const primary = agents[0];
             if (!primary) throw new Error("Orchestrator: no agent configured.");
+
+            this.telemetry.record({
+                session,
+                stage: "selection",
+                provider: primary.provider,
+            });
+
             return this.callAgent(primary, messages);
         }
 
@@ -193,11 +241,13 @@ export class SMAGEOrchestrator {
         agent: OrchestratorConfig["agents"][0],
         messages: SMAGEMessage[],
     ): Promise<OrchestratorResult> {
-        const primary = agent.provider ?? "openai";
-        const fallbackProvider =
-            typeof agent.options?.fallback === "string"
-                ? agent.options.fallback
-                : "anthropic";
+        // agent dispatch telemetry
+        this.telemetry.record({
+            session: this.config.session,
+            stage: "agent_dispatch",
+            provider: agent.provider,
+            agentId: agent.id,
+        });
 
         const chain = new ProviderChainRouter(
             {
@@ -250,6 +300,15 @@ export class SMAGEOrchestrator {
             model: agent.model,
             messages,
             options: agent.options ?? {},
+        });
+
+        // agent result telemetry
+        this.telemetry.record({
+            session: this.config.session,
+            stage: "agent_result",
+            provider: agent.provider,
+            agentId: agent.id,
+            response: res,
         });
 
         return {
