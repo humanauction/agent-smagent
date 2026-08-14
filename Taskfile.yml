@@ -87,12 +87,15 @@ tasks:
     # Tests
     # -----------------------------
     tst:
-        desc: "Run tests against compiled JS"
+        desc: "Run all tests (JS + TS)"
         cmds:
             - task bd
+            - echo "Running compiled JS tests..."
             - arch -arm64 node dist/ha_core/transform/anchor.test.js
             - arch -arm64 node dist/ha_proxy/test-provider.js
             - arch -arm64 node dist/ha_learn/test-learn.js
+            - echo "Running Vitest TS suite..."
+            - arch -arm64 npx vitest --run
             - echo "Tests completed successfully"
 
     tst:ts:
@@ -100,6 +103,17 @@ tasks:
         cmds:
             - echo "Running Vitest test suite..."
             - arch -arm64 npx vitest --run
+
+    tst:ccr:
+        desc: "Run only CCRPipeline tests"
+        cmds:
+            - echo "Running CCRPipeline tests..."
+            - arch -arm64 npx vitest --run --reporter=verbose tests/transform/ccr.pipeline.test.ts
+
+    tst:ccrw:
+        desc: "Watch CCRPipeline tests"
+        cmds:
+            - arch -arm64 npx vitest --watch tests/transform/ccr.pipeline.test.ts
 
     tst:vw:
         desc: "Run Vitest in watch mode"
