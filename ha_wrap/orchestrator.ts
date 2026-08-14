@@ -86,7 +86,7 @@ export class SMAGEOrchestrator {
         // orchestrator scoring telemetry
         const providerScoresRecord: Record<string, number> = {};
         for (const p of providersWithReliability) {
-            providerScoresRecord[p.id] = p.reliability;
+            providerScoresRecord[p.provider] = p.reliability;
         }
 
         this.telemetry.record({
