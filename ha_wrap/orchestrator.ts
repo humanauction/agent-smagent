@@ -10,6 +10,7 @@ import { ProviderReliabilityTracker } from "./providerReliability.js";
 import { ProviderRouter } from "../ha_core/call/providers/router.js";
 import { ProviderChainRouter } from "../ha_core/call/providers/chainRouter.js";
 import { ProviderChainTelemetry } from "../ha_core/call/providers/chainTelemetry.js";
+import { CCRPipeline } from "../ha_core/transform/ccr/pipeline.js";
 
 export interface OrchestratorConfig {
     session: string;
@@ -295,10 +296,17 @@ export class SMAGEOrchestrator {
             this.config.session,
         );
 
+        const ccr = new CCRPipeline(this.telemetry);
+        const shaped = await ccr.run(
+            this.config.session,
+            messages,
+            agent.options ?? {},
+        );
+
         const res = await chain.call({
             session: this.config.session,
             model: agent.model,
-            messages,
+            messages: shaped.compressed,
             options: agent.options ?? {},
         });
 
