@@ -3,6 +3,8 @@ import { CCRPipeline } from "../../ha_core/transform/ccr/pipeline.js";
 import { ProviderChainTelemetry } from "../../ha_core/call/providers/chainTelemetry.js";
 import type { SMAGEMessage } from "../../ha_core/index.js";
 
+// this file contains the test suite for the CCRPipeline end-to-end processing of messages through all pipeline stages.
+
 function msg(
     role: "system" | "user" | "assistant" | "tool",
     content: string,

@@ -48,3 +48,7 @@ docker-compose.override.yml
 
 # GitHub agents
 .github/agents/askTutor.agent.md
+
+# helper scripts
+scripts/treeGen
+project-tree.txt
