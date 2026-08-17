@@ -141,6 +141,12 @@ tasks:
         cmds:
             - arch -arm64 node dist/ha_proxy/server.js
 
+    proxy:ccr:
+        desc: "Start proxy server and open CCR dashboard"
+        cmds:
+            - arch -arm64 node dist/ha_proxy/server.js
+            - echo "Open http://localhost:3000/ccr"
+
     mcp:
         desc: "Start MCP server (dist)"
         cmds:
