@@ -11,8 +11,6 @@ import { ProviderRouter } from "../ha_core/call/providers/router.js";
 import { ProviderChainRouter } from "../ha_core/call/providers/chainRouter.js";
 import { ProviderChainTelemetry } from "../ha_core/call/providers/chainTelemetry.js";
 import { CCRPipeline } from "../ha_core/transform/ccr/pipeline.js";
-import { reversibleLog } from "../ha_core/cache/log.js";
-import { dedupeMessages } from "../ha_core/transform/dedupe.js";
 
 export interface OrchestratorConfig {
     session: string;
@@ -34,7 +32,8 @@ export interface OrchestratorResult {
     role: string;
     content: string;
 }
-
+// Orchestrator-level telemetry
+export const orchestratorTelemetry = new ProviderChainTelemetry();
 export class SMAGEOrchestrator {
     private config: OrchestratorConfig;
     private single: SMAGEAgent;
@@ -46,9 +45,7 @@ export class SMAGEOrchestrator {
     private tracker = new ProviderReliabilityTracker();
     private providerRouter: ProviderRouter;
     private deduped: SMAGEMessage[] = []; // Store deduped messages for telemetry
-
-    // Orchestrator-level telemetry
-    private telemetry = new ProviderChainTelemetry();
+    private telemetry: ProviderChainTelemetry;
 
     constructor(config: OrchestratorConfig) {
         if (config.agents.length === 0) {
@@ -58,6 +55,7 @@ export class SMAGEOrchestrator {
         this.config = config;
         this.single = new SMAGEAgent();
         this.multi = new SMAGEMultiAgent(config.agents);
+        this.telemetry = orchestratorTelemetry;
 
         const primary = config.agents[0]?.provider ?? "openai";
         const fallbackProvider =

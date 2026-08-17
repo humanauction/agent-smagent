@@ -15,7 +15,7 @@ import { renderCCR } from "./html/ccr.js";
 import { renderProvider } from "./html/provider.js";
 import { renderConfig } from "./html/config.js";
 import { renderHealth } from "./html/health.js";
-import { ProviderChainTelemetry } from "../../ha_core/call/providers/chainTelemetry.js";
+import { orchestratorTelemetry } from "../../ha_wrap/orchestrator.js";
 
 // this file defines the dashboard router for the Express app. It provides endpoints for fetching wrapper anchors, memory, CCR, provider responses, and wrapper config.
 
@@ -181,10 +181,7 @@ dashboardRouter.get("/:wrapper/memory/html", (req, res) => {
 // GET /dashboard/:wrapper/ccr/html
 dashboardRouter.get("/:wrapper/ccr/html", async (req, res) => {
     const session = "dashboard-session";
-    // CCR telemetry from the provider chain telemetry system
-    const telemetry = new ProviderChainTelemetry();
-    const events = telemetry.getSession(session);
-
+    const events = orchestratorTelemetry.getSession(session);
     const metrics = events.filter((e: any) => e.stage === "metrics");
     const timeline = events;
 
