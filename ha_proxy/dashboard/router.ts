@@ -181,6 +181,15 @@ dashboardRouter.get("/:wrapper/memory/html", (req, res) => {
 // GET /dashboard/:wrapper/ccr/html
 dashboardRouter.get("/:wrapper/ccr/html", async (req, res) => {
     const session = "dashboard-session";
+    orchestratorTelemetry.clearSession(session); // clear old Telemetry
+    const wrapper = getProviderWrapper(req.params.wrapper as any);
+    const prompt = req.query.prompt?.toString() ?? "test prompt";
+    const anchors = wrapper["prepareWrapperAnchors"]();
+    const merged: SMAGEMessage[] = [...anchors, userMsg(prompt)];
+
+    // This runs CCRPipeline internally and populates orchestratorTelemetry
+    await wrapper.debugProvider(session, merged, {});
+
     const events = orchestratorTelemetry.getSession(session);
     const metrics = events.filter((e: any) => e.stage === "metrics");
     const timeline = events;
