@@ -45,6 +45,12 @@ tasks:
         cmds:
             - task help
 
+    tree:
+        desc: "Generate project file tree"
+        cmds:
+            - bash scripts/treeGen
+            - echo "Project file tree generated in project-tree.txt"
+
     # -----------------------------
     # Python environment management
     # -----------------------------
