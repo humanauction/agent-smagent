@@ -2,6 +2,8 @@
 export interface ChainTelemetryEvent {
     session: string;
     provider: string;
+
+    // Extended union: includes ALL existing provider-chain stages + ALL CCR stages
     stage:
         | "adapter"
         | "adapter_error"
@@ -11,18 +13,29 @@ export interface ChainTelemetryEvent {
         | "call"
         | "cache_hit"
         | "cache_skip"
+        | "dedupe"
         | "failure"
         | "fallback"
         | "finalize"
+        | "metrics"
         | "normalize"
         | "pipeline_start"
         | "pipeline_end"
         | "retry"
         | "routing"
-        | "selection";
+        | "selection"
+        // --- CCR pipeline stages ---
+        | "anchor"
+        | "relevance"
+        | "priority"
+        | "window"
+        | "reconstruct"
+        | "compress"
+        | "reduce";
 
     agentId?: string;
     chain?: string;
+    counts?: Record<"raw" | "deduped" | "window" | "compressed", number>;
     score?: number;
     scores?: Record<string, number>;
     metrics?: Record<string, number>;
@@ -39,6 +52,7 @@ export interface ChainTelemetryEvent {
     request?: unknown;
     response?: unknown;
     timestamp?: number;
+    tokens?: Record<"raw" | "window" | "compressed" | "reduced", number>;
 }
 
 export class ProviderChainTelemetry {

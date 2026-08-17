@@ -47,25 +47,56 @@ export class CCRPipeline {
 
         // 1. ANCHOR EXTRACTION
         const anchor = extractAnchor(messages);
+        this.telemetry.record({
+            session,
+            provider: "ccr",
+            stage: "anchor",
+            messageCount: messages.length,
+        });
 
         // 2. DEDUPE (operates on full message list)
         const deduped = dedupeMessages(messages);
-
+        this.telemetry.record({
+            session,
+            provider: "ccr",
+            stage: "dedupe",
+            messageCount: deduped.length,
+        });
         // 3. RELEVANCE SCORING (per-message)
         const scored = deduped.map((m, i) =>
             scoreRelevance(m, i, deduped.length),
         );
-
+        this.telemetry.record({
+            session,
+            provider: "ccr",
+            stage: "relevance",
+            messageCount: deduped.length,
+        });
         // 4. PRIORITY ASSIGNMENT (batch)
         const prioritized = assignPriorities(deduped);
-
+        this.telemetry.record({
+            session,
+            provider: "ccr",
+            stage: "priority",
+            messageCount: deduped.length,
+        });
         // 5. CONTEXT WINDOW (requires maxTokens)
         const MAX_TOKENS = 4096;
         const windowed = applyContextWindow(prioritized, MAX_TOKENS);
-
+        this.telemetry.record({
+            session,
+            provider: "ccr",
+            stage: "window",
+            messageCount: windowed.length,
+        });
         // 6. RECONSTRUCT (requires anchor)
         const reconstructed = reconstruct(windowed, anchor);
-
+        this.telemetry.record({
+            session,
+            provider: "ccr",
+            stage: "reconstruct",
+            messageCount: reconstructed.length,
+        });
         // 7. PAYLOAD COMPRESSION (async)
         const compressed = await applyPayloadCompression(
             reconstructed,
@@ -90,10 +121,43 @@ export class CCRPipeline {
                 "CCR pipeline: no messages available for reduction. should never actually fire. happy now, ts? FFS tho...",
             );
         }
+        this.telemetry.record({
+            session,
+            provider: "ccr",
+            stage: "compress",
+            messageCount: compressed.length,
+        });
         // 8. OUTPUT REDUCTION (single message)
         const reduced = reduceOutput(
             pickLastMsg(compressed, reconstructed, messages),
         );
+        this.telemetry.record({
+            session,
+            provider: "ccr",
+            stage: "reduce",
+            messageCount: 1,
+        });
+
+        this.telemetry.record({
+            session,
+            provider: "ccr",
+            stage: "metrics",
+            tokens: {
+                raw: messages.reduce((n, m) => n + m.content.length, 0),
+                window: windowed.reduce((n, m) => n + m.content.length, 0),
+                compressed: compressed.reduce(
+                    (n, m) => n + m.content.length,
+                    0,
+                ),
+                reduced: reduced.content.length,
+            },
+            counts: {
+                raw: messages.length,
+                deduped: deduped.length,
+                window: windowed.length,
+                compressed: compressed.length,
+            },
+        });
 
         // CCR end
         this.telemetry.record({

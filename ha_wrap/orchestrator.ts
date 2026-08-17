@@ -11,6 +11,8 @@ import { ProviderRouter } from "../ha_core/call/providers/router.js";
 import { ProviderChainRouter } from "../ha_core/call/providers/chainRouter.js";
 import { ProviderChainTelemetry } from "../ha_core/call/providers/chainTelemetry.js";
 import { CCRPipeline } from "../ha_core/transform/ccr/pipeline.js";
+import { reversibleLog } from "../ha_core/cache/log.js";
+import { dedupeMessages } from "../ha_core/transform/dedupe.js";
 
 export interface OrchestratorConfig {
     session: string;
@@ -43,6 +45,7 @@ export class SMAGEOrchestrator {
     private router = new MemoryRouter();
     private tracker = new ProviderReliabilityTracker();
     private providerRouter: ProviderRouter;
+    private deduped: SMAGEMessage[] = []; // Store deduped messages for telemetry
 
     // Orchestrator-level telemetry
     private telemetry = new ProviderChainTelemetry();
@@ -103,6 +106,13 @@ export class SMAGEOrchestrator {
             provider: "orchestrator",
             stage: "pipeline_start",
             messageCount: messages.length,
+        });
+
+        this.telemetry.record({
+            session,
+            provider: "ccr",
+            stage: "dedupe",
+            messageCount: this.deduped.length,
         });
 
         // AUTO STRATEGY
@@ -309,7 +319,6 @@ export class SMAGEOrchestrator {
             messages: shaped.compressed,
             options: agent.options ?? {},
         });
-
         // agent result telemetry
         this.telemetry.record({
             session: this.config.session,

@@ -15,6 +15,7 @@ import { renderCCR } from "./html/ccr.js";
 import { renderProvider } from "./html/provider.js";
 import { renderConfig } from "./html/config.js";
 import { renderHealth } from "./html/health.js";
+import { reversibleLog } from "../../ha_core/cache/log.js";
 
 // this file defines the dashboard router for the Express app. It provides endpoints for fetching wrapper anchors, memory, CCR, provider responses, and wrapper config.
 
