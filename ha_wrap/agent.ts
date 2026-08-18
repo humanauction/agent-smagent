@@ -5,7 +5,8 @@ import { SMAGEMCPClient } from "../ha_cli/mcp_client.js";
 import { applyCCR } from "../ha_core/transform/ccr.js";
 import { reversibleLog } from "../ha_core/cache/log.js";
 import { learn } from "../ha_learn/index.js";
-
+import { CCRPipeline } from "../ha_core/transform/ccr/pipeline.js";
+import { ProviderChainTelemetry } from "../ha_core/call/providers/chainTelemetry.js";
 export interface SMAGECallInput {
     session: string;
     model: string;
@@ -128,5 +129,29 @@ export class SMAGEAgent {
             durationMs,
             empty,
         };
+    }
+    // ---------------------------------------------
+    // DEBUG: CCR Anchors + CCR Pipeline Inspection
+    // ---------------------------------------------
+    getAnchors() {
+        return {
+            system: "SMAGE Agent System Anchor",
+            lastUser: null,
+            lastAssistant: null,
+            lastTool: null,
+        };
+    }
+
+    async debugCCR(prompt: string) {
+        const telemetry = new ProviderChainTelemetry();
+        const pipeline = new CCRPipeline(telemetry);
+
+        const messages: SMAGEMessage[] = [
+            { role: "user", content: prompt, meta: {} },
+        ];
+
+        const shaped = await pipeline.run("debug-session", messages, {});
+
+        return shaped; // contains metrics + timeline + shaped messages
     }
 }

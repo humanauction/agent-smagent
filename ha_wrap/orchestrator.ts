@@ -332,4 +332,16 @@ export class SMAGEOrchestrator {
             content: res.content,
         };
     }
+    async debugCCR(prompt: string) {
+        const telemetry = new ProviderChainTelemetry();
+        const pipeline = new CCRPipeline(telemetry);
+
+        const messages: SMAGEMessage[] = [
+            { role: "user", content: prompt, meta: {} },
+        ];
+
+        const shaped = await pipeline.run("debug-session", messages, {});
+
+        return shaped; // contains metrics + timeline + shaped messages
+    }
 }

@@ -1,5 +1,8 @@
 import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index.js";
+import { applyCCR } from "../ha_core/transform/ccr.js";
 import { SMAGEAgent } from "./agent.js";
+import { CCRPipeline } from "../ha_core/transform/ccr/pipeline.js";
+import { ProviderChainTelemetry } from "../ha_core/call/providers/chainTelemetry.js";
 
 export interface AgentDescriptor {
     id: string;
@@ -111,5 +114,26 @@ export class SMAGEMultiAgent {
             content: res.content,
             reliability: agent.reliability ?? 0,
         };
+    }
+    getAnchors() {
+        return {
+            system: "SMAGE Multi-Agent System Anchor",
+            lastUser: null,
+            lastAssistant: null,
+            lastTool: null,
+        };
+    }
+
+    async debugCCR(prompt: string) {
+        const telemetry = new ProviderChainTelemetry();
+        const pipeline = new CCRPipeline(telemetry);
+
+        const messages: SMAGEMessage[] = [
+            { role: "user", content: prompt, meta: {} },
+        ];
+
+        const shaped = await pipeline.run("debug-session", messages, {});
+
+        return shaped; // contains metrics + timeline + shaped messages
     }
 }
