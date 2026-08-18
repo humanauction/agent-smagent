@@ -6,7 +6,6 @@
         "resolveJsonModule": true,
         "noImplicitAny": true,
         "useDefineForClassFields": false,
-
         "module": "esnext",
         "target": "esnext",
         "types": ["node", "express", "vitest", "vitest/globals"],

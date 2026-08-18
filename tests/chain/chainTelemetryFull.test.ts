@@ -1,6 +1,7 @@
 import { ProviderChainRouter } from "../../ha_core/call/providers/chainRouter.js";
 import { providers } from "../../ha_core/call/providers/index.js";
 import { installFailureMocks } from "../_setup/providerRegistry.js";
+import { describe, it, expect } from "vitest";
 
 describe("ChainRouter Telemetry", () => {
     beforeEach(() => {

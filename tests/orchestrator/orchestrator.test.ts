@@ -1,4 +1,5 @@
 import { SMAGEOrchestrator } from "../../ha_wrap/orchestrator.js";
+import { describe, it, expect } from "vitest";
 
 describe("SMAGEOrchestrator", () => {
     it("AUTO strategy calls an agent", async () => {
