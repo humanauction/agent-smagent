@@ -6,29 +6,43 @@ import { decayMemory } from "../../ha_learn/memoryDecay.js";
 import { weightMemory } from "../../ha_learn/memoryWeight.js";
 import { pruneMemory } from "../../ha_learn/memoryPrune.js";
 import { resolveConflicts } from "../../ha_learn/memoryResolve.js";
-import { applyCCR } from "../../ha_core/transform/ccr.js";
+
+import { CCRPipeline } from "../../ha_core/transform/ccr/pipeline.js";
+import { ProviderChainTelemetry } from "../../ha_core/call/providers/chainTelemetry.js";
+
 import { SMAGEMessage } from "../../ha_core/index.js";
 import { userMsg } from "./utils/messages.js";
+
 import { renderAnchors } from "./html/anchors.js";
 import { renderMemory } from "./html/memory.js";
 import { renderCCR } from "./html/ccr.js";
 import { renderProvider } from "./html/provider.js";
 import { renderConfig } from "./html/config.js";
 import { renderHealth } from "./html/health.js";
-import { orchestratorTelemetry } from "../../ha_wrap/orchestrator.js";
 
-// this file defines the dashboard router for the Express app. It provides endpoints for fetching wrapper anchors, memory, CCR, provider responses, and wrapper config.
+import { orchestratorTelemetry } from "../../ha_wrap/orchestrator.js";
 
 export const dashboardRouter = express.Router();
 
-// GET /dashboard/:wrapper/anchors
-dashboardRouter.get("/:wrapper/anchors", (req, res) => {
-    const wrapper = getProviderWrapper(req.params.wrapper as any);
-    const anchors = wrapper["prepareWrapperAnchors"]();
-    res.json({ anchors });
+/* -------------------------------
+   1. ANCHORS (pipeline only)
+------------------------------- */
+dashboardRouter.get("/:wrapper/anchors", async (req, res) => {
+    const telemetry = new ProviderChainTelemetry();
+    const pipeline = new CCRPipeline(telemetry);
+
+    const shaped = await pipeline.run(
+        "dashboard-session",
+        [{ role: "user", content: "hello", meta: {} } satisfies SMAGEMessage],
+        {},
+    );
+    const anchorArray = Object.values(shaped.anchor).filter(Boolean);
+    res.send(renderAnchors(anchorArray));
 });
 
-// GET /dashboard/:wrapper/memory
+/* -------------------------------
+   2. MEMORY (unchanged)
+------------------------------- */
 dashboardRouter.get("/:wrapper/memory", (req, res) => {
     const wrapperId = req.params.wrapper as any;
     const raw = loadWrapperMemory(wrapperId);
@@ -47,14 +61,7 @@ dashboardRouter.get("/:wrapper/memory", (req, res) => {
             Date.now() - (meta.timestamp ?? Date.now()),
         );
 
-        return {
-            ...m,
-            meta: {
-                ...meta,
-                score,
-                weight,
-            },
-        };
+        return { ...m, meta: { ...meta, score, weight } };
     });
 
     const pruned = pruneMemory(scored);
@@ -63,34 +70,30 @@ dashboardRouter.get("/:wrapper/memory", (req, res) => {
         (a, b) => (b.meta?.weight ?? 0) - (a.meta?.weight ?? 0),
     );
 
-    res.json({
-        raw,
-        scored,
-        pruned,
-        resolved,
-        sorted,
-    });
+    res.json({ raw, scored, pruned, resolved, sorted });
 });
 
-// GET /dashboard/:wrapper/ccr?prompt=hello
+/* -------------------------------
+   3. CCR JSON (pipeline only)
+------------------------------- */
 dashboardRouter.get("/:wrapper/ccr", async (req, res) => {
-    const wrapper = getProviderWrapper(req.params.wrapper as any);
     const prompt = req.query.prompt?.toString() ?? "test prompt";
 
-    const anchors = wrapper["prepareWrapperAnchors"]();
-    const merged: SMAGEMessage[] = [...anchors, userMsg(prompt)];
+    const telemetry = new ProviderChainTelemetry();
+    const pipeline = new CCRPipeline(telemetry);
 
-    const shaped = await applyCCR(
-        merged,
-        req.params.wrapper,
+    const shaped = await pipeline.run(
         "dashboard-session",
+        [{ role: "user", content: prompt, meta: {} } satisfies SMAGEMessage],
         {},
     );
 
     res.json({ shaped });
 });
 
-// GET /dashboard/:wrapper/provider?prompt=hello
+/* -------------------------------
+   4. PROVIDER (unchanged)
+------------------------------- */
 dashboardRouter.get("/:wrapper/provider", async (req, res) => {
     const wrapper = getProviderWrapper(req.params.wrapper as any);
     const prompt = req.query.prompt?.toString() ?? "test prompt";
@@ -104,16 +107,19 @@ dashboardRouter.get("/:wrapper/provider", async (req, res) => {
     res.json({ response });
 });
 
-// GET /dashboard/:wrapper/config
+/* -------------------------------
+   5. CONFIG (unchanged)
+------------------------------- */
 dashboardRouter.get("/:wrapper/config", (req, res) => {
     const wrapper = getProviderWrapper(req.params.wrapper as any);
     res.json({ config: wrapper["config"] });
 });
 
-// GET /dashboard/:wrapper/health
+/* -------------------------------
+   6. HEALTH (unchanged)
+------------------------------- */
 dashboardRouter.get("/:wrapper/health", (req, res) => {
     const wrapperId = req.params.wrapper;
-
     const memory = loadWrapperMemory(wrapperId as any);
     const memoryCount = memory.length;
 
@@ -131,110 +137,40 @@ dashboardRouter.get("/:wrapper/health", (req, res) => {
     });
 });
 
-// HTML endpoints for dashboard rendering
+/* -------------------------------
+   7. HTML ROUTES (pipeline only)
+------------------------------- */
+dashboardRouter.get("/:wrapper/anchors/html", async (req, res) => {
+    const telemetry = new ProviderChainTelemetry();
+    const pipeline = new CCRPipeline(telemetry);
 
-// GET /dashboard/:wrapper/anchors/html
-dashboardRouter.get("/:wrapper/anchors/html", (req, res) => {
-    const wrapper = getProviderWrapper(req.params.wrapper as any);
-    const anchors = wrapper["prepareWrapperAnchors"]();
-    res.send(renderAnchors(anchors));
-});
-
-// GET /dashboard/:wrapper/memory/html
-dashboardRouter.get("/:wrapper/memory/html", (req, res) => {
-    const wrapperId = req.params.wrapper as any;
-    const raw = loadWrapperMemory(wrapperId);
-
-    // same scoring pipeline as JSON version
-    const scored = raw.map((m) => {
-        const meta = m.meta ?? {};
-        const score = scoreMemory({
-            failureType: meta.failureType,
-            frequency: meta.frequency ?? 1,
-            recencyMs: Date.now() - (meta.timestamp ?? Date.now()),
-            wrapperId: meta.wrapper,
-        });
-
-        const weight = decayMemory(
-            weightMemory(score),
-            Date.now() - (meta.timestamp ?? Date.now()),
-        );
-
-        return {
-            ...m,
-            meta: {
-                ...meta,
-                score,
-                weight,
-            },
-        };
-    });
-    const pruned = pruneMemory(scored);
-    const resolved = resolveConflicts(pruned);
-    const sorted = [...resolved].sort(
-        (a, b) => (b.meta?.weight ?? 0) - (a.meta?.weight ?? 0),
+    const shaped = await pipeline.run(
+        "dashboard-session",
+        [{ role: "user", content: "hello", meta: {} } satisfies SMAGEMessage],
+        {},
     );
-
-    res.send(renderMemory({ raw, scored, pruned, resolved, sorted }));
+    const anchorArray = Object.values(shaped.anchor).filter(Boolean);
+    res.send(renderAnchors(anchorArray));
 });
 
-// GET /dashboard/:wrapper/ccr/html
 dashboardRouter.get("/:wrapper/ccr/html", async (req, res) => {
     const session = "dashboard-session";
-    orchestratorTelemetry.clearSession(session); // clear old Telemetry
-    const wrapper = getProviderWrapper(req.params.wrapper as any);
-    const prompt = req.query.prompt?.toString() ?? "test prompt";
-    const anchors = wrapper["prepareWrapperAnchors"]();
-    const merged: SMAGEMessage[] = [...anchors, userMsg(prompt)];
+    orchestratorTelemetry.clearSession(session);
 
-    // This runs CCRPipeline internally and populates orchestratorTelemetry
-    await wrapper.debugProvider(session, merged, {});
+    const prompt = req.query.prompt?.toString() ?? "test prompt";
+
+    const telemetry = new ProviderChainTelemetry();
+    const pipeline = new CCRPipeline(telemetry);
+
+    await pipeline.run(
+        session,
+        [{ role: "user", content: prompt, meta: {} } satisfies SMAGEMessage],
+        {},
+    );
 
     const events = orchestratorTelemetry.getSession(session);
     const metrics = events.filter((e: any) => e.stage === "metrics");
     const timeline = events;
 
     res.send(renderCCR({ metrics, timeline }));
-});
-
-// GET /dashboard/:wrapper/provider/html
-dashboardRouter.get("/:wrapper/provider/html", async (req, res) => {
-    const wrapper = getProviderWrapper(req.params.wrapper as any);
-    const prompt = req.query.prompt?.toString() ?? "test prompt";
-
-    const response = await wrapper.debugProvider(
-        "dashboard-session",
-        [{ role: "user" as const, content: prompt }],
-        {},
-    );
-
-    res.send(renderProvider(response));
-});
-
-// GET /dashboard/:wrapper/config/html
-dashboardRouter.get("/:wrapper/config/html", (req, res) => {
-    const wrapper = getProviderWrapper(req.params.wrapper as any);
-    res.send(renderConfig(wrapper["config"]));
-});
-
-// GET /dashboard/:wrapper/health/html
-dashboardRouter.get("/:wrapper/health/html", (req, res) => {
-    const wrapperId = req.params.wrapper;
-    const memory = loadWrapperMemory(wrapperId as any);
-    const memoryCount = memory.length;
-
-    const health = {
-        wrapper: wrapperId,
-        memoryCount,
-        memoryStatus:
-            memoryCount === 0
-                ? "empty"
-                : memoryCount < 10
-                  ? "healthy"
-                  : memoryCount < 50
-                    ? "growing"
-                    : "large",
-    };
-
-    res.send(renderHealth(health));
 });

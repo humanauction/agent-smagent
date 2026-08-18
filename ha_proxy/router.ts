@@ -60,36 +60,47 @@ export async function handleLLM(req: Request, res: Response) {
 /* ---------- CCR dashboard router ---------- */
 
 export const dashboardRouter = Router();
+/* -------------------------------
+   1. CCR ANCHORS (pipeline only)
+------------------------------- */
+dashboardRouter.get(
+    "/:wrapper/anchors",
+    async (req: Request, res: Response) => {
+        const { wrapper } = req.params;
 
-/* 1. anchors */
+        try {
+            // validate wrapper exists
+            wrapperRegistry.get(wrapper as any);
 
-dashboardRouter.get("/:wrapper/anchors", async (req, res) => {
-    const { wrapper } = req.params;
+            const telemetry = new ProviderChainTelemetry();
+            const pipeline = new CCRPipeline(telemetry);
 
-    try {
-        wrapperRegistry.get(wrapper as any); // just to validate id
+            const shaped = await pipeline.run(
+                "debug-session",
+                [
+                    {
+                        role: "user",
+                        content: "hello",
+                        meta: {},
+                    } satisfies SMAGEMessage,
+                ],
+                {},
+            );
 
-        const telemetry = new ProviderChainTelemetry();
-        const pipeline = new CCRPipeline(telemetry);
+            res.json({
+                wrapper,
+                anchor: shaped.anchor,
+            });
+        } catch {
+            res.status(404).json({ error: `Wrapper not found: ${wrapper}` });
+        }
+    },
+);
 
-        const shaped = await pipeline.run(
-            "debug-session",
-            [{ role: "user", content: "hello", meta: {} }],
-            {},
-        );
-
-        res.json({
-            wrapper,
-            anchor: shaped.anchor,
-        });
-    } catch {
-        res.status(404).json({ error: `Wrapper not found: ${wrapper}` });
-    }
-});
-
-/* 2. raw + shaped JSON */
-
-dashboardRouter.get("/:wrapper/ccr", async (req, res) => {
+/* -------------------------------
+   2. CCR RAW + SHAPED JSON
+------------------------------- */
+dashboardRouter.get("/:wrapper/ccr", async (req: Request, res: Response) => {
     const { wrapper } = req.params;
     const prompt = req.query.prompt?.toString() ?? "hello";
 
@@ -101,7 +112,13 @@ dashboardRouter.get("/:wrapper/ccr", async (req, res) => {
 
         const shaped = await pipeline.run(
             "debug-session",
-            [{ role: "user", content: prompt, meta: {} }],
+            [
+                {
+                    role: "user",
+                    content: prompt,
+                    meta: {},
+                } satisfies SMAGEMessage,
+            ],
             {},
         );
 
@@ -115,8 +132,9 @@ dashboardRouter.get("/:wrapper/ccr", async (req, res) => {
     }
 });
 
-/* 3. HTML dashboard (simple metrics computed locally) */
-
+/* -------------------------------
+   3. CCR HTML DASHBOARD
+------------------------------- */
 dashboardRouter.get(
     "/:wrapper/ccr/html",
     async (req: Request, res: Response) => {
@@ -124,7 +142,6 @@ dashboardRouter.get(
         const prompt = req.query.prompt?.toString() ?? "hello";
 
         try {
-            // just validate wrapper id exists
             wrapperRegistry.get(wrapper as any);
 
             const telemetry = new ProviderChainTelemetry();
