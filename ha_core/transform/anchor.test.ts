@@ -28,7 +28,7 @@ test("extractAnchor returns correct last-role anchors", () => {
 
     const anchor = extractAnchor(messages);
 
-    assert(anchor.system.length === 1, "system anchor missing");
+    assert(anchor.system !== null, "system anchor missing");
     assert(anchor.lastUser?.content === "u2", "lastUser incorrect");
     assert(anchor.lastAssistant?.content === "a2", "lastAssistant incorrect");
     assert(anchor.lastTool?.content === "t1", "lastTool incorrect");

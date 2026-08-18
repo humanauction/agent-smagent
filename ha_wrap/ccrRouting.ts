@@ -28,8 +28,9 @@ export class CCRRouter {
 
         // 1. Anchors
         const anchor = extractAnchor(messages);
-        const topAnchor =
-            anchor.lastUser ?? anchor.lastAssistant ?? anchor.system.at(0);
+
+        const sys = anchor.system ?? null;
+        const topAnchor = anchor.lastUser ?? anchor.lastAssistant ?? sys;
 
         if (topAnchor) {
             const text = topAnchor.content.toLowerCase();

@@ -29,7 +29,7 @@ describe("CCRPipeline", () => {
         const shaped = await ccr.run("test-session", messages, {});
 
         // --- anchors ---
-        expect(shaped.anchor.system.length).toBe(1);
+        expect(shaped.anchor.system).not.toBeNull();
         expect(shaped.anchor.lastUser?.content).toBe("hello world");
         expect(shaped.anchor.lastAssistant?.content).toBe("response 1");
         expect(shaped.anchor.lastTool?.role).toBe("tool");
