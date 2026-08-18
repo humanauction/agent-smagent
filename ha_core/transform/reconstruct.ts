@@ -1,5 +1,5 @@
 import type { SMAGEMessage } from "../index.js";
-import type { Anchor } from "./anchor.js";
+import type { CCRAnchor } from "./anchor.js";
 // Responsibilities
 // rebuild final message list
 // re‑inject anchors
@@ -19,12 +19,12 @@ import type { Anchor } from "./anchor.js";
 
 export function reconstruct(
     windowed: SMAGEMessage[],
-    anchor: Anchor,
+    anchor: CCRAnchor,
 ): SMAGEMessage[] {
     const out: SMAGEMessage[] = [];
 
     // 1. System anchors first
-    out.push(...anchor.system);
+    if (anchor.system) out.push(anchor.system);
 
     // 2. Last user
     if (anchor.lastUser) out.push(anchor.lastUser);

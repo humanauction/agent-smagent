@@ -10,12 +10,13 @@ import { applyContextWindow } from "../window.js";
 import { reconstruct } from "../reconstruct.js";
 import { applyPayloadCompression } from "../payload.js";
 import { reduceOutput } from "../../output/reducer.js";
+import { CCRAnchor } from "../anchor.js";
 
 // this file contains the CCR pipeline for processing SMAGE messages through various stages
 
 export interface CCRPipelineResult {
     original: SMAGEMessage[];
-    anchor: ReturnType<typeof extractAnchor>;
+    anchor: CCRAnchor;
     deduped: SMAGEMessage[];
     scored: number[];
     prioritized: SMAGEMessage[];
@@ -46,7 +47,13 @@ export class CCRPipeline {
         });
 
         // 1. ANCHOR EXTRACTION
-        const anchor = extractAnchor(messages);
+        const rawAnchor = extractAnchor(messages);
+        const anchor: CCRAnchor = {
+            system: rawAnchor.system ?? null,
+            lastUser: rawAnchor.lastUser ?? null,
+            lastAssistant: rawAnchor.lastAssistant ?? null,
+            lastTool: rawAnchor.lastTool ?? null,
+        };
         this.telemetry.record({
             session,
             provider: "ccr",

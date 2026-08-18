@@ -15,14 +15,24 @@ export interface Anchor {
     // priority?: number;        // anchor priority tier
 }
 
+export interface CCRAnchor {
+    system?: SMAGEMessage | null;
+    lastUser?: SMAGEMessage | null;
+    lastAssistant?: SMAGEMessage | null;
+    lastTool?: SMAGEMessage | null;
+}
+
 // Extract pinned messages and last messages of each role from the message history.
-export function extractAnchor(messages: SMAGEMessage[]): Anchor {
-    const anchor: Anchor = {
-        system: [],
+export function extractAnchor(messages: SMAGEMessage[]): CCRAnchor {
+    const anchor: CCRAnchor = {
+        system: null,
+        lastUser: null,
+        lastAssistant: null,
+        lastTool: null,
     };
 
     for (const msg of messages) {
-        if (msg.role === "system") anchor.system.push(msg);
+        if (msg.role === "system") anchor.system = msg;
         if (msg.role === "user") anchor.lastUser = msg;
         if (msg.role === "assistant") anchor.lastAssistant = msg;
         if (msg.role === "tool") anchor.lastTool = msg;
@@ -33,12 +43,12 @@ export function extractAnchor(messages: SMAGEMessage[]): Anchor {
 
 export function applyAnchor(
     _messages: SMAGEMessage[],
-    anchor: Anchor,
+    anchor: CCRAnchor,
 ): SMAGEMessage[] {
     const result: SMAGEMessage[] = [];
 
     // Add system messages first.
-    result.push(...anchor.system);
+    if (anchor.system) result.push(anchor.system);
 
     // Add the last user message if it exists.
     if (anchor.lastUser) result.push(anchor.lastUser);
@@ -55,7 +65,7 @@ export function applyAnchor(
 // CCR integration Helper: inject anchors at top of shaped window
 
 export function mergeAnchor(
-    anchor: Anchor,
+    anchor: CCRAnchor,
     shaped: SMAGEMessage[],
 ): SMAGEMessage[] {
     const anchorMsgs = applyAnchor([], anchor);

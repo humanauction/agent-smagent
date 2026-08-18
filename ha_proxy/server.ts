@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 
 import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index.js";
 import { callProvider } from "../ha_core/call/providers/index.js";
-import { dashboardRouter } from "./dashboard/router.js";
+import { dashboardRouter } from "./router.js";
 
 const app = express();
 app.use(cors());
