@@ -93,3 +93,147 @@ describe("CCRPipeline", () => {
         expect(shapedTokens).toBeLessThan(rawTokens);
     });
 });
+
+// -----------------------
+// baseline testing suite
+// -----------------------
+
+// baseline test: anchor extraction
+test("CCR baseline: anchor extraction", async () => {
+    const pipeline = new CCRPipeline({ record() {} } as any);
+
+    const messages: SMAGEMessage[] = [
+        { role: "system", content: "sys", meta: {} },
+        { role: "user", content: "hello", meta: {} },
+        { role: "assistant", content: "hi", meta: {} },
+        { role: "tool", content: "tool-output", meta: {} },
+    ];
+
+    const shaped = await pipeline.run("test", messages, {});
+
+    expect(shaped.anchor.system?.content).toBe("sys");
+    expect(shaped.anchor.lastUser?.content).toBe("hello");
+    expect(shaped.anchor.lastAssistant?.content).toBe("hi");
+    expect(shaped.anchor.lastTool?.content).toBe("tool-output");
+});
+
+// test baseline: dedupe
+test("CCR baseline: dedupe", async () => {
+    const pipeline = new CCRPipeline({ record() {} } as any);
+
+    const messages: SMAGEMessage[] = [
+        { role: "user", content: "hello", meta: {} },
+        { role: "user", content: "hello", meta: {} },
+    ];
+
+    const shaped = await pipeline.run("test", messages, {});
+
+    expect(shaped.deduped.length).toBe(1);
+});
+
+// test baseline: relevance scoring
+test("CCR baseline: relevance scoring", async () => {
+    const pipeline = new CCRPipeline({ record() {} } as any);
+
+    const messages: SMAGEMessage[] = [
+        { role: "user", content: "important", meta: {} },
+        { role: "user", content: "meh", meta: {} },
+    ];
+
+    const shaped = await pipeline.run("test", messages, {});
+
+    expect(shaped.scored.length).toBe(2);
+    expect(typeof shaped.scored[0]).toBe("number");
+});
+// test baseline: priority assignment
+test("CCR baseline: priority assignment", async () => {
+    const pipeline = new CCRPipeline({ record() {} } as any);
+
+    const messages: SMAGEMessage[] = [
+        { role: "user", content: "urgent", meta: {} },
+        { role: "user", content: "normal", meta: {} },
+    ];
+
+    const shaped = await pipeline.run("test", messages, {});
+
+    expect(shaped.prioritized.length).toBe(2);
+});
+
+// test baseline: context window
+test("CCR baseline: windowing", async () => {
+    const pipeline = new CCRPipeline({ record() {} } as any);
+
+    const messages: SMAGEMessage[] = Array.from({ length: 50 }, (_, i) => ({
+        role: "user",
+        content: `msg ${i}`,
+        meta: {},
+    }));
+
+    const shaped = await pipeline.run("test", messages, {});
+
+    expect(shaped.windowed.length).toBeLessThanOrEqual(50);
+});
+
+// test baseline: Reconstruction
+test("CCR baseline: reconstruction", async () => {
+    const pipeline = new CCRPipeline({ record() {} } as any);
+
+    const messages: SMAGEMessage[] = [
+        { role: "system", content: "sys", meta: {} },
+        { role: "user", content: "hello", meta: {} },
+    ];
+
+    const shaped = await pipeline.run("test", messages, {});
+
+    expect(shaped.reconstructed.length).toBeGreaterThan(0);
+});
+
+// test baseline: compression
+test("CCR baseline: compression", async () => {
+    const pipeline = new CCRPipeline({ record() {} } as any);
+
+    const messages: SMAGEMessage[] = [
+        { role: "user", content: "hello world", meta: {} },
+    ];
+
+    const shaped = await pipeline.run("test", messages, {});
+
+    expect(shaped.compressed.length).toBeGreaterThan(0);
+});
+
+// test baseline: output reduction
+test("CCR baseline: reduction", async () => {
+    const pipeline = new CCRPipeline({ record() {} } as any);
+
+    const messages: SMAGEMessage[] = [
+        { role: "user", content: "hello world", meta: {} },
+    ];
+
+    const shaped = await pipeline.run("test", messages, {});
+
+    expect(shaped.reduced).toBeDefined();
+    expect(typeof shaped.reduced.content).toBe("string");
+});
+
+// test baseline: full pipeline shape
+test("CCR baseline: full pipeline shape", async () => {
+    const pipeline = new CCRPipeline({ record() {} } as any);
+
+    const messages: SMAGEMessage[] = [
+        { role: "user", content: "hello", meta: {} },
+    ];
+
+    const shaped = await pipeline.run("test", messages, {});
+
+    expect(Object.keys(shaped)).toEqual([
+        "original",
+        "anchor",
+        "deduped",
+        "scored",
+        "prioritized",
+        "windowed",
+        "reconstructed",
+        "compressed",
+        "reduced",
+    ]);
+});
