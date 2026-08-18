@@ -145,7 +145,7 @@ tasks:
     proxy:
         desc: "Start SMAGE proxy server (dist)"
         cmds:
-            - arch -arm64 node dist/ha_proxy/server.js
+            - "node --loader ts-node/esm ha_proxy/server.ts"
 
     proxy:ccr:
         desc: "Start proxy server and open CCR dashboard"

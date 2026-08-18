@@ -4,10 +4,12 @@ import bodyParser from "body-parser";
 
 import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index.js";
 import { callProvider } from "../ha_core/call/providers/index.js";
+import { dashboardRouter } from "./dashboard/router.js";
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use("/dashboard", dashboardRouter);
 
 function toSMAGEMessages(
     messages: Array<{ role: string; content: string }>,
@@ -53,7 +55,7 @@ app.post("/v1/chat/completions", async (req, res) => {
             messages: smageMessages,
             options: {
                 ...(smage_options ?? {}),
-                provider: providerName, // <-- provider lives here
+                provider: providerName,
             },
         });
 
