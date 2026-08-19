@@ -79,8 +79,12 @@ export class CCRPipeline {
             stage: "relevance",
             messageCount: deduped.length,
         });
+        const scoredMessages = deduped.map((m, i) => ({
+            ...m,
+            meta: { ...m.meta, relevance: scored[i] },
+        }));
         // 4. PRIORITY ASSIGNMENT (batch)
-        const prioritized = assignPriorities(deduped, anchor);
+        const prioritized = assignPriorities(scoredMessages, anchor);
         this.telemetry.record({
             session,
             provider: "ccr",
