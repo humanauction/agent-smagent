@@ -12,6 +12,13 @@ function stableHash(msg: SMAGEMessage): string {
     return `${msg.role}:${normalized}`;
 }
 
+function semanticSignature(msg: SMAGEMessage): string {
+    return msg.content
+        .replace(/[`*~]/g, "") // strip markdown
+        .replace(/\s+/g, " ") // normalize whitespace
+        .trim()
+        .toLowerCase();
+}
 /**
  * CCR Dedupe:
  *
@@ -33,16 +40,18 @@ function stableHash(msg: SMAGEMessage): string {
 
 export function dedupeMessages(messages: SMAGEMessage[]): SMAGEMessage[] {
     const seen = new Set<string>();
+    const semanticSeen = new Set<string>();
     const out: SMAGEMessage[] = [];
 
-    for (let i = 0; i < messages.length; i++) {
-        const msg = messages[i];
-        if (!msg) continue;
+    let lastHash: string | null = null;
+
+    for (const msg of messages) {
         const hash = stableHash(msg);
 
         // System messages: never dedupe
         if (msg.role === "system") {
             out.push(msg);
+            lastHash = hash;
             continue;
         }
 
@@ -51,14 +60,31 @@ export function dedupeMessages(messages: SMAGEMessage[]): SMAGEMessage[] {
             if (seen.has(hash)) continue;
             seen.add(hash);
             out.push(msg);
+            lastHash = hash;
             continue;
         }
 
-        // Assistant + tool + logs: aggressive dedupe
-        if (seen.has(hash)) continue;
+        if (msg.role === "summary") {
+            if (seen.has(hash)) continue;
+            seen.add(hash);
+            out.push(msg);
+            lastHash = hash;
+            continue;
+        }
+        // Assistant/tool: burst dedupe
+        if (hash === lastHash) continue;
 
+        // Assistant/tool: semantic dedupe
+        const sig = semanticSignature(msg);
+        if (semanticSeen.has(sig)) continue;
+        semanticSeen.add(sig);
+
+        // Assistant/tool: hash dedupe
+        if (seen.has(hash)) continue;
         seen.add(hash);
+
         out.push(msg);
+        lastHash = hash;
     }
 
     return out;

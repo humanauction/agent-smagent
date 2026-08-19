@@ -51,11 +51,11 @@ connect-src 'self' http://localhost:8080;
         padding: 0.4rem 0.8rem;
         cursor: pointer;
         border-radius: 6px 6px 0 0;
-        background: #e9ecef;
+        background: #333;
         font-size: 0.85rem;
     }
     .tab.active {
-        background: #fff;
+        background: #333;
         border: 1px solid #ddd;
         border-bottom-color: #fff;
     }
