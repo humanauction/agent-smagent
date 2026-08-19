@@ -16,7 +16,7 @@ describe("scoreRelevance", () => {
         ];
 
         const scored: number[] = messages.map((m, i): number =>
-            scoreRelevance(m, i, messages.length),
+            scoreRelevance(m, i, messages.length, null),
         );
 
         // basic sanity: all scores are numbers

@@ -80,7 +80,7 @@ export class CCRPipeline {
             messageCount: deduped.length,
         });
         // 4. PRIORITY ASSIGNMENT (batch)
-        const prioritized = assignPriorities(deduped);
+        const prioritized = assignPriorities(deduped, anchor);
         this.telemetry.record({
             session,
             provider: "ccr",

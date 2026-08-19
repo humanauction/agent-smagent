@@ -29,7 +29,7 @@ export function applyContextWindow(
     maxTokens: number,
 ): SMAGEMessage[] {
     // 1. assign unified structural priority
-    const prioritized = assignPriorities(messages);
+    const prioritized = assignPriorities(messages, null);
 
     // 2. project into scored view
     const scored: ScoredMessage[] = prioritized.map((m) => ({

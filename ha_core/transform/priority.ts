@@ -1,59 +1,71 @@
 import type { SMAGEMessage } from "../index.js";
-import { scoreRelevance } from "./relevance.js";
+import type { CCRAnchor } from "./anchor.js";
 
-export enum Priority {
-    SYSTEM = 100,
-    USER = 90,
-    ASSISTANT = 80,
-    TOOL = 70,
-    LOG = 50,
-    ANCHOR = 100,
-}
-
-export function priorityOf(msg: SMAGEMessage): Priority {
-    if (msg.meta?.anchor) return Priority.ANCHOR;
-    switch (msg.role) {
-        case "system":
-            return Priority.SYSTEM;
-        case "user":
-            return Priority.USER;
-        case "assistant":
-            return Priority.ASSISTANT;
-        case "tool": // tool messages may include meta, changing priority based on the meta content.
-            if (msg.meta?.log || msg.meta?.rag) return Priority.LOG;
-            return Priority.TOOL;
-        default:
-            return Priority.LOG; // For example, a tool message with meta indicating it is a log message should have a lower priority than a regular tool message.
-    }
-}
-
-/**
- * CCR Priority Tiers (MVP)
- *
- * Priority is a coarse, structural importance score.
- * It is NOT the same as relevance.
- *
- * Tiers:
- *   100 – system messages (always keep)
- *    90 – last user intent (critical)
- *    80 – assistant replies (context continuity)
- *    70 – tool messages (medium importance)
- *    50 – everything else (low importance)
- *
- * Deterministic, cheap, compression‑safe.
+/*
+ * CCR Priority Tiers
  */
 
-export function assignPriority(msg: SMAGEMessage): number {
-    return priorityOf(msg);
+export function assignPriority(
+    msg: SMAGEMessage,
+    anchor?: CCRAnchor | null,
+): number {
+    // Critical system-level messages
+    if (msg.role === "system") return 3;
+
+    // Explicit urgency markers
+    const lower = msg.content.toLowerCase();
+    if (
+        lower.includes("urgent") ||
+        lower.includes("immediately") ||
+        lower.includes("asap") ||
+        lower.includes("error") ||
+        lower.includes("fix this")
+    ) {
+        return 3;
+    }
+
+    // Anchor proximity boosts priority
+    if (anchor) {
+        if (msg === anchor.lastUser) return 3;
+        if (msg === anchor.lastAssistant) return 2;
+        if (msg === anchor.lastTool) return 2;
+        if (msg === anchor.system) return 2;
+    }
+
+    // Tool outputs are generally important
+    if (msg.role === "tool") return 2;
+
+    // User messages are more important than assistant filler
+    if (msg.role === "user") return 2;
+
+    // Summary messages are moderately important
+    if (msg.role === "summary") return 1;
+
+    // Assistant filler detection
+    if (
+        /^ok|sure|thanks|cool|sounds good|let me think/i.test(msg.content) ||
+        msg.content.length < 10
+    ) {
+        return 0;
+    }
+
+    // Default assistant messages
+    if (msg.role === "assistant") return 1;
+
+    // Fallback
+    return 1;
 }
 
 /**
  * Batch priority assignment.
  */
-export function assignPriorities(messages: SMAGEMessage[]): SMAGEMessage[] {
+export function assignPriorities(
+    messages: SMAGEMessage[],
+    anchor: CCRAnchor | null,
+): SMAGEMessage[] {
     return messages.map((m) => ({
         ...m,
-        meta: { ...m.meta, priority: assignPriority(m) },
+        meta: { ...m.meta, priority: assignPriority(m, anchor) },
     }));
 }
 
@@ -61,19 +73,4 @@ export interface PriorityScore {
     message: SMAGEMessage;
     relevance: number;
     tier: 1 | 2 | 3;
-}
-
-export function assignPriorityTier(relevance: number): 1 | 2 | 3 {
-    if (relevance >= 80) return 1; // critical, maps to SYSTEM/USER/ASSISTANT
-    if (relevance >= 60) return 2; // important, maps to TOOL
-    return 3; // background, maps to LOG
-}
-
-export function scorePriority(messages: SMAGEMessage[]): PriorityScore[] {
-    return messages.map((m, i) => {
-        const relevance = scoreRelevance(m, i, messages.length);
-        const tier = assignPriorityTier(relevance);
-
-        return { message: m, relevance, tier };
-    });
 }
