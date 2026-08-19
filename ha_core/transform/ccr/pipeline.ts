@@ -83,13 +83,20 @@ export class CCRPipeline {
             ...m,
             meta: { ...m.meta, relevance: scored[i] },
         }));
+        this.telemetry.record({
+            session,
+            provider: "ccr",
+            stage: "scoredMessages",
+            messageCount: scoredMessages.length,
+        });
+
         // 4. PRIORITY ASSIGNMENT (batch)
         const prioritized = assignPriorities(scoredMessages, anchor);
         this.telemetry.record({
             session,
             provider: "ccr",
             stage: "priority",
-            messageCount: deduped.length,
+            messageCount: scoredMessages.length,
         });
         // 5. CONTEXT WINDOW (requires maxTokens)
         const MAX_TOKENS = 4096;

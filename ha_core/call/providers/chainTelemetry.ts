@@ -28,6 +28,7 @@ export interface ChainTelemetryEvent {
         | "anchor"
         | "relevance"
         | "priority"
+        | "scoredMessages"
         | "window"
         | "reconstruct"
         | "compress"

@@ -1,42 +1,40 @@
 import type { SMAGEMessage } from "../index.js";
 import type { CCRAnchor } from "./anchor.js";
-// Responsibilities
-// rebuild final message list
-// re‑inject anchors
-// re‑inject memory
-// re‑inject tool outputs
-// ensure reversible mapping
-
-/**
- * CCR Reconstruction (MVP)
- *
- * Responsibilities:
- * - Re‑inject anchor spine at the top
- * - Preserve windowed message order
- * - Deterministic
- * - Pure (no mutation)
- */
+import { applyAnchor } from "./anchor.js";
 
 export function reconstruct(
     windowed: SMAGEMessage[],
     anchor: CCRAnchor,
 ): SMAGEMessage[] {
+    // 1. Build anchor block
+    const anchorBlock = applyAnchor([], anchor);
+
+    // 2. Merge anchor + window
+    const merged = [...anchorBlock, ...windowed];
+
+    // 3. Deduplicate by role+content (preserve metadata)
+    const seen = new Set<string>();
     const out: SMAGEMessage[] = [];
 
-    // 1. System anchors first
-    if (anchor.system) out.push(anchor.system);
+    for (const msg of merged) {
+        const key = `${msg.role}:${msg.content}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push(msg);
+    }
 
-    // 2. Last user
-    if (anchor.lastUser) out.push(anchor.lastUser);
+    // 4. Preserve chronological order of windowed messages
+    out.sort((a, b) => {
+        const ai = windowed.indexOf(a);
+        const bi = windowed.indexOf(b);
 
-    // 3. Last assistant
-    if (anchor.lastAssistant) out.push(anchor.lastAssistant);
+        // Anchor messages come first
+        if (ai === -1 && bi === -1) return 0;
+        if (ai === -1) return -1;
+        if (bi === -1) return 1;
 
-    // 4. Last tool
-    if (anchor.lastTool) out.push(anchor.lastTool);
-
-    // 5. Append windowed messages (already sorted + filtered)
-    out.push(...windowed);
+        return ai - bi;
+    });
 
     return out;
 }
