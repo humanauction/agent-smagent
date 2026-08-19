@@ -1,34 +1,28 @@
 import type { SMAGEMessage } from "../index.js";
 
 // Priority levels for messages.
-export interface Anchor {
-    system: SMAGEMessage[];
-    lastUser?: SMAGEMessage;
-    lastAssistant?: SMAGEMessage;
-    lastTool?: SMAGEMessage;
-
+export interface CCRAnchor {
+    system?: SMAGEMessage | null;
+    lastUser?: SMAGEMessage | null;
+    lastAssistant?: SMAGEMessage | null;
+    lastTool?: SMAGEMessage | null;
+    summaryHint?: string | null;
     // TODO: add additional metadata fields for anchors
     // intent?: string;          // extracted user intent
     // topic?: string;           // classifier output
     // summary?: string;         // compressed anchor summary
     // tokens?: number;          // token weight
     // priority?: number;        // anchor priority tier
+    // Extract pinned messages and last messages of each role from the message history.
 }
 
-export interface CCRAnchor {
-    system?: SMAGEMessage | null;
-    lastUser?: SMAGEMessage | null;
-    lastAssistant?: SMAGEMessage | null;
-    lastTool?: SMAGEMessage | null;
-}
-
-// Extract pinned messages and last messages of each role from the message history.
 export function extractAnchor(messages: SMAGEMessage[]): CCRAnchor {
     const anchor: CCRAnchor = {
         system: null,
         lastUser: null,
         lastAssistant: null,
         lastTool: null,
+        summaryHint: null,
     };
 
     for (const msg of messages) {
@@ -36,7 +30,12 @@ export function extractAnchor(messages: SMAGEMessage[]): CCRAnchor {
         if (msg.role === "user") anchor.lastUser = msg;
         if (msg.role === "assistant") anchor.lastAssistant = msg;
         if (msg.role === "tool") anchor.lastTool = msg;
+        if (msg.role === "summary") {
+            anchor.summaryHint = msg.content.slice(0, 120);
+        }
     }
+    const pivot = anchor.lastUser ?? anchor.lastAssistant ?? anchor.system;
+    anchor.summaryHint = pivot ? pivot.content.slice(0, 120) : null;
 
     return anchor;
 }
@@ -59,6 +58,18 @@ export function applyAnchor(
     // Add the last tool message if it exists.
     if (anchor.lastTool) result.push(anchor.lastTool);
 
+    // Add the summary hint if it exists.
+    if (!anchor.summaryHint) {
+        const pivot = anchor.lastUser ?? anchor.lastAssistant ?? anchor.system;
+        if (pivot) {
+            anchor.summaryHint = pivot.content.slice(0, 120);
+        }
+        result.push({
+            role: "summary",
+            content: anchor.summaryHint,
+            meta: { anchor: true },
+        });
+    }
     return result;
 }
 

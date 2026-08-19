@@ -17,6 +17,7 @@ export function renderAnchors(anchorOrArray: CCRAnchor | SMAGEMessage[]) {
                   .filter(([_, v]) => v === null)
                   .map(([k]) => k),
               count: Object.values(anchorOrArray).filter(Boolean).length,
+              summaryHint: (anchorOrArray as CCRAnchor).summaryHint ?? null,
           };
 
     return `

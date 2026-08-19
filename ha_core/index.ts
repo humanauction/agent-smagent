@@ -7,8 +7,8 @@ export interface SMAGEOptions {
 }
 
 export interface SMAGEMessage {
-    role: "system" | "user" | "assistant" | "tool";
-    content: string;
+    role: "system" | "user" | "assistant" | "tool" | "summary";
+    content: string | any;
     name?: string;
     meta?: Record<string, any>;
 }
