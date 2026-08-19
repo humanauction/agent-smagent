@@ -2,6 +2,7 @@ export function layout(title: string, body: string): string {
     return `
 <!DOCTYPE html>
 <html lang="en">
+connect-src 'self' http://localhost:8080; 
 <head>
 <meta charset="UTF-8" />
 <title>${title}</title>

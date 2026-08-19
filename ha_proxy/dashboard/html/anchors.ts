@@ -9,7 +9,7 @@ export function renderAnchors(anchorOrArray: CCRAnchor | SMAGEMessage[]) {
     const meta = Array.isArray(anchorOrArray)
         ? null
         : {
-              keys: Object.keys(anchorOrArray),
+              keys: Object.keys(anchorOrArray).sort(),
               present: Object.entries(anchorOrArray)
                   .filter(([_, v]) => v !== null)
                   .map(([k]) => k),

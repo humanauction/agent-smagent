@@ -64,6 +64,8 @@ export function applyAnchor(
         if (pivot) {
             anchor.summaryHint = pivot.content.slice(0, 120);
         }
+    }
+    if (anchor.summaryHint) {
         result.push({
             role: "summary",
             content: anchor.summaryHint,
