@@ -71,7 +71,7 @@ export class CCRPipeline {
         });
         // 3. RELEVANCE SCORING (per-message)
         const scored = deduped.map((m, i) =>
-            scoreRelevance(m, i, deduped.length),
+            scoreRelevance(m, i, deduped.length, anchor),
         );
         this.telemetry.record({
             session,

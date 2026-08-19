@@ -1,6 +1,27 @@
 import type { SMAGEMessage } from "../index.js";
 import { tokenCount } from "../analyze/tokens.js";
+import type { CCRAnchor } from "./anchor.js";
 // CCR pipeline relevance scoring. components: keyword overlap, role weighting, recency weighting
+
+const ROLE_WEIGHT = {
+    system: 0.2,
+    user: 1.0,
+    assistant: 0.4,
+    tool: 0.8,
+    summary: 0.6,
+};
+
+const KEYWORD_BOOSTS: [string, number][] = [
+    ["urgent", 0.3],
+    ["error", 0.25],
+    ["fix", 0.25],
+    ["analysis", 0.2],
+    ["deep", 0.2],
+    ["why", 0.15],
+    ["how", 0.15],
+    ["explain", 0.15],
+];
+
 /**
  * Extract keywords from a message.
  * Lowercase, remove punctuation, split on whitespace.
@@ -106,27 +127,41 @@ export function scoreRelevance(
     msg: SMAGEMessage,
     index: number,
     total: number,
+    anchor: CCRAnchor | null,
 ): number {
-    let score = 0;
+    let score = 0.1;
 
     // Role weighting
-    if (msg.role === "system") score += 50;
-    else if (msg.role === "user") score += 40;
-    else if (msg.role === "assistant") score += 30;
-    else score += 10;
+    score += ROLE_WEIGHT[msg.role] ?? 0;
 
     // Recency weighting
     const recency = (index + 1) / total;
-    score += recency * 20;
+    score += recency * 0.3;
+
+    // anchor proximity
+    if (anchor) {
+        if (msg === anchor.lastUser) score += 0.2;
+        if (msg === anchor.lastAssistant) score += 0.15;
+        if (msg === anchor.lastTool) score += 0.1;
+        if (msg === anchor.system) score += 0.05;
+    }
 
     // Explicit markers
-    if (msg.content.includes("IMPORTANT")) score += 25;
+    if (msg.content.includes("IMPORTANT")) score += 0.25;
 
-    // Token density
-    const MAX_TOKENS: number = 50;
-    const tokens = Math.min(tokenCount(msg.content) ?? 0, MAX_TOKENS);
+    // keyword boost
+    const lower = msg.content.toLowerCase();
+    for (const [kw, boost] of KEYWORD_BOOSTS) {
+        if (lower.includes(kw)) score += boost;
+    }
 
-    score += tokens / 5;
+    // low info content penalty
+    if (msg.content.length < 10) score -= 0.2;
+    if (/^(ok|sure|thanks|cool)$/i.test(msg.content)) score -= 0.3;
 
-    return score;
+    // Semantic density
+    const tokens = msg.content.split(/\s+/).length;
+    score += Math.min(tokens / 50, 0.3);
+
+    return Math.max(0, Math.min(score, 1));
 }
