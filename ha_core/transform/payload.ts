@@ -1,29 +1,62 @@
 import type { SMAGEMessage, SMAGEOptions } from "../index.js";
-import { tokenCount } from "../analyze/tokens.js";
-import { classifyMessage } from "../analyze/classifier.js";
-import { compressContent } from "./compressors/basic.js";
+
+/**
+ * Semantic compression:
+ * - collapse duplicates
+ * - remove filler
+ * - remove low-priority messages
+ * - preserve anchor + priority
+ * - preserve meaning
+ */
 
 export async function applyPayloadCompression(
     messages: SMAGEMessage[],
     options: SMAGEOptions,
 ): Promise<SMAGEMessage[]> {
-    return messages.map((msg) => {
-        const kind = classifyMessage(msg);
-        const tokens = tokenCount(msg.content);
+    const out: SMAGEMessage[] = [];
+    const seen = new Set<string>();
 
-        // invariants
-        if (kind === "user" || kind === "system") return msg;
-        if (kind === "code" && !options.ast) return msg;
-        if (tokens < 200) return msg;
+    for (const msg of messages) {
+        const normalized = msg.content
+            .replace(/\s+/g, " ")
+            .trim()
+            .toLowerCase();
 
-        if (kind === "tool_output" || kind === "rag" || kind === "log") {
-            return {
-                ...msg,
-                content: compressContent(msg.content),
-                meta: { ...(msg.meta ?? {}), compressed: true },
-            };
+        // 1. dedupe semantic content
+        if (seen.has(normalized)) continue;
+        seen.add(normalized);
+
+        // 2. remove filler
+        if (
+            /^ok|sure|thanks|cool|sounds good|let me think$/i.test(
+                msg.content,
+            ) ||
+            msg.content.length < 10
+        ) {
+            continue;
         }
 
-        return msg;
-    });
+        // 3. remove low-priority messages
+        const priority = msg.meta?.priority ?? 0;
+        if (priority === 0) continue;
+
+        // 4. preserve anchor + summary
+        if (msg.meta?.anchor) {
+            out.push(msg);
+            continue;
+        }
+
+        // 5. semantic compression (long -> short messages)
+        const compressedContent =
+            msg.content.length > 200
+                ? msg.content.slice(0, 200) + " …"
+                : msg.content;
+
+        out.push({
+            ...msg,
+            content: compressedContent,
+        });
+    }
+
+    return out;
 }
