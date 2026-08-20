@@ -1,38 +1,32 @@
 import type { Request, Response } from "express";
 import { applyCCR } from "../../ha_core/transform/ccr.js";
-import { callProvider } from "../../ha_core/call/providers/index.js";
 import { reversibleLog } from "../../ha_core/cache/log.js";
 import {
     providerError,
     isProviderError,
 } from "../../ha_core/call/providers/errors.js";
-import { wrapperRegistry } from "../../ha_wrap/wrapperRegistry.js";
+import { SMAGEOrchestrator } from "../../ha_wrap/orchestrator.js";
+import type { SMAGEMessage } from "../../ha_core/index.js";
 
-// this file defines the routing logic for LLM requests, including CCR shaping and provider calls.
 export async function routeLLM(req: Request, res: Response) {
-    const { provider, model, messages, options = {} } = req.body;
+    const { model, messages, provider, wrapper, options = {} } = req.body;
 
     if (!model || !messages) {
         return res.status(400).json({ error: "Missing model or messages" });
     }
 
-    // validate wrapper when routing via wrappers
-    const wrapper = options.wrapper as string | undefined;
-    if (wrapper) {
-        try {
-            wrapperRegistry.get(wrapper as any);
-        } catch {
-            return res
-                .status(400)
-                .json({ error: `Unknown wrapper: ${wrapper}` });
-        }
-    }
-
     const session = "session"; // TODO: real session id
+
+    // Convert incoming messages → SMAGEMessage
+    const smageMessages: SMAGEMessage[] = messages.map((m: any) => ({
+        role: m.role,
+        content: m.content,
+        meta: {},
+    }));
 
     // CCR shaping
     const shaped = await applyCCR(
-        messages,
+        smageMessages,
         provider ?? "openai",
         session,
         options,
@@ -41,20 +35,40 @@ export async function routeLLM(req: Request, res: Response) {
     reversibleLog(session, "raw", { provider, model, messages, options });
     reversibleLog(session, "shaped", shaped);
 
-    try {
-        const response = await callProvider({
-            session,
-            model,
-            messages: shaped,
-            options: { ...options, provider },
-        });
+    // Build orchestrator config
+    const orchestrator = new SMAGEOrchestrator({
+        session,
+        strategy: options.strategy ?? "auto",
+        agents: [
+            {
+                id: provider ?? "openai",
+                provider: provider ?? "openai",
+                model,
+                speed: 1,
+                cost: 1,
+                depth: 1,
+                quality: 1,
+                options,
+            },
+        ],
+    });
 
-        reversibleLog(session, "provider_response", response);
+    try {
+        const result = await orchestrator.orchestrate(shaped);
+
+        reversibleLog(session, "provider_response", result);
 
         return res.json({
             id: "smage-proxy-response",
             object: "chat.completion",
-            choices: [{ message: response }],
+            choices: [
+                {
+                    message: {
+                        role: "assistant",
+                        content: result.content,
+                    },
+                },
+            ],
         });
     } catch (err) {
         if (isProviderError(err)) {
