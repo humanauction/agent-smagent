@@ -9,7 +9,7 @@ import type { ProviderResponse } from "./interface.js";
  */
 export function normalizeProviderResponse(
     content: any,
-    role?: string,
+    role?: ProviderResponse["role"],
 ): ProviderResponse {
     return {
         role: role ?? "assistant",

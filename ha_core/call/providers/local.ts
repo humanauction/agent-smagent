@@ -1,27 +1,91 @@
-import type { ProviderAdapter } from "./interface.js";
-import { logProviderIO } from "./utils.js";
+import { shapeOutput, logProviderIO } from "./utils.js";
 import { mapProviderRole } from "./roles.js";
-import { normalizeProviderResponse } from "./providerNormalize.js";
+import type { ProviderAdapter } from "./interface.js";
+import { withRetry, providerError, isProviderError } from "./errors.js";
+import { ProviderChainTelemetry } from "./chainTelemetry.js";
 
 export const LocalAdapter: ProviderAdapter = {
     name: "local",
+    capabilities: {
+        streaming: false,
+        tools: true,
+        systemRole: true,
+        maxTokens: 128000,
+    },
 
     async call(req) {
+        const telemetry = new ProviderChainTelemetry();
+        telemetry.record({
+            session: req.session,
+            provider: "local",
+            stage: "provider_call",
+            model: req.model,
+            messages: req.messages.length,
+        });
         const payload = {
             model: req.model,
             messages: req.messages.map((m) => ({
                 role: mapProviderRole(m.role),
                 content: m.content,
             })),
+            temperature: req.options?.temperature ?? 0.7,
+            max_tokens: req.options?.maxTokens ?? 2048,
         };
 
-        // TODO: integrate local model / llama.cpp / python bridge
-        const response = normalizeProviderResponse(
-            "[local placeholder]",
-            "assistant",
-        );
+        try {
+            // Local inference placeholder (retry-safe)
+            const raw = await withRetry(async () => {
+                // TODO: integrate llama.cpp / python bridge
+                return "[local placeholder response]";
+            }, req.options?.retry ?? 2);
 
-        logProviderIO(req.session, "local", req, response);
-        return response;
+            if (!raw || raw.trim() === "") {
+                throw providerError(
+                    "content",
+                    "local",
+                    req.model,
+                    req.session,
+                    "Empty or malformed local model response",
+                    raw,
+                );
+            }
+
+            const response = shapeOutput("assistant", raw);
+
+            logProviderIO(req.session, "local", req, response);
+
+            telemetry.record({
+                session: req.session,
+                provider: "local",
+                stage: "provider_response",
+                tokens: response.meta?.tokens,
+            });
+
+            return response;
+        } catch (err) {
+            if (isProviderError(err)) {
+                logProviderIO(req.session, "local", req, {
+                    role: "assistant",
+                    content: `[provider error: ${err.type} - ${err.message}]`,
+                });
+                throw err;
+            }
+
+            const pe = providerError(
+                "internal",
+                "local",
+                req.model,
+                req.session,
+                String((err as any)?.message ?? err),
+                err,
+            );
+
+            logProviderIO(req.session, "local", req, {
+                role: "assistant",
+                content: `[provider error: ${pe.type} - ${pe.message}]`,
+            });
+
+            throw pe;
+        }
     },
 };
