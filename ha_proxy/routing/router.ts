@@ -34,23 +34,43 @@ export async function routeLLM(req: Request, res: Response) {
 
     reversibleLog(session, "raw", { provider, model, messages, options });
     reversibleLog(session, "shaped", shaped);
-
+    const agents = [
+        {
+            id: "openai-main",
+            provider: "openai",
+            model: model ?? "gpt-4o",
+            speed: 1.0,
+            cost: 0.7,
+            depth: 0.8,
+            quality: 0.95,
+            options,
+        },
+        {
+            id: "anthropic-backup",
+            provider: "anthropic",
+            model: "claude-3-opus",
+            speed: 0.8,
+            cost: 0.8,
+            depth: 0.9,
+            quality: 0.97,
+            options,
+        },
+        {
+            id: "google-spec",
+            provider: "google",
+            model: "gemini-2.0-pro",
+            speed: 1.1,
+            cost: 0.6,
+            depth: 0.7,
+            quality: 0.9,
+            options,
+        },
+    ];
     // Build orchestrator config
     const orchestrator = new SMAGEOrchestrator({
         session,
         strategy: options.strategy ?? "auto",
-        agents: [
-            {
-                id: provider ?? "openai",
-                provider: provider ?? "openai",
-                model,
-                speed: 1,
-                cost: 1,
-                depth: 1,
-                quality: 1,
-                options,
-            },
-        ],
+        agents,
     });
 
     try {
