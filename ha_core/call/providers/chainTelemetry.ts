@@ -28,6 +28,8 @@ export interface ChainTelemetryEvent {
         | "anchor"
         | "relevance"
         | "priority"
+        | "provider_call"
+        | "provider_response"
         | "scoredMessages"
         | "window"
         | "reconstruct"
@@ -46,6 +48,8 @@ export interface ChainTelemetryEvent {
     cached?: boolean;
     error?: string;
     messageCount?: number;
+    messages?: number;
+    model?: string;
     resultSize?: number;
     retryCount?: number;
     retryDelay?: number;

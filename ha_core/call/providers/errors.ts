@@ -61,3 +61,45 @@ export function classifyRetry(type: ProviderErrorType): boolean {
             return false;
     }
 }
+
+export async function withRetry<T>(
+    fn: () => Promise<T>,
+    retries = 2,
+): Promise<T> {
+    let lastErr: any = null;
+    for (let i = 0; i <= retries; i++) {
+        try {
+            return await fn();
+        } catch (err) {
+            lastErr = err;
+        }
+    }
+    throw lastErr;
+}
+
+export function normalizeError(provider: string, err: unknown): ProviderError {
+    if (err instanceof Error) {
+        return providerError(
+            "internal",
+            provider,
+            "unknown",
+            "unknown",
+            err.message,
+            err,
+        );
+    } else if (typeof err === "string") {
+        return providerError("internal", provider, "unknown", "unknown", err);
+    } else {
+        return providerError(
+            "internal",
+            provider,
+            "unknown",
+            "unknown",
+            "Unknown error",
+        );
+    }
+}
+
+export function isProviderError(err: any): err is ProviderError {
+    return err && typeof err === "object" && typeof err.type === "string";
+}
