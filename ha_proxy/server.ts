@@ -5,11 +5,13 @@ import bodyParser from "body-parser";
 import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index.js";
 import { callProvider } from "../ha_core/call/providers/index.js";
 import { dashboardRouter } from "./router.js";
+import { routeLLM } from "./routing/router.js";
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use("/dashboard", dashboardRouter);
+app.post("/v1/chat/completions", routeLLM);
 
 function toSMAGEMessages(
     messages: Array<{ role: string; content: string }>,
