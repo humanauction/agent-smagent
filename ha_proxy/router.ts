@@ -6,6 +6,7 @@ import { mapProviderRole } from "../ha_core/call/providers/roles.js";
 import { CCRPipeline } from "../ha_core/transform/ccr/pipeline.js";
 import { ProviderChainTelemetry } from "../ha_core/call/providers/chainTelemetry.js";
 import { wrapperRegistry } from "../ha_wrap/wrapperRegistry.js";
+import { layout } from "./dashboard/html/layout.js";
 import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index.js";
 /* ---------- runtime endpoint ---------- */
 
@@ -180,23 +181,19 @@ dashboardRouter.get(
                 reducedTokens,
             };
 
-            const html = `
-            <html>
-            <head><title>CCR Dashboard</title></head>
-            <body>
-                <h1>CCR Dashboard — ${wrapper}</h1>
+            const html = layout(
+                `CCR Dashboard — ${wrapper}`,
+                `
+                    <h2>Prompt</h2>
+                    <pre>${prompt}</pre>
 
-                <h2>Prompt</h2>
-                <pre>${prompt}</pre>
+                    <h2>Metrics</h2>
+                    <pre>${JSON.stringify(metrics, null, 2)}</pre>
 
-                <h2>Metrics</h2>
-                <pre>${JSON.stringify(metrics, null, 2)}</pre>
-
-                <h2>Pipeline Result</h2>
-                <pre>${JSON.stringify(shaped, null, 2)}</pre>
-            </body>
-            </html>
-        `;
+                    <h2>Pipeline Result</h2>
+                    <pre>${JSON.stringify(shaped, null, 2)}</pre>
+                `,
+            );
 
             res.send(html);
         } catch (err) {

@@ -29,54 +29,20 @@ function stripCCRMeta(meta: Record<string, unknown> | undefined) {
 }
 
 export function reduceOutput(msg: SMAGEMessage): SMAGEMessage {
-    // Never reduce system/user or anchors
-    if (msg.role === "system" || msg.role === "user" || isAnchor(msg)) {
-        return {
-            ...msg,
-            meta: stripCCRMeta(msg.meta),
-        };
-    }
+    // 1. Normalize whitespace
+    const normalized = msg.content.replace(/\s+/g, " ").trim();
 
-    // Only reduce assistant/tool
-    if (msg.role !== "assistant" && msg.role !== "tool") {
-        return {
-            ...msg,
-            meta: stripCCRMeta(msg.meta),
-        };
-    }
+    // 2. If anchor summary exists, prefer it
+    const summary = msg.meta?.anchor ? normalized : normalized.slice(0, 200);
 
-    let text = msg.content;
-
-    // Avoid breaking JSON or code blocks
-    if (text.includes("{") || text.includes("```")) {
-        return {
-            ...msg,
-            meta: stripCCRMeta(msg.meta),
-        };
-    }
-
-    // Normalize whitespace
-    text = text.replace(/\s+/g, " ").trim();
-
-    const sentences = text.split(/(?<=[.!?])\s+/);
-
-    if (sentences.length <= 3) {
-        return {
-            ...msg,
-            meta: stripCCRMeta(msg.meta),
-        };
-    }
-
-    const reduced = [
-        sentences[0],
-        sentences[1],
-        sentences[sentences.length - 1],
-    ].join(" ");
-
+    // 3. Build reduced message
     return {
-        ...msg,
-        content: reduced,
-        meta: stripCCRMeta(msg.meta),
+        role: "summary",
+        content: summary,
+        meta: {
+            ...msg.meta,
+            reduced: true,
+        },
     };
 }
 

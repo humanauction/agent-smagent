@@ -2,27 +2,27 @@ export function layout(title: string, body: string): string {
     return `
 <!DOCTYPE html>
 <html lang="en">
-connect-src 'self' http://localhost:8080; 
 <head>
 <meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy"
+      content="connect-src 'self' http://localhost:8080;">
 <title>${title}</title>
 <style>
-    body {
+     body {
         font-family: Inter, sans-serif;
         margin: 2rem;
-        background: #222;
+        background: #000;
         color: #f8f9fa;
     }
-    h1 {
-        font-size: 1.8rem;
-        margin-bottom: 1rem;
-    }
     pre {
-        background: #333;
+        background: #111;
+        color: rgb(2, 193, 2);
         padding: 1rem;
         border-radius: 8px;
-        border: 0px solid #ddd;
         overflow-x: auto;
+    }
+    h1, h2 {
+        color: rgb(4, 141, 4);
     }
     .section {
         margin-bottom: 2rem;
