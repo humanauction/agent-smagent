@@ -17,7 +17,7 @@ export const GoogleAdapter: ProviderAdapter = {
         const telemetry = new ProviderChainTelemetry();
         telemetry.record({
             session: req.session,
-            provider: "openai",
+            provider: "google",
             stage: "provider_call",
             model: req.model,
             messages: req.messages.length,

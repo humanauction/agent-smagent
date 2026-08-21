@@ -1,9 +1,12 @@
 # agent‑smagent
 
+[![SMAGE Multi-Platform Build (Bun, Node 24)](https://github.com/humanauction/agent-smagent/actions/workflows/smage-build.yml/badge.svg)](https://github.com/humanauction/agent-smagent/actions/workflows/smage-build.yml)
+
 ## Intro
 
-I built this because I got murdered on tokens asking stupid questions. Being naturally paranoid and now fully suspicious of using anything I don’t understand after recent waves of supply‑chain breaches across NPM, Linux, React, GitHub, and various “open source but actually not” ecosystems.
-I found solutions like Headroom, started reading the code, didnt know why a bunch of it was there. not because it was nefarious I just didnt understand it. if i don’t understand something, I build it. So I decided to just try to write my own compression and context‑management layer. At least then I know what it’s doing, and what it’s not doing. For now. Probably.
+i built this because i got murdered on tokens asking stupid questions. i found solutions, started reading code, didnt know why a bunch of it was there. mostly, because i just didnt understand it and if i don’t understand something - i try to build it. so i thought feck it, i'll just write my own compression and context‑management layer. least then i know what it’s doing and what it’s not doing. for now. probably. i mean, it cant be THAT hard, right?
+
+Right?
 
 ---
 
@@ -118,7 +121,7 @@ Complete:
 ```text
 agent-smagent/
 │
-├── ha_core/
+├── ha_core/                                   # [Core Engine]
 │   ├── analyze/
 │   │   ├── classifier.ts
 │   │   └── tokens.ts
@@ -126,15 +129,18 @@ agent-smagent/
 │   │   ├── compressors/
 │   │   │   └── basic.ts
 │   │   ├── anchor.ts
+│   │   ├── anchor.test.ts
 │   │   ├── ccr.ts
 │   │   ├── context.ts
 │   │   ├── dedupe.ts
 │   │   ├── payload.ts
 │   │   ├── priority.ts
 │   │   ├── relevance.ts
+│   │   ├── relevance.test.ts
 │   │   ├── reconstruct.ts
 │   │   ├── window.ts
-│   │   └── anchor.test.ts
+│   │   └── ccr/
+│   │       └── pipeline.ts
 │   ├── call/
 │   │   └── providers/
 │   │       ├── anthropic.ts
@@ -155,19 +161,20 @@ agent-smagent/
 │   │       ├── router.ts
 │   │       └── utils.ts
 │   ├── cache/
-│   │   ├── logs.ts
+│   │   ├── log.ts
 │   │   └── store.ts
 │   ├── memory/
 │   │   └── memory.ts
-│   ├── stats/
 │   ├── output/
 │   │   └── reducer.ts
-│   ├── compress.py
+│   ├── stats/
 │   ├── compress.ts
-│   ├── index.ts
-│   └── providerMetadata.ts
+│   ├── compress.py
+│   ├── smoke-test.ts
+│   ├── providerMetadata.ts
+│   └── index.ts
 │
-├── ha_proxy/
+├── ha_proxy/                                  # [Proxy Layer]
 │   ├── dashboard/
 │   │   ├── html/
 │   │   │   ├── anchors.ts
@@ -183,6 +190,8 @@ agent-smagent/
 │   │   │   ├── index.ts
 │   │   │   └── messages.ts
 │   │   └── router.ts
+│   ├── routing/
+│   │   └── router.ts
 │   ├── config.ts
 │   ├── index.ts
 │   ├── middleware.ts
@@ -190,18 +199,17 @@ agent-smagent/
 │   ├── server.ts
 │   ├── test-provider.ts
 │   └── test-proxy.ts
-
-├── ha_mcp/
-│   ├── server.ts
-│   ├── index.ts
-│   │
-│   └── tools/
-│       ├── compress.ts
-│       ├── index.ts
-│       ├── retrieve.ts
-│       └── stats.ts
 │
-├── ha_wrap/
+├── ha_mcp/                                    # [MCP Server]
+│   ├── tools/
+│   │   ├── compress.ts
+│   │   ├── retrieve.ts
+│   │   ├── stats.ts
+│   │   └── index.ts
+│   ├── server.ts
+│   └── index.ts
+│
+├── ha_wrap/                                   # [Agent Wrappers]
 │   ├── claude/
 │   │   └── claudeWrapper.ts
 │   ├── aider/
@@ -221,19 +229,19 @@ agent-smagent/
 │   ├── agent.ts
 │   ├── ccrRouting.ts
 │   ├── index.ts
+│   ├── memoryRouting.ts
+│   ├── mcp-client.ts
 │   ├── multi_agent.ts
 │   ├── orchestrator.ts
-│   ├── providerSelection.ts
 │   ├── providerFallback.ts
 │   ├── providerMetadata.ts
 │   ├── providerReliability.ts
+│   ├── providerSelection.ts
 │   ├── responseBlender.ts
-│   ├── memoryRouting.ts
 │   ├── wrapperRegistry.ts
-│   ├── mcp-client.ts
 │   └── types.ts
 │
-├── ha_learn/
+├── ha_learn/                                  # [Learning Engine]
 │   ├── engine.ts
 │   ├── failMiner.ts
 │   ├── index.ts
@@ -247,7 +255,7 @@ agent-smagent/
 │   ├── test-learn.ts
 │   └── types.ts
 │
-├── ha_cli/
+├── ha_cli/                                    # [CLI]
 │   ├── commands/
 │   │   ├── agent.ts
 │   │   ├── anchors.ts
@@ -267,58 +275,91 @@ agent-smagent/
 │   ├── mcp_client.ts
 │   └── main.ts
 │
-├── ha_docs/
+├── ha_docs/                                   # [Docs Generator]
 │   ├── docsite.ts
 │   ├── generator.ts
 │   ├── index.ts
 │   ├── types.ts
 │   └── walk.ts
 │
-├── dist/           # Bun-compiled JS output (tsc) + binary staging
-├── docs/           # Documentation (pending expansion)
+├── docs/                                      # [Documentation]
+│   ├── ccr_stage1.md
+│   ├── ccr_anchor_design/
+│   ├── tech_debt/
+│   │   ├── schema_factor.md
+│   │   ├── provider_adaptive.md
+│   │   ├── relevance_tiers.md
+│   │   ├── semantic_anchors.md
+│   │   ├── entity_dictionary.md
+│   │   └── ast_compress.md
 │
-├── tests/          # Test suite (Vitest)
+├── tests/                                     # [Test Suite]
 │   ├── providers/
+│   │   ├── openai.integration.test.ts
 │   │   ├── openai.test.ts
 │   │   ├── anthropic.test.ts
 │   │   ├── google.test.ts
 │   │   └── local.test.ts
-│   │
 │   ├── chain/
 │   │   ├── chainRouter.test.ts
 │   │   ├── chainTelemetry.test.ts
-│   │   └── chainScore.test.ts
-│   │
+│   │   ├── chainTelemetryFull.test.ts
+│   │   ├── chainScore.test.ts
+│   │   ├── chainRetryLoop.test.ts
+│   │   ├── chainRetry.test.ts
+│   │   ├── chainCache.test.ts
+│   │   ├── chainCacheSkip.test.ts
+│   │   ├── chainFallback.test.ts
+│   │   ├── chainFallbackOrder.test.ts
+│   │   └── chainMultiProvider.test.ts
 │   ├── orchestrator/
-│   │   └── orchestrator.test.ts
-│   │
+│   │   ├── orchestrator.test.ts
+│   │   └── orchestratorFallback.test.ts
+│   ├── transform/
+│   │   └── ccrPipeline.test.ts
 │   ├── utils/
 │   │   ├── mockMessages.ts
 │   │   └── mockConfig.ts
-│   │
+│   ├── _setup/
+│   │   └── providerRegistry.ts
+│   ├── _mocks/
+│   │   └── providers.ts
+│   ├── esm-test.js
+│   ├── setup.ts
 │   ├── vitest.config.js
 │   └── tsconfig.test.json
 │
-│
-├
-
-
-
-
-
-├── smage/          # Binary output directory (CI artifacts)
+├── smage/                                     # [Binary Output]
+│   ├── smage.ts
 │   ├── __init__.py
 │   ├── config.ts
-│   └── smage.ts
-├── scripts/# Utility scripts
+│   ├── node/
+│   ├── .env
+│   └── smage-linux
+│
+├── scripts/                                   # [Scripts]
+│   └── treeGen/
+│
+├── dist/                                      # Bun-compiled JS
+├── node_modules/
+├── .venv/
+│
+├── Dockerfile
+├── Dockerfile.build
+├── compose.yaml
+├── compose.override.yml
+├── Taskfile.yml
 ├── Taskfile.dev.yml
 ├── Taskfile.prod.yml
-├── Taskfile.yml
 ├── tsconfig.json
 ├── package.json
-├── Dockerfile      # Minimal runtime image (binary only)
-├── compose.yaml    # Multi-service runtime (proxy/agent/docs/test)
-└── README.md
+├── package-lock.json
+├── README.md
+├── SMAGE_DOCS.md
+├── mcp.sh
+├── project-tree.txt
+└── .gitignore
+
 ```
 
 ## Current Stage
