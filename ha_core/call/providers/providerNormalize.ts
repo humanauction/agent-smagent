@@ -8,11 +8,11 @@ import type { ProviderResponse } from "./interface.js";
  * - never returns undefined
  */
 export function normalizeProviderResponse(
-    content: any,
-    role?: ProviderResponse["role"],
+    content: unknown,
+    role: ProviderResponse["role"] = "assistant",
 ): ProviderResponse {
     return {
-        role: role ?? "assistant",
         content: typeof content === "string" ? content : String(content ?? ""),
+        role,
     };
 }

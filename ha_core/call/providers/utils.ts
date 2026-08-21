@@ -3,7 +3,10 @@ import { reversibleLog } from "../../cache/log.js";
 
 // this file contains utility functions for provider adapters
 
-export function shapeOutput(role: string, content: string): ProviderResponse {
+export function shapeOutput(
+    role: ProviderResponse["role"],
+    content: string,
+): ProviderResponse {
     return { role, content };
 }
 

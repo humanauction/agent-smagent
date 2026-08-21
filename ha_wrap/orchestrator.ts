@@ -73,6 +73,7 @@ export class SMAGEOrchestrator {
         const userQuery = lastUser?.content ?? "";
 
         const learnedAnchors = learn.scoreRelevance(session, userQuery);
+
         const routing = this.router.decide({ session, messages });
         const effectiveStrategy = routing.strategy;
 

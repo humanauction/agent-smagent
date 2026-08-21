@@ -34,11 +34,13 @@ export async function routeLLM(req: Request, res: Response) {
 
     reversibleLog(session, "raw", { provider, model, messages, options });
     reversibleLog(session, "shaped", shaped);
+
+    // Multi-agent config (fan-out ready)
     const agents = [
         {
             id: "openai-main",
             provider: "openai",
-            model: model ?? "gpt-4o",
+            model,
             speed: 1.0,
             cost: 0.7,
             depth: 0.8,
@@ -66,7 +68,8 @@ export async function routeLLM(req: Request, res: Response) {
             options,
         },
     ];
-    // Build orchestrator config
+
+    // Construct orchestrator
     const orchestrator = new SMAGEOrchestrator({
         session,
         strategy: options.strategy ?? "auto",
@@ -74,6 +77,7 @@ export async function routeLLM(req: Request, res: Response) {
     });
 
     try {
+        // Use the real orchestrator API
         const result = await orchestrator.orchestrate(shaped);
 
         reversibleLog(session, "provider_response", result);
