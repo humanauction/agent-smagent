@@ -4,6 +4,7 @@ export interface SMAGEOptions {
     maxAge?: number; // ms
     maxTokens?: number;
     model?: string;
+    strategy?: "auto" | "single" | "round_robin" | "fan_out";
 }
 
 export interface SMAGEMessage {

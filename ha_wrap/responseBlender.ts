@@ -26,7 +26,7 @@ export class ResponseBlender {
 
         // --- Case: single result ---
         if (results.length === 1) {
-            const single = results[0];
+            const single = results.at(0);
             if (!single) {
                 return {
                     content: "[no response]",
@@ -40,74 +40,94 @@ export class ResponseBlender {
         }
 
         // --- Case: multiple results ---
-        const scored: {
-            agentId: string;
-            content: string;
-            weight: number;
-        }[] = [];
-
-        for (const r of results) {
+        // Step 1: score each result
+        const scored = results.map((r) => {
             const reliability = r.reliability ?? 0;
             const contentScore = this.scoreContent(r.content);
             const combined = contentScore + reliability * 1.5;
 
-            scored.push({
+            return {
                 agentId: r.agentId,
-                content: r.content,
+                content: r.content.trim(),
                 weight: combined,
-            });
+            };
+        });
+
+        // Step 2: group by content
+        const groups = new Map<
+            string,
+            { content: string; items: typeof scored }
+        >();
+
+        for (const item of scored) {
+            const key = item.content;
+            const existing = groups.get(key);
+            if (existing) {
+                existing.items.push(item);
+            } else {
+                groups.set(key, { content: item.content, items: [item] });
+            }
         }
 
-        let total = 0;
-        for (const s of scored) total += s.weight;
-        if (total === 0) total = 1;
+        // Step 3: compute groupScore
+        const rankedGroups = Array.from(groups.values()).map((g) => ({
+            content: g.content,
+            items: g.items,
+            groupScore: g.items.reduce((sum, x) => sum + x.weight, 0),
+        }));
 
-        const normalized: {
-            agentId: string;
-            content: string;
-            weight: number;
-        }[] = [];
-
-        for (const s of scored) {
-            normalized.push({
-                agentId: s.agentId,
-                content: s.content,
-                weight: s.weight / total,
-            });
-        }
-
-        const sorted = normalized.slice().sort((a, b) => b.weight - a.weight);
-
-        const primary = sorted[0];
-        if (!primary) {
+        // strict-safe: check before indexing
+        if (rankedGroups.length === 0) {
             return {
                 content: "[no response]",
                 sources: [],
             };
         }
 
-        let output = primary.content.trim();
+        rankedGroups.sort((a, b) => b.groupScore - a.groupScore);
 
-        for (let i = 1; i < sorted.length; i++) {
-            const o = sorted[i];
-            if (!o) continue;
+        const bestGroup = rankedGroups[0];
+        if (!bestGroup || bestGroup.items.length === 0) {
+            return {
+                content: "[no response]",
+                sources: [],
+            };
+        }
 
-            const trimmed = o.content.trim();
+        const bestItem = bestGroup.items
+            .slice()
+            .sort((a, b) => b.weight - a.weight)[0];
+        if (!bestItem) {
+            return {
+                content: "[no response]",
+                sources: [],
+            };
+        }
+
+        // Step 4: merge additional insights
+        let output = bestGroup.content;
+
+        for (const g of rankedGroups.slice(1)) {
+            const trimmed = g.content.trim();
             if (!trimmed || trimmed.includes("[empty response]")) continue;
 
             if (!output.includes(trimmed.slice(0, 20))) {
-                output += `\n\nAdditional insight (${o.agentId}):\n${trimmed}`;
+                const agentIds = g.items.map((i) => i.agentId).join(", ");
+                output += `\n\nAdditional insight (${agentIds}):\n${trimmed}`;
             }
         }
 
+        // Step 5: normalize weights
+        const totalWeight = scored.reduce((n, x) => n + x.weight, 0) || 1;
+
+        const sources = scored.map((s) => ({
+            agentId: s.agentId,
+            weight: Number((s.weight / totalWeight).toFixed(3)),
+        }));
+
         return {
             content: output,
-            sources: sorted
-                .filter((n) => !!n)
-                .map((n) => ({
-                    agentId: n.agentId,
-                    weight: Number(n.weight.toFixed(3)),
-                })),
+            sources,
         };
     }
 
