@@ -32,52 +32,33 @@ export class ProviderFallback {
             };
         }
 
-        // 2. Timeout → switch to fastest provider
-        if (this.isTimeout(error)) {
-            const fast = this.pickBest(allProviders, "speed");
+        // 2. Classify error for logging (but do NOT change fallback logic)
+        let classification = "unknown failure";
+        if (this.isTimeout(error)) classification = "Timeout";
+        else if (this.isApiError(error)) classification = "API error";
+        else if (this.isRateLimit(error)) classification = "Rate limit";
+        else if (this.isEmptyResponse(error)) classification = "Empty response";
+        // 3. Reliability-first fallback
+        const next = [...allProviders]
+            .filter((p) => p.id !== provider.id)
+            .sort(
+                (a, b) =>
+                    (b.reliability ?? 0) - (a.reliability ?? 0) ||
+                    (b.quality ?? 0) - (a.quality ?? 0) ||
+                    (b.depth ?? 0) - (a.depth ?? 0),
+            )[0];
+
+        if (next) {
             return {
-                provider: fast,
+                provider: next,
                 retry: true,
-                reason: "Timeout detected, switching to fastest provider",
+                reason: `${classification} → Reliability-first fallback`,
             };
         }
-
-        // 3. API error → switch to highest quality
-        if (this.isApiError(error)) {
-            const quality = this.pickBest(allProviders, "quality");
-            return {
-                provider: quality,
-                retry: true,
-                reason: "API error, switching to highest quality provider",
-            };
-        }
-
-        // 4. Rate limit → switch to cheapest
-        if (this.isRateLimit(error)) {
-            const cheap = this.pickBest(allProviders, "cost");
-            return {
-                provider: cheap,
-                retry: true,
-                reason: "Rate limit hit, switching to cheapest provider",
-            };
-        }
-
-        // 5. Reliability-aware fallback: prefer most reliable
-        const reliable = this.pickBest(allProviders, "reliability");
-        if (reliable) {
-            return {
-                provider: reliable,
-                retry: true,
-                reason: "Unknown failure, switching to most reliable provider",
-            };
-        }
-
-        // 6. Final fallback: deepest reasoning model
-        const deep = this.pickBest(allProviders, "depth");
         return {
-            provider: deep,
-            retry: true,
-            reason: "Unknown failure, escalating to deepest provider",
+            provider,
+            retry: false,
+            reason: `${classification} → no suitable fallback`,
         };
     }
 
