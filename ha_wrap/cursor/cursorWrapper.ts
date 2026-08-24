@@ -1,9 +1,10 @@
-import type { SMAGEMessage, SMAGEOptions } from '../../ha_core/index.js';
-import { BaseWrapper } from '../shared/baseWrapper.js';
+import type { SMAGEMessage, SMAGEOptions } from "../../ha_core/index.js";
+import { BaseWrapper } from "../shared/baseWrapper.js";
 
-import { OpenAIAdapter } from '../../ha_core/call/providers/openai.js';
-import { reversibleLog } from '../../ha_core/cache/log.js';
-import { mapProviderRole } from '../../ha_core/call/providers/roles.js';
+import { OpenAIAdapter } from "../../ha_core/call/providers/openai.js";
+import { reversibleLog } from "../../ha_core/cache/log.js";
+import { mapProviderRole } from "../../ha_core/call/providers/roles.js";
+import { SMAGEOrchestrator } from "../orchestrator.js";
 
 /**
  * Cursor persona + rules.
@@ -22,6 +23,29 @@ Never invent APIs or libraries that do not exist.
 Prefer small, incremental improvements unless the user requests a full rewrite.
 Avoid hallucinations by grounding answers in the provided context.
 `;
+
+export const CursorAgents = [
+    {
+        id: "cursor-openai-large",
+        provider: "openai",
+        model: "gpt-4o",
+        speed: 0.9,
+        cost: 0.8,
+        depth: 0.95,
+        quality: 0.95,
+        options: { fallback: "anthropic" },
+    },
+    {
+        id: "cursor-anthropic-sonnet",
+        provider: "anthropic",
+        model: "claude-3-sonnet",
+        speed: 0.8,
+        cost: 0.7,
+        depth: 0.9,
+        quality: 0.92,
+        options: { fallback: "openai" },
+    },
+];
 
 /**
  * CursorWrapper
@@ -52,21 +76,23 @@ export class CursorWrapper extends BaseWrapper {
             messages,
         });
 
-        const response = await OpenAIAdapter.call({
+        const orchestrator = new SMAGEOrchestrator({
             session,
-            model: options.model ?? "gpt-4o-mini",
-            messages,
+            strategy: options.strategy ?? "round_robin",
+            agents: CursorAgents,
         });
+
+        const result = await orchestrator.orchestrate(messages);
 
         reversibleLog(session, "wrapper_provider_response", {
             wrapper: "cursor",
-            response,
+            response: result,
         });
 
         return [
             {
-                role: mapProviderRole(response.role),
-                content: response.content,
+                role: mapProviderRole(result.role),
+                content: result.content,
                 meta: { provider: "openai" },
             },
         ];

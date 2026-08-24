@@ -1,11 +1,12 @@
 // ha_wrap/aider/aiderWrapper.ts
 
-import type { SMAGEMessage, SMAGEOptions } from '../../ha_core/index.js';
-import { BaseWrapper } from '../shared/baseWrapper.js';
+import type { SMAGEMessage, SMAGEOptions } from "../../ha_core/index.js";
+import { BaseWrapper } from "../shared/baseWrapper.js";
 
-import { LocalAdapter } from '../../ha_core/call/providers/local.js';
-import { reversibleLog } from '../../ha_core/cache/log.js';
-import { mapProviderRole } from '../../ha_core/call/providers/roles.js';
+import { LocalAdapter } from "../../ha_core/call/providers/local.js";
+import { reversibleLog } from "../../ha_core/cache/log.js";
+import { mapProviderRole } from "../../ha_core/call/providers/roles.js";
+import { SMAGEOrchestrator } from "../orchestrator.js";
 
 /**
  * Aider persona + rules.
@@ -26,6 +27,29 @@ Always preserve user formatting unless instructed otherwise.
 Never invent APIs or functions that do not exist.
 Always show the diff or patch clearly.
 `;
+
+export const AiderAgents = [
+    {
+        id: "aider-local",
+        provider: "local",
+        model: "local-llm",
+        speed: 1.2,
+        cost: 0.1,
+        depth: 0.6,
+        quality: 0.7,
+        options: { fallback: "openai" },
+    },
+    {
+        id: "aider-openai-mini",
+        provider: "openai",
+        model: "gpt-4o-mini",
+        speed: 1.0,
+        cost: 0.7,
+        depth: 0.8,
+        quality: 0.9,
+        options: { fallback: "local" },
+    },
+];
 
 /**
  * AiderWrapper
@@ -56,22 +80,24 @@ export class AiderWrapper extends BaseWrapper {
             messages,
         });
 
-        const response = await LocalAdapter.call({
+        const orchestrator = new SMAGEOrchestrator({
             session,
-            model: options.model ?? "local-code-model",
-            messages,
+            strategy: options.strategy ?? "round_robin",
+            agents: AiderAgents,
         });
+
+        const result = await orchestrator.orchestrate(messages);
 
         reversibleLog(session, "wrapper_provider_response", {
             wrapper: "aider",
-            response,
+            response: result,
         });
 
         return [
             {
-                role: mapProviderRole(response.role),
-                content: response.content,
-                meta: { provider: "local" },
+                role: mapProviderRole(result.role),
+                content: result.content,
+                meta: { provider: result.agentId },
             },
         ];
     }
