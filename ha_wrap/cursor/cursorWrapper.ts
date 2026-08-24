@@ -93,7 +93,7 @@ export class CursorWrapper extends BaseWrapper {
             {
                 role: mapProviderRole(result.role),
                 content: result.content,
-                meta: { provider: "openai" },
+                meta: { result: result.agentId },
             },
         ];
     }

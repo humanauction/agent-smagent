@@ -93,7 +93,7 @@ export class ClaudeWrapper extends BaseWrapper {
             {
                 role: mapProviderRole(result.role),
                 content: result.content,
-                meta: { provider: "anthropic" },
+                meta: { provider: result.agentId },
             },
         ];
     }

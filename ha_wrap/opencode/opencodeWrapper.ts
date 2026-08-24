@@ -89,7 +89,7 @@ export class OpencodeWrapper extends BaseWrapper {
             {
                 role: mapProviderRole(result.role),
                 content: result.content,
-                meta: { provider: "opencode" },
+                meta: { result: result.agentId },
             },
         ];
     }
