@@ -37,6 +37,7 @@ export async function handleLLM(req: Request, res: Response) {
     const result = await callProvider({
         session: "session",
         model,
+        provider: provider,
         messages: shaped,
         options: { ...smageOptions, provider },
     });
