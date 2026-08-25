@@ -72,6 +72,7 @@ async function handleCall(params: any) {
     const response = await callProvider({
         session,
         model,
+        provider: providerName,
         messages: shaped,
         options: { ...(options ?? {}), provider: providerName },
     });

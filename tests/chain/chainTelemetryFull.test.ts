@@ -64,6 +64,7 @@ describe("ChainRouter Telemetry", () => {
         await chain.call({
             session: "test-session",
             model: "gpt-4o-mini",
+            provider: "openai",
             messages: [{ role: "user", content: "hello" }],
             options: {},
         });

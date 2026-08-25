@@ -17,6 +17,7 @@ describe("OpenAI Integration", () => {
         const res = await adapter.call({
             session: "integration-test",
             model: "gpt-4o-mini",
+            provider: "openai",
             messages: [{ role: "user", content: "hello" }],
             options: {},
         });

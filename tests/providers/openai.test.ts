@@ -23,6 +23,7 @@ describe("OpenAI Provider Connectivity", () => {
         const req: ProviderRequest = {
             session: "test-session",
             model: "gpt-4o-mini",
+            provider: "openai",
             messages: [{ role: "user", content: "hello" }],
             options: {},
         };

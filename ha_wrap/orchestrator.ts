@@ -315,7 +315,8 @@ export class SMAGEOrchestrator {
         const res = await chain.call({
             session: this.config.session,
             model: agent.model,
-            messages: shaped.compressed,
+            provider: agent.provider ?? "openai",
+            messages: shaped.reconstructed,
             options: agent.options ?? {},
         });
         // agent result telemetry
