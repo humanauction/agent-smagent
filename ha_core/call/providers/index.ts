@@ -1,3 +1,4 @@
+// imports
 import type {
     ProviderAdapter,
     ProviderRequest,
@@ -7,8 +8,8 @@ import { OpenAIAdapter } from "./openai.js";
 import { AnthropicAdapter } from "./anthropic.js";
 import { GoogleAdapter } from "./google.js";
 import { LocalAdapter } from "./local.js";
-import { normalizeProviderResponse } from "./providerNormalize.js";
 
+//exports
 export * from "./anthropic.js";
 export * from "./google.js";
 export * from "./interface.js";

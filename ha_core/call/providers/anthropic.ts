@@ -3,7 +3,6 @@ import { mapProviderRole } from "./roles.js";
 import type { ProviderAdapter } from "./interface.js";
 import { withRetry, providerError, isProviderError } from "./errors.js";
 import { ProviderChainTelemetry } from "./chainTelemetry.js";
-
 import {
     fetchWithTimeout,
     jsonParseWithTimeout,
@@ -52,7 +51,7 @@ export const AnthropicAdapter: ProviderAdapter = {
 
         try {
             /**
-             * Hardened fetch + retry
+             * fetch + retry
              */
             const res = await withRetry(
                 () =>
@@ -115,7 +114,7 @@ export const AnthropicAdapter: ProviderAdapter = {
             }
 
             /**
-             * Hardened JSON parse
+             * JSON parse
              */
             const json = await jsonParseWithTimeout(res, req);
 
