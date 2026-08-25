@@ -7,6 +7,7 @@ export type ProviderErrorType =
     | "auth"
     | "rate_limit"
     | "model"
+    | "timeout"
     | "content"
     | "internal";
 
@@ -21,6 +22,7 @@ export interface ProviderError {
     retryDelay?: number; // ms milliseconds before retrying
     retryCount?: number; // INT number of retries attempted
     timestamp: number;
+    timeout?: boolean; // indicates if the error was due to a timeout
 }
 
 export function providerError(
@@ -31,7 +33,7 @@ export function providerError(
     message: string,
     cause?: unknown,
     retryCount: number = 0,
-    retryable: boolean = false,
+    // retryable: boolean = false,
 ): ProviderError {
     return {
         type,
@@ -44,6 +46,7 @@ export function providerError(
         retryDelay: classifyRetry(type) ? 250 * (retryCount + 1) : undefined,
         retryCount,
         timestamp: Date.now(),
+        timeout: type === "timeout",
     };
 }
 
@@ -58,6 +61,10 @@ export function classifyRetry(type: ProviderErrorType): boolean {
         case "model":
         case "content":
         case "internal":
+        case "timeout":
+            return false;
+
+        default:
             return false;
     }
 }
