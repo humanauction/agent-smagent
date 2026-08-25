@@ -37,8 +37,9 @@ export function getProvider(name: string): ProviderAdapter {
 export async function callProvider(
     req: ProviderRequest,
 ): Promise<ProviderResponse> {
-    const providerName = req.options?.provider ?? req.provider ?? "openai";
+    const providerName = req.provider ?? "openai";
     const provider = getProvider(providerName);
+
     return provider.call({
         ...req,
         provider: providerName,
