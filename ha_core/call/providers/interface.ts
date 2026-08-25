@@ -3,6 +3,7 @@ import type { SMAGEMessage } from "../../index.js";
 export interface ProviderRequest {
     session: string;
     model: string;
+    provider: string;
     messages: SMAGEMessage[];
     options?: {
         provider?: string;
