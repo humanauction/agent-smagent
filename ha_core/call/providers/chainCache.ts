@@ -1,4 +1,4 @@
-// this file contains cache implementation for provider failures in the multi-fallback chain
+import { timeoutGuard, safeTelemetry } from "./timeout.js";
 
 export interface ChainCacheEntry {
     provider: string;
@@ -8,46 +8,80 @@ export interface ChainCacheEntry {
 
 export class ProviderChainCache {
     private cache: Map<string, ChainCacheEntry> = new Map();
-    private readonly ttl = 15_000; // 15 seconds
 
+    // 15s TTL for failure entries
+    private readonly ttl = 15_000;
+
+    // --- safeCache wrapper ---
+    private safeCache<T>(fn: () => T): T | null {
+        try {
+            return fn();
+        } catch {
+            return null;
+        }
+    }
+
+    // --- mark failure (timeout-aware) ---
     markFailure(provider: string, reason: string) {
-        this.cache.set(provider, {
-            provider,
-            lastFailure: Date.now(),
-            reason,
+        this.safeCache(() => {
+            this.cache.set(provider, {
+                provider,
+                lastFailure: Date.now(),
+                reason,
+            });
         });
     }
 
+    // --- internal TTL check ---
+    private isFresh(entry: ChainCacheEntry | undefined): boolean {
+        if (!entry) return false;
+        const age = Date.now() - entry.lastFailure;
+        return age < this.ttl;
+    }
+
+    // --- cache hit (provider recently failed) ---
     isHit(provider: string): boolean {
-        const entry = this.cache.get(provider);
-        if (!entry) return false;
-
-        const age = Date.now() - entry.lastFailure;
-        return age < this.ttl;
+        return (
+            this.safeCache(() => {
+                const entry = this.cache.get(provider);
+                return this.isFresh(entry);
+            }) ?? false
+        );
     }
 
+    // --- cache skip (router should skip provider) ---
     isCached(provider: string): boolean {
-        const entry = this.cache.get(provider);
-        if (!entry) return false;
-
-        const age = Date.now() - entry.lastFailure;
-        return age < this.ttl;
+        return (
+            this.safeCache(() => {
+                const entry = this.cache.get(provider);
+                return this.isFresh(entry);
+            }) ?? false
+        );
     }
 
+    // --- failure reason (timeout-aware) ---
     getReason(provider: string): string | null {
-        return this.cache.get(provider)?.reason ?? null;
+        return this.safeCache(() => {
+            const entry = this.cache.get(provider);
+            if (!entry) return null;
+            if (!this.isFresh(entry)) return null;
+            return entry.reason;
+        });
     }
 
+    // --- get full entry (TTL enforced) ---
     get(provider: string): ChainCacheEntry | null {
-        const entry = this.cache.get(provider);
-        if (!entry) return null;
+        return this.safeCache(() => {
+            const entry = this.cache.get(provider);
+            if (!entry) return null;
 
-        const age = Date.now() - entry.lastFailure;
-        if (age < this.ttl) {
-            return entry;
-        } else {
+            if (this.isFresh(entry)) {
+                return entry;
+            }
+
+            // expired → delete
             this.cache.delete(provider);
             return null;
-        }
+        });
     }
 }
