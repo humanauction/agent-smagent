@@ -2,7 +2,7 @@ import type { SMAGEMessage, SMAGEOptions } from "../../index.js";
 import { ProviderChainTelemetry } from "../../call/providers/chainTelemetry.js";
 
 // CCR stage modules (real signatures)
-import { extractAnchor, mergeAnchor } from "../anchor.js";
+import { extractAnchor, mergeAnchor, CCRAnchor } from "../anchor.js";
 import { dedupeMessages } from "../dedupe.js";
 import { scoreRelevance } from "../relevance.js";
 import { assignPriorities } from "../priority.js";
@@ -10,10 +10,11 @@ import { applyContextWindow } from "../window.js";
 import { reconstruct } from "../reconstruct.js";
 import { applyPayloadCompression } from "../payload.js";
 import { reduceOutput } from "../../output/reducer.js";
-import { CCRAnchor } from "../anchor.js";
+import { timeoutGuard, safeTelemetry } from "../../call/providers/timeout.js";
 
 // this file contains the CCR pipeline for processing SMAGE messages through various stages
 
+const CCR_STAGE_TIMEOUT_MS = 20_000; // cap for heavy async CCR stages
 export interface CCRPipelineResult {
     original: SMAGEMessage[];
     anchor: CCRAnchor;
@@ -39,12 +40,15 @@ export class CCRPipeline {
         options: SMAGEOptions = {},
     ): Promise<CCRPipelineResult> {
         // CCR start
-        this.telemetry.record({
-            session,
-            provider: "ccr",
-            stage: "pipeline_start",
-            messageCount: messages.length,
-        });
+
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                provider: "ccr",
+                stage: "pipeline_start",
+                messageCount: messages.length,
+            }),
+        );
 
         // 1. ANCHOR EXTRACTION
         const rawAnchor = extractAnchor(messages);
@@ -54,71 +58,92 @@ export class CCRPipeline {
             lastAssistant: rawAnchor.lastAssistant ?? null,
             lastTool: rawAnchor.lastTool ?? null,
         };
-        this.telemetry.record({
-            session,
-            provider: "ccr",
-            stage: "anchor",
-            messageCount: messages.length,
-        });
 
-        // 2. DEDUPE (operates on full message list)
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                provider: "ccr",
+                stage: "anchor",
+                messageCount: messages.length,
+            }),
+        );
+
+        // 2. DEDUPE
         const deduped = dedupeMessages(messages);
-        this.telemetry.record({
-            session,
-            provider: "ccr",
-            stage: "dedupe",
-            messageCount: deduped.length,
-        });
-        // 3. RELEVANCE SCORING (per-message)
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                provider: "ccr",
+                stage: "dedupe",
+                messageCount: deduped.length,
+            }),
+        );
+
+        // 3. RELEVANCE SCORING
         const scored = deduped.map((m, i) =>
             scoreRelevance(m, i, deduped.length, anchor),
         );
-        this.telemetry.record({
-            session,
-            provider: "ccr",
-            stage: "relevance",
-            messageCount: deduped.length,
-        });
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                provider: "ccr",
+                stage: "relevance",
+                messageCount: deduped.length,
+            }),
+        );
+
         const scoredMessages = deduped.map((m, i) => ({
             ...m,
             meta: { ...m.meta, relevance: scored[i] },
         }));
-        this.telemetry.record({
-            session,
-            provider: "ccr",
-            stage: "scoredMessages",
-            messageCount: scoredMessages.length,
-        });
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                provider: "ccr",
+                stage: "scoredMessages",
+                messageCount: scoredMessages.length,
+            }),
+        );
 
-        // 4. PRIORITY ASSIGNMENT (batch)
+        // 4. PRIORITY ASSIGNMENT
         const prioritized = assignPriorities(scoredMessages, anchor);
-        this.telemetry.record({
-            session,
-            provider: "ccr",
-            stage: "priority",
-            messageCount: scoredMessages.length,
-        });
-        // 5. CONTEXT WINDOW (requires maxTokens)
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                provider: "ccr",
+                stage: "priority",
+                messageCount: scoredMessages.length,
+            }),
+        );
+
+        // 5. CONTEXT WINDOW
         const MAX_TOKENS = 4096;
         const windowed = applyContextWindow(prioritized, MAX_TOKENS);
-        this.telemetry.record({
-            session,
-            provider: "ccr",
-            stage: "window",
-            messageCount: windowed.length,
-        });
-        // 6. RECONSTRUCT (requires anchor)
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                provider: "ccr",
+                stage: "window",
+                messageCount: windowed.length,
+            }),
+        );
+
+        // 6. RECONSTRUCT
         const reconstructed = reconstruct(windowed, anchor);
-        this.telemetry.record({
-            session,
-            provider: "ccr",
-            stage: "reconstruct",
-            messageCount: reconstructed.length,
-        });
-        // 7. PAYLOAD COMPRESSION (async)
-        const compressed = await applyPayloadCompression(
-            reconstructed,
-            options,
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                provider: "ccr",
+                stage: "reconstruct",
+                messageCount: reconstructed.length,
+            }),
+        );
+
+        // 7. PAYLOAD COMPRESSION (async, heavy) with timeout
+        const compressed = await timeoutGuard(
+            applyPayloadCompression(reconstructed, options),
+            CCR_STAGE_TIMEOUT_MS,
+            `ccr-compress-${session}`,
         );
 
         function pickLastMsg(
@@ -136,54 +161,64 @@ export class CCRPipeline {
                 return original.at(-1)!;
             }
             throw new Error(
-                "CCR pipeline: no messages available for reduction. should never actually fire. happy now, ts? FFS tho...",
+                "CCR pipeline: no messages available for reduction.",
             );
         }
-        this.telemetry.record({
-            session,
-            provider: "ccr",
-            stage: "compress",
-            messageCount: compressed.length,
-        });
-        // 8. OUTPUT REDUCTION (single message)
+
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                provider: "ccr",
+                stage: "compress",
+                messageCount: compressed.length,
+            }),
+        );
+
+        // 8. OUTPUT REDUCTION
         const reduced = reduceOutput(
             pickLastMsg(compressed, reconstructed, messages),
         );
-        this.telemetry.record({
-            session,
-            provider: "ccr",
-            stage: "reduce",
-            messageCount: 1,
-        });
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                provider: "ccr",
+                stage: "reduce",
+                messageCount: 1,
+            }),
+        );
 
-        this.telemetry.record({
-            session,
-            provider: "ccr",
-            stage: "metrics",
-            tokens: {
-                raw: messages.reduce((n, m) => n + m.content.length, 0),
-                window: windowed.reduce((n, m) => n + m.content.length, 0),
-                compressed: compressed.reduce(
-                    (n, m) => n + m.content.length,
-                    0,
-                ),
-                reduced: reduced.content.length,
-            },
-            counts: {
-                raw: messages.length,
-                deduped: deduped.length,
-                window: windowed.length,
-                compressed: compressed.length,
-            },
-        });
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                provider: "ccr",
+                stage: "metrics",
+                tokens: {
+                    raw: messages.reduce((n, m) => n + m.content.length, 0),
+                    window: windowed.reduce((n, m) => n + m.content.length, 0),
+                    compressed: compressed.reduce(
+                        (n, m) => n + m.content.length,
+                        0,
+                    ),
+                    reduced: reduced.content.length,
+                },
+                counts: {
+                    raw: messages.length,
+                    deduped: deduped.length,
+                    window: windowed.length,
+                    compressed: compressed.length,
+                },
+            }),
+        );
 
         // CCR end
-        this.telemetry.record({
-            session,
-            provider: "ccr",
-            stage: "pipeline_end",
-            resultSize: 1,
-        });
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                provider: "ccr",
+                stage: "pipeline_end",
+                resultSize: 1,
+            }),
+        );
 
         return {
             original: messages,
