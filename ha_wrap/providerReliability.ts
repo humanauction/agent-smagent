@@ -21,46 +21,91 @@ export interface ProviderReliabilitySnapshot {
     reliability: number; // 0–1
 }
 
+const MAX_EVENTS_PER_PROVIDER = 200;
+
 export class ProviderReliabilityTracker {
     private events: ProviderFailureEvent[] = [];
     private store: Record<string, ProviderReliabilitySnapshot> = {};
+    private safeMemory<T>(fn: () => T): T | null {
+        try {
+            return fn();
+        } catch {
+            return null;
+        }
+    }
 
     getSnapshot(providerId: string): ProviderReliabilitySnapshot {
         if (this.store[providerId]) {
             return this.store[providerId];
         }
-        return this.snapshot(providerId);
+        const snap = this.safeMemory(() => this.snapshot(providerId));
+        if (snap) return snap;
+
+        // fallback snapshot if memory fails
+        return {
+            id: providerId,
+            provider: "unknown",
+            model: "unknown",
+            failures: 0,
+            timeouts: 0,
+            empties: 0,
+            fallbacks: 0,
+            slowResponses: 0,
+            reliability: 1,
+        };
     }
 
     record(event: ProviderFailureEvent) {
-        this.events.push(event);
-        const snap = this.snapshot(event.providerId);
-        let delta = 0;
+        this.safeMemory(() => {
+            this.events.push(event);
 
-        switch (event.kind) {
-            case "error":
-                delta = -0.25;
-                break;
-            case "empty":
-                delta = -0.15;
-                break;
-            case "slow":
-                delta = -0.1;
-                break;
-            case "fallback":
-                delta = -0.2;
-                break;
-            case "timeout":
-                delta = -0.25;
-                break;
-            case "success":
-                delta = +0.05;
-                break;
-        }
+            // bound history per provider
+            const relevant = this.events.filter(
+                (e) => e.providerId === event.providerId,
+            );
+            if (relevant.length > MAX_EVENTS_PER_PROVIDER) {
+                const excess = relevant.length - MAX_EVENTS_PER_PROVIDER;
+                const cutoffTs = relevant
+                    .sort((a, b) => a.timestamp - b.timestamp)
+                    .slice(excess)[0]?.timestamp;
 
-        const next = Math.max(0, Math.min(1, snap.reliability + delta));
+                if (cutoffTs !== undefined) {
+                    this.events = this.events.filter(
+                        (e) =>
+                            e.providerId !== event.providerId ||
+                            e.timestamp >= cutoffTs,
+                    );
+                }
+            }
 
-        this.store[event.providerId] = { ...snap, reliability: next };
+            const snap = this.snapshot(event.providerId);
+            let delta = 0;
+
+            switch (event.kind) {
+                case "error":
+                    delta = -0.25;
+                    break;
+                case "empty":
+                    delta = -0.15;
+                    break;
+                case "slow":
+                    delta = -0.1;
+                    break;
+                case "fallback":
+                    delta = -0.2;
+                    break;
+                case "timeout":
+                    delta = -0.25;
+                    break;
+                case "success":
+                    delta = +0.05;
+                    break;
+            }
+
+            const next = Math.max(0, Math.min(1, snap.reliability + delta));
+
+            this.store[event.providerId] = { ...snap, reliability: next };
+        });
     }
 
     snapshot(providerId: string): ProviderReliabilitySnapshot {

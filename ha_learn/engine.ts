@@ -27,36 +27,64 @@ export interface LearningState {
     anchors: Anchor[];
 }
 
+const MAX_ANCHORS_PER_SESSION = 200;
+const ANCHOR_TTL_MS = 24 * 60_000 * 60; // 24h
+
 export class SMAGELearningEngine {
     private state: LearningState = { anchors: [] };
 
     constructor() {}
 
-    // ingest a single conversation turn
-    ingest(event: LearningEvent) {
-        reversibleLog(event.session, "learn_ingest", event);
-
-        const text = this.extractText(event);
-        if (!text.trim()) return;
-
-        const anchor = this.createOrUpdateAnchor(event.session, text);
-        reversibleLog(event.session, "learn_anchor", anchor);
+    private safeMemory<T>(fn: () => T): T | null {
+        try {
+            return fn();
+        } catch {
+            return null;
+        }
     }
 
-    // get anchors for a session
+    // ingest a single conversation turn
+    ingest(event: LearningEvent) {
+        this.safeMemory(() => {
+            reversibleLog(event.session, "learn_ingest", event);
+
+            const text = this.extractText(event);
+            if (!text.trim()) return;
+
+            const anchor = this.createOrUpdateAnchor(event.session, text);
+            reversibleLog(event.session, "learn_anchor", anchor);
+        });
+    }
+
+    // get anchors for a session (bounded + TTL)
     getAnchors(session: string): Anchor[] {
-        return this.state.anchors.filter((a) => a.session === session);
+        const now = Date.now();
+
+        const anchors = this.state.anchors.filter(
+            (a) =>
+                a.session === session && now - a.lastUpdatedAt <= ANCHOR_TTL_MS,
+        );
+
+        if (anchors.length > MAX_ANCHORS_PER_SESSION) {
+            anchors.sort((a, b) => a.lastUpdatedAt - b.lastUpdatedAt);
+            return anchors.slice(-MAX_ANCHORS_PER_SESSION);
+        }
+
+        return anchors;
     }
 
     // simple relevance scoring (placeholder)
     scoreRelevance(session: string, query: string): Anchor[] {
         const anchors = this.getAnchors(session);
-        return anchors
+
+        const scored = anchors
             .map((a) => ({
                 ...a,
                 score: this.computeScore(a.text, query),
             }))
             .sort((a, b) => b.score - a.score);
+
+        return scored;
     }
 
     // --- internals ---
@@ -73,11 +101,11 @@ export class SMAGELearningEngine {
     }
 
     private createOrUpdateAnchor(session: string, text: string): Anchor {
+        const now = Date.now();
+
         const existing = this.state.anchors.find(
             (a) => a.session === session && a.text === text,
         );
-
-        const now = Date.now();
 
         if (existing) {
             existing.score = Math.min(existing.score + 0.1, 1.0);
@@ -119,24 +147,19 @@ export class SMAGELearningEngine {
     }
 }
 
-// this function is the orchestrator called from CLI or agents to run the learning cycle
+// unchanged: runLearningCycle stays as-is
 export async function runLearningCycle(
     session: string,
 ): Promise<LearningUpdate> {
     const samples = collectSamples(session);
     const update = mineSignals(samples);
 
-    // engine-level signal bundle
     const signal = {
         session,
         samples,
         update,
     };
 
-    // TODO: persist update to disk (JSON file) or DB
-    // e.g. writeFile(`learn/${session}.json`, JSON.stringify(update, null, 2))
-
-    // unified reversibleLog for learning cycle
     reversibleLog(session, "learning_signal", signal);
     reversibleLog(session, "learning_update", update);
 
