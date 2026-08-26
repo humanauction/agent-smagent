@@ -11,7 +11,13 @@ import { ProviderRouter } from "../ha_core/call/providers/router.js";
 import { ProviderChainRouter } from "../ha_core/call/providers/chainRouter.js";
 import { ProviderChainTelemetry } from "../ha_core/call/providers/chainTelemetry.js";
 import { CCRPipeline } from "../ha_core/transform/ccr/pipeline.js";
+import {
+    timeoutGuard,
+    safeTelemetry,
+} from "../ha_core/call/providers/timeout.js";
 
+const ORCHESTRATOR_TIMEOUT_MS = 90_000; // per agent cap 90s
+const CCR_TIMEOUT_MS = 30_000; // CCR cap 30s
 export interface OrchestratorConfig {
     session: string;
     strategy: "single" | "round_robin" | "fan_out" | "auto";
@@ -251,13 +257,17 @@ export class SMAGEOrchestrator {
         agent: OrchestratorConfig["agents"][0],
         messages: SMAGEMessage[],
     ): Promise<OrchestratorResult> {
+        const session = this.config.session;
+
         // agent dispatch telemetry
-        this.telemetry.record({
-            session: this.config.session,
-            stage: "agent_dispatch",
-            provider: agent.provider,
-            agentId: agent.id,
-        });
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                stage: "agent_dispatch",
+                provider: agent.provider,
+                agentId: agent.id,
+            }),
+        );
 
         const chain = new ProviderChainRouter(
             {
@@ -302,31 +312,40 @@ export class SMAGEOrchestrator {
                     reliability: 0.2,
                 },
             },
-            this.config.session,
+            session,
         );
 
         const ccr = new CCRPipeline(this.telemetry);
-        const shaped = await ccr.run(
-            this.config.session,
-            messages,
-            agent.options ?? {},
+
+        // CCR pipeline with orchestroator-level timeout guard
+        const shaped = await timeoutGuard(
+            ccr.run(session, messages, agent.options ?? {}),
+            CCR_TIMEOUT_MS,
+            `orchestrator-ccr-${agent.id}`,
         );
 
-        const res = await chain.call({
-            session: this.config.session,
-            model: agent.model,
-            provider: agent.provider ?? "openai",
-            messages: shaped.reconstructed,
-            options: agent.options ?? {},
-        });
+        // chain call with orchestrator-level timeout
+        const res = await timeoutGuard(
+            chain.call({
+                session,
+                model: agent.model,
+                provider: agent.provider ?? "openai",
+                messages: shaped.reconstructed,
+                options: agent.options ?? {},
+            }),
+            ORCHESTRATOR_TIMEOUT_MS,
+            `orchestrator-chain-${agent.id}`,
+        );
         // agent result telemetry
-        this.telemetry.record({
-            session: this.config.session,
-            stage: "agent_result",
-            provider: agent.provider,
-            agentId: agent.id,
-            response: res,
-        });
+        safeTelemetry(() =>
+            this.telemetry.record({
+                session,
+                stage: "agent_result",
+                provider: agent.provider,
+                agentId: agent.id,
+                response: res,
+            }),
+        );
 
         return {
             agentId: agent.id,
