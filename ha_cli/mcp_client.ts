@@ -1,7 +1,5 @@
 import { spawn } from "child_process";
 
-// this file contains a client for the MCP server used to call SMAGE providers from a separate process.
-// Useful for - isolating provider calls from main application; running MCP server in a separate process.
 interface MCPRequest {
     id: number;
     method: string;
@@ -13,6 +11,8 @@ interface MCPResponse {
     result?: any;
     error?: string;
 }
+
+const MCP_CLIENT_TIMEOUT_MS = 30_000;
 
 export class SMAGEMCPClient {
     private proc: ReturnType<typeof spawn>;
@@ -38,14 +38,20 @@ export class SMAGEMCPClient {
     }
 
     private send(req: MCPRequest): Promise<MCPResponse> {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const json = JSON.stringify(req);
             this.stdin.write(json + "\n");
+
+            const timer = setTimeout(() => {
+                this.stdout.off("data", onData);
+                reject(new Error("MCP request timed out"));
+            }, MCP_CLIENT_TIMEOUT_MS);
 
             const onData = (data: Buffer) => {
                 try {
                     const msg = JSON.parse(data.toString()) as MCPResponse;
                     if (msg.id === req.id) {
+                        clearTimeout(timer);
                         this.stdout.off("data", onData);
                         resolve(msg);
                     }

@@ -3,5 +3,10 @@ export function printSection(title: string) {
 }
 
 export function printJSON(obj: any) {
-    console.log(JSON.stringify(obj, null, 2));
+    try {
+        console.log(JSON.stringify(obj, null, 2));
+    } catch (err) {
+        console.log("<< JSON stringify failed >>");
+        console.log(String(err));
+    }
 }

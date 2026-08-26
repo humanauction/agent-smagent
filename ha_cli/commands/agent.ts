@@ -8,6 +8,7 @@ interface AgentProcess {
 
 let agent: AgentProcess | null = null;
 
+// Full metrics object — TS must see all fields
 const metrics = {
     restarts: 0,
     uptimeStart: Date.now(),
@@ -20,6 +21,16 @@ const metrics = {
     },
 };
 
+// ---- safe logging wrapper ----
+function safeLog(session: string, tag: string, payload: any) {
+    try {
+        reversibleLog(session, tag, payload);
+    } catch {
+        // never block agent supervisor
+    }
+}
+
+// ---- system metrics sampler ----
 function sampleSystemMetrics() {
     const usage = process.cpuUsage();
     const mem = process.memoryUsage();
@@ -31,11 +42,30 @@ function sampleSystemMetrics() {
     };
 }
 
+// ---- dashboard printer ----
+function printDashboard() {
+    console.log("\x1Bc");
+    console.log("=== SMAGE Agent Metrics Dashboard ===");
+    console.log(
+        `Uptime: ${Math.round((Date.now() - metrics.uptimeStart) / 1000)}s`,
+    );
+    console.log(`Restarts: ${metrics.restarts}`);
+    console.log(`Heartbeat latency: ${metrics.heartbeatLatency}ms`);
+    console.log(`CPU: ${metrics.cpu}ms`);
+    console.log(
+        `Memory: RSS ${metrics.memory.rss}MB, Heap ${metrics.memory.heap}MB`,
+    );
+    console.log(
+        `Last heartbeat: ${new Date(metrics.lastHeartbeat).toLocaleTimeString()}`,
+    );
+    console.log("=====================================");
+}
+
+// ---- agent start ----
 function startAgent(): AgentProcess {
     console.log("[agent] starting MCP server...");
 
-    // reversible logging: agent start
-    reversibleLog("agent", "agent_start", {
+    safeLog("agent", "agent_start", {
         ts: Date.now(),
         restarts: metrics.restarts,
     });
@@ -58,8 +88,7 @@ function startAgent(): AgentProcess {
             agentProc.lastHeartbeat = now;
             metrics.lastHeartbeat = now;
 
-            // reversible logging: heartbeat
-            reversibleLog("agent", "agent_heartbeat", {
+            safeLog("agent", "agent_heartbeat", {
                 ts: now,
                 latency: metrics.heartbeatLatency,
             });
@@ -76,12 +105,12 @@ function startAgent(): AgentProcess {
     return agentProc;
 }
 
+// ---- restart logic ----
 function restartAgent() {
     metrics.restarts++;
     console.log("[agent] restarting MCP server...");
 
-    // reversible logging: restart event
-    reversibleLog("agent", "agent_restart", {
+    safeLog("agent", "agent_restart", {
         ts: Date.now(),
         reason: "exit_or_unresponsive",
         restarts: metrics.restarts,
@@ -90,6 +119,7 @@ function restartAgent() {
     agent = startAgent();
 }
 
+// ---- heartbeat watchdog ----
 function startHealthCheck() {
     setInterval(() => {
         if (!agent) return;
@@ -100,8 +130,7 @@ function startHealthCheck() {
         if (diff > 10000) {
             console.log("[agent] Agent is unresponsive, restarting...");
 
-            // reversible logging: heartbeat timeout
-            reversibleLog("agent", "agent_restart", {
+            safeLog("agent", "agent_restart", {
                 ts: now,
                 reason: "heartbeat_timeout",
                 lastHeartbeat: agent.lastHeartbeat,
@@ -113,6 +142,7 @@ function startHealthCheck() {
     }, 5000);
 }
 
+// ---- dashboard loop ----
 function startDashboard() {
     setInterval(() => {
         sampleSystemMetrics();
@@ -120,24 +150,7 @@ function startDashboard() {
     }, 2000);
 }
 
-function printDashboard() {
-    console.log("\x1Bc");
-    console.log("=== SMAGE Agent Metrics Dashboard ===");
-    console.log(
-        `Uptime: ${Math.round((Date.now() - metrics.uptimeStart) / 1000)}s`,
-    );
-    console.log(`Restarts: ${metrics.restarts}`);
-    console.log(`Heartbeat latency: ${metrics.heartbeatLatency}ms`);
-    console.log(`CPU: ${metrics.cpu}ms`);
-    console.log(
-        `Memory: RSS ${metrics.memory.rss}MB, Heap ${metrics.memory.heap}MB`,
-    );
-    console.log(
-        `Last heartbeat: ${new Date(metrics.lastHeartbeat).toLocaleTimeString()}`,
-    );
-    console.log("=====================================");
-}
-
+// ---- CLI entry ----
 export async function testAgent() {
     console.log("[agent] supervisor starting...");
     agent = startAgent();
