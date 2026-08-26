@@ -65,9 +65,10 @@ export class ProviderReliabilityTracker {
             );
             if (relevant.length > MAX_EVENTS_PER_PROVIDER) {
                 const excess = relevant.length - MAX_EVENTS_PER_PROVIDER;
-                const cutoffTs = relevant
-                    .sort((a, b) => a.timestamp - b.timestamp)
-                    .slice(excess)[0]?.timestamp;
+                const sorted = [...relevant].sort(
+                    (a, b) => a.timestamp - b.timestamp,
+                );
+                const cutoffTs = sorted[excess]?.timestamp;
 
                 if (cutoffTs !== undefined) {
                     this.events = this.events.filter(

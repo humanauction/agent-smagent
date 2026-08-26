@@ -7,6 +7,9 @@ import {
 } from "../../ha_core/call/providers/errors.js";
 import { SMAGEOrchestrator } from "../../ha_wrap/orchestrator.js";
 import type { SMAGEMessage } from "../../ha_core/index.js";
+import { timeoutGuard } from "../../ha_core/call/providers/timeout.js";
+
+const PROXY_TIMEOUT_MS = 90_000; // per-request cap
 
 export async function routeLLM(req: Request, res: Response) {
     const { model, messages, provider, wrapper, options = {} } = req.body;
@@ -17,25 +20,26 @@ export async function routeLLM(req: Request, res: Response) {
 
     const session = "session"; // TODO: real session id
 
-    // Convert incoming messages → SMAGEMessage
     const smageMessages: SMAGEMessage[] = messages.map((m: any) => ({
         role: m.role,
         content: m.content,
         meta: {},
     }));
 
-    // CCR shaping
-    const shaped = await applyCCR(
-        smageMessages,
-        provider ?? "openai",
-        session,
-        options,
+    // CCR shaping (guarded)
+    const shaped = await timeoutGuard(
+        applyCCR(smageMessages, provider ?? "openai", session, options),
+        PROXY_TIMEOUT_MS,
+        `proxy-ccr-${session}`,
     );
 
-    reversibleLog(session, "raw", { provider, model, messages, options });
-    reversibleLog(session, "shaped", shaped);
+    try {
+        reversibleLog(session, "raw", { provider, model, messages, options });
+        reversibleLog(session, "shaped", shaped);
+    } catch {
+        // logging must never break the proxy
+    }
 
-    // Multi-agent config (fan-out ready)
     const agents = [
         {
             id: "openai-main",
@@ -69,7 +73,6 @@ export async function routeLLM(req: Request, res: Response) {
         },
     ];
 
-    // Construct orchestrator
     const orchestrator = new SMAGEOrchestrator({
         session,
         strategy: options.strategy ?? "auto",
@@ -77,10 +80,17 @@ export async function routeLLM(req: Request, res: Response) {
     });
 
     try {
-        // Use the real orchestrator API
-        const result = await orchestrator.orchestrate(shaped);
+        const result = await timeoutGuard(
+            orchestrator.orchestrate(shaped),
+            PROXY_TIMEOUT_MS,
+            `proxy-orchestrator-${session}`,
+        );
 
-        reversibleLog(session, "provider_response", result);
+        try {
+            reversibleLog(session, "provider_response", result);
+        } catch {
+            // ignore logging failures
+        }
 
         return res.json({
             id: "smage-proxy-response",

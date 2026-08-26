@@ -3,8 +3,6 @@ import { collectSamples, mineSignals } from "./miner.js";
 import type { LearningUpdate } from "./types.js";
 import { reversibleLog } from "../ha_core/cache/log.js";
 
-// this file contains the main function that runs the learning cycle for a given session
-
 export interface LearningEvent {
     session: string;
     provider: string;
@@ -28,7 +26,7 @@ export interface LearningState {
 }
 
 const MAX_ANCHORS_PER_SESSION = 200;
-const ANCHOR_TTL_MS = 24 * 60_000 * 60; // 24h
+const ANCHOR_TTL_MS = 24 * 60_60_000; // 24h
 
 export class SMAGELearningEngine {
     private state: LearningState = { anchors: [] };
@@ -60,14 +58,15 @@ export class SMAGELearningEngine {
     getAnchors(session: string): Anchor[] {
         const now = Date.now();
 
-        const anchors = this.state.anchors.filter(
+        let anchors = this.state.anchors.filter(
             (a) =>
                 a.session === session && now - a.lastUpdatedAt <= ANCHOR_TTL_MS,
         );
 
         if (anchors.length > MAX_ANCHORS_PER_SESSION) {
-            anchors.sort((a, b) => a.lastUpdatedAt - b.lastUpdatedAt);
-            return anchors.slice(-MAX_ANCHORS_PER_SESSION);
+            anchors = anchors
+                .sort((a, b) => a.lastUpdatedAt - b.lastUpdatedAt)
+                .slice(-MAX_ANCHORS_PER_SESSION);
         }
 
         return anchors;
@@ -77,14 +76,12 @@ export class SMAGELearningEngine {
     scoreRelevance(session: string, query: string): Anchor[] {
         const anchors = this.getAnchors(session);
 
-        const scored = anchors
+        return anchors
             .map((a) => ({
                 ...a,
                 score: this.computeScore(a.text, query),
             }))
             .sort((a, b) => b.score - a.score);
-
-        return scored;
     }
 
     // --- internals ---
@@ -147,7 +144,6 @@ export class SMAGELearningEngine {
     }
 }
 
-// unchanged: runLearningCycle stays as-is
 export async function runLearningCycle(
     session: string,
 ): Promise<LearningUpdate> {
