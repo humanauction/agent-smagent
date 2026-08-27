@@ -10,32 +10,61 @@ Right?
 
 ---
 
+## Current Stage: CCR Upgrade Stage 1 (MVP‑Critical)
+
+### Modules being stabilised now
+
+- anchors
+- dedupe
+- relevance scoring
+- priority tiers
+- window shaping
+- reconstruction
+- payload compression
+- output reduction
+
+### What’s already stable
+
+- ProviderChainRouter
+- Telemetry (Stage 2 complete)
+- reversible logging
+- proxy
+- MCP
+- wrappers
+- CLI
+- multi‑agent routing
+- provider fallback
+- response blending
+- memory routing
+
 ## Roadmap
 
-1.MVP baseline (current)
+### 1. MVP Baseline (current)
 
-- CCR Stage 1
+- deterministic CCR pipeline
 - reversible logging
-- proxy/MCP/CLI
+- proxy + MCP
+- multi‑agent routing
+- provider adapters
 - binary builds
 - Docker + Compose
 - baseline token tests
 
-    2.Learning engine
+### 2. Learning Engine
 
 - failure miner
-- CLAUDE.md / AGENTS.md writer
 - memory scoring
 - auto‑tuning
+- CLAUDE.md / AGENTS.md writer
 
-    3.UI
+### 3. UI
 
 - dashboard
 - CCR visualiser
 - memory visualiser
 - provider routing visualiser
 
-    4.Crush‑Tech Zone
+### 4. Crush‑Tech Zone
 
 - entity dictionary compression
 - schema factoring
@@ -44,19 +73,72 @@ Right?
 - semantic anchors
 - relevance‑tier chunking
 
-## Overview
+## Architecture Overview
 
-A transparent, testable compression + context‑management engine for LLMs, with:
-deterministic CCR pipeline
-reversible logging
-multi‑agent routing
-provider adapters
-proxy + MCP servers
-agent wrappers
-learning engine
-unified CLI
-binary builds (Bun)
-Docker + Compose runtime
+### ha_core — The Engine
+
+Contains:
+
+- message model
+- CCR pipeline
+- token counting
+- compression rules
+- provider adapters
+- reversible logging
+- SMAGEAgent
+- SMAGEMultiAgent
+- SMAGEOrchestrator
+- ProviderSelector
+- ProviderFallback
+- ResponseBlender
+- MemoryRouter
+
+### ha_proxy — Drop‑in HTTP Proxy
+
+- OpenAI/Anthropic/Google‑style API
+- CCR shaping
+- provider forwarding
+- output reduction
+- reversible logging
+- HTML dashboards
+
+### ha_mcp — MCP Server
+
+- humanAuction_compress
+- humanAuction_retrieve
+- humanAuction_stats
+- JSON‑RPC dispatch
+- reversible logging
+- dist‑based execution
+
+### ha_wrap — Agent Wrappers
+
+One‑command wrappers for:
+
+- claude
+- aider
+- cursor
+- copilot
+- opencode
+
+### ha_learn — Auto‑Tuning Layer
+
+- failure miner
+- memory scoring
+- session weighting
+- CLAUDE.md / AGENTS.md writer
+
+### ha_cli — Unified CLI
+
+```bash
+smage proxy
+smage anchors
+smage ccr
+smage agent
+smage multi_agent
+smage docs
+smage learn
+```
 
 Everything is explicit.
 Everything is logged.
@@ -484,17 +566,6 @@ This is the auto‑tuning brain. Mines failed sessions → writes corrections to
 - `CLAUDE.md`
 - `AGENTS.md`
 
-### ha_cli — Unified CLI
-
-Everything exposed through one command.
-
-```bash
-humanAuction proxy
-humanAuction wrap aider
-humanAuction learn
-humanAuction stats
-```
-
 ### Build Order
 
 - `ha_core`
@@ -532,24 +603,24 @@ humanAuction stats
 
 ## Current Status
 
-1. ha_core
+### 1. ha_core
 
 - ✔ ProviderChainRouter stable
 - ✔ Telemetry stable (Stage 2 complete)
 - ⬆ CCR internals in progress (Stage 3 next)
 
-2. Message Model
+### 2. Message Model
 
 - ✔ Stable (SMAGEMessage, SMAGEOptions, roles, meta)
 
-3. Cache
+### 3. Cache
 
 - ✔ cache/store.ts
 - ✔ cache/log.ts
 - ✔ reversible logging unified
 - ⬆ multi‑backend pending
 
-4. CCR Pipeline — Current Stage
+### 4. CCR Pipeline — Current Stage
 
 - Implementing (in order):
 - ⬆ anchors
@@ -564,18 +635,18 @@ humanAuction stats
 - ⬆ output reduction
 - ✔ reversible logging at each stage
 
-5. compress() Python + TS
+### 5. compress() Python + TS
 
 - ✔ Implemented (TS + Python entrypoints exist)
 
-6. Provider Adapters
+### 6. Provider Adapters
 
 - ✔ OpenAI, Anthropic, Google, Local
 - ✔ unified
 - ✔ logging
 - ✔ shape‑correct
 
-7. Reversible Logging
+### 7. Reversible Logging
 
 - ✔ providers
 - ✔ CCR
@@ -583,22 +654,22 @@ humanAuction stats
 - ✔ learning engine
 - ✔ proxy
 
-8. ha_proxy
+### 8. ha_proxy
 
 - ✔ HTTP server
 - ✔ provider routing
 - ✔ HTML views
 - ⬆ CCR integration pending
 
-9. Provider adapters (proxy layer)
+### 9. Provider adapters (proxy layer)
 
 - ✔ wired
 
-10. Reversible logging (proxy layer)
+### 10. Reversible logging (proxy layer)
 
 - ✔ wired
 
-11. ha_mcp
+### 11. ha_mcp
 
 - ✔ compress
 - ✔ retrieve
@@ -609,12 +680,12 @@ humanAuction stats
 - ✔ JSON‑RPC dispatch
 - ✔ stable dist execution
 
-12. ha_wrap (agent wrappers)
+### 12. ha_wrap (agent wrappers)
 
 - ✔ SMAGEAgent
 - ⬆ Next stage after CCR
 
-13. ha_learn
+### 13. ha_learn
 
 - ✔ failure miner
 - ⬆ CLAUDE.md / AGENTS.md writer
@@ -622,14 +693,15 @@ humanAuction stats
 - ⬆ session scoring
 - ⬆ auto‑tuning
 
-14. ha_cli
+### 14. ha_cli
 
 - ✔ CLI exists
 - ⬆ Expansion after wrappers + learning
 
-15. docs
+### 15. docs
 
-- Pending:
+Pending:
+
 - ⬆ Architecture diagrams
 - ⬆ Roadmap
 - ⬆ Usage examples
@@ -641,19 +713,17 @@ humanAuction stats
 
 CLI
 
-```Code
+```bash
 smage proxy
-smage anchors
-smage ccr
+smage ccr "hello world"
+smage run claude "explain CCR"
 smage agent
-smage multi_agent
-smage docs
-smage learn
+smage learn default
 ```
 
 Proxy
 
-```Code
+```bash
 POST /v1/chat/completions
 GET  /health
 ```
@@ -662,14 +732,14 @@ MCP
 Claude Desktop / Cursor connect via MCP server.
 Docker
 
-```Code
+```bash
 docker build -t smage .
 docker run --rm smage proxy
 ```
 
 Compose
 
-```Code
+```bash
 docker compose up
 ```
 
@@ -772,23 +842,18 @@ docker compose run smage-docs
 
 ## Testing
 
-Use Vitest:
-
-```Code
-npm i -D vitest
+```bash
 npm test
 ```
 
-First tests:
+### Tests cover
 
-- anchor.ts
-- dedupe.ts
-- relevance.ts
-- priority.ts
-- window.ts
-- reconstruct.ts
+- CCR modules
 - provider selection
 - provider fallback
 - response blending
 - memory routing
 - multi‑agent routing
+- proxy
+- MCP
+- learning engine

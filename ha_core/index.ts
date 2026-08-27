@@ -2,6 +2,7 @@ export * from "./providerMetadata.js";
 export interface SMAGEOptions {
     ast?: boolean;
     maxAge?: number; // ms
+    maxPayloadChars?: number;
     maxTokens?: number;
     model?: string;
     strategy?: "auto" | "single" | "round_robin" | "fan_out";

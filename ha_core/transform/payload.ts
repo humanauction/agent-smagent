@@ -1,12 +1,15 @@
 import type { SMAGEMessage, SMAGEOptions } from "../index.js";
+import { tokenCount } from "../analyze/tokens.js";
 
 /**
- * Semantic compression:
- * - collapse duplicates
- * - remove filler
- * - remove low-priority messages
- * - preserve anchor + priority
- * - preserve meaning
+ * CCR Payload Compression (Stage 1)
+ *
+ * Goals:
+ * - collapse semantic duplicates
+ * - remove filler / low‑signal messages
+ * - preserve anchors and high‑priority content
+ * - enforce soft token budget per message
+ * - keep behaviour deterministic
  */
 
 export async function applyPayloadCompression(
@@ -16,45 +19,62 @@ export async function applyPayloadCompression(
     const out: SMAGEMessage[] = [];
     const seen = new Set<string>();
 
+    // Optional per‑message cap (fallback to 200 chars)
+    const maxChars =
+        typeof options.maxPayloadChars === "number"
+            ? Math.max(50, options.maxPayloadChars)
+            : 200;
+
     for (const msg of messages) {
+        const meta = msg.meta ?? {};
+
+        // 1. Normalize for semantic dedupe
         const normalized = msg.content
             .replace(/\s+/g, " ")
             .trim()
             .toLowerCase();
 
-        // 1. dedupe semantic content
+        if (!normalized) continue;
+
+        // 2. Deduplicate semantic content
         if (seen.has(normalized)) continue;
         seen.add(normalized);
 
-        // 2. remove filler
+        // 3. Remove obvious filler
         if (
             /^ok|sure|thanks|cool|sounds good|let me think$/i.test(
-                msg.content,
+                msg.content.trim(),
             ) ||
-            msg.content.length < 10
+            tokenCount(msg.content) < 3
         ) {
-            continue;
+            // anchors are never treated as filler
+            if (!meta.anchor) continue;
         }
 
-        // 3. remove low-priority messages
-        const priority = msg.meta?.priority ?? 0;
-        if (priority === 0) continue;
+        // 4. Remove low‑priority messages (unless anchor)
+        const priority = meta.priority ?? 0;
+        if (priority === 0 && !meta.anchor) continue;
 
-        // 4. preserve anchor + summary
-        if (msg.meta?.anchor) {
+        // 5. Preserve anchors verbatim
+        if (meta.anchor) {
             out.push(msg);
             continue;
         }
 
-        // 5. semantic compression (long -> short messages)
+        // 6. Semantic compression (long → short)
+        const trimmed = msg.content.replace(/\s+/g, " ").trim();
         const compressedContent =
-            msg.content.length > 200
-                ? msg.content.slice(0, 200) + " …"
-                : msg.content;
+            trimmed.length > maxChars
+                ? trimmed.slice(0, maxChars) + " …"
+                : trimmed;
 
         out.push({
             ...msg,
             content: compressedContent,
+            meta: {
+                ...meta,
+                compressed: true,
+            },
         });
     }
 
