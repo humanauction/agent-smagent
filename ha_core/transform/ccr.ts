@@ -76,9 +76,19 @@ export async function applyCCR(
     }));
     reversibleLog(session, "ccr_prioritized", prioritized);
 
-    // 11. Apply context window
-    const windowed = applyContextWindow(prioritized, options.maxTokens ?? 4000);
-    reversibleLog(session, "ccr_windowed", windowed);
+    // 11. Apply context window (WindowResult API)
+    const windowResult = applyContextWindow(
+        prioritized,
+        options.maxTokens ?? 4000,
+    );
+
+    const windowed = windowResult.windowed;
+
+    reversibleLog(session, "ccr_windowed", {
+        windowed,
+        dropped: windowResult.dropped,
+        tokens: windowResult.tokens,
+    });
 
     // 12. Reconstruct final message list
     const reconstructed = reconstruct(windowed, anchor);
