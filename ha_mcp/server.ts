@@ -5,6 +5,7 @@ import type { SMAGEMessage, SMAGEOptions } from "../ha_core/index.js";
 import { applyCCR } from "../ha_core/transform/ccr.js";
 import { callProvider, providers } from "../ha_core/call/providers/index.js";
 import { reversibleLog } from "../ha_core/cache/log.js";
+import { timeoutGuard } from "../ha_core/call/providers/timeout.js";
 
 interface MCPRequest {
     id: string | number;
@@ -18,10 +19,20 @@ interface MCPResponse {
     error?: string;
 }
 
+const MCP_TIMEOUT_MS = 90_000; // 90 seconds
+
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
 });
+
+function safeLog(session: string, tag: string, payload: any) {
+    try {
+        reversibleLog(session, tag, payload);
+    } catch {
+        // never block MCP server due to logging errors
+    }
+}
 
 // Convert raw MCP messages → SMAGEMessage[]
 function toSMAGE(
@@ -61,23 +72,26 @@ async function handleCall(params: any) {
     const smageMessages = toSMAGE(messages);
 
     // Run CCR pipeline
-    const shaped = await applyCCR(
-        smageMessages,
-        providerName,
-        session,
-        options ?? {},
+    const shaped = await timeoutGuard(
+        applyCCR(smageMessages, providerName, session, options ?? {}),
+        MCP_TIMEOUT_MS,
+        `mcp-ccr-${session}`,
     );
 
     // Call provider
-    const response = await callProvider({
-        session,
-        model,
-        provider: providerName,
-        messages: shaped,
-        options: { ...(options ?? {}), provider: providerName },
-    });
+    const response = await timeoutGuard(
+        callProvider({
+            session,
+            model,
+            provider: providerName,
+            messages: shaped,
+            options: { ...(options ?? {}), provider: providerName },
+        }),
+        MCP_TIMEOUT_MS,
+        `mcp-provider-${session}`,
+    );
 
-    reversibleLog(session, "mcp_call", {
+    safeLog(session, "mcp_call", {
         provider: providerName,
         model,
         request: messages,
@@ -99,7 +113,6 @@ async function handleProviders() {
 
 async function handleModels(params: any) {
     const providerName = params?.provider ?? "openai";
-
     // TODO: dynamic model listing per provider
     return ["default", "gpt-4o-mini", "claude-3-haiku", "gemini-pro"];
 }
