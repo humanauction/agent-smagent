@@ -69,11 +69,8 @@ export async function applyCCR(
     }));
     reversibleLog(session, "ccr_scored", scored);
 
-    // 10. Assign priority tiers
-    const prioritized = scored.map((m) => ({
-        ...m,
-        meta: { ...m.meta, priority: assignPriority(m) },
-    }));
+    // 10. Assign priority tiers (new API)
+    const prioritized = assignPriority(scored, anchor);
     reversibleLog(session, "ccr_prioritized", prioritized);
 
     // 11. Apply context window (WindowResult API)

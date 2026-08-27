@@ -5,7 +5,7 @@ import { ProviderChainTelemetry } from "../../call/providers/chainTelemetry.js";
 import { extractAnchor, mergeAnchor, CCRAnchor } from "../anchor.js";
 import { dedupeMessages } from "../dedupe.js";
 import { scoreRelevance } from "../relevance.js";
-import { assignPriorities } from "../priority.js";
+import { assignPriority } from "../priority.js";
 import { applyContextWindow } from "../window.js";
 import { reconstruct } from "../reconstruct.js";
 import { applyPayloadCompression } from "../payload.js";
@@ -106,7 +106,7 @@ export class CCRPipeline {
         );
 
         // 4. PRIORITY ASSIGNMENT
-        const prioritized = assignPriorities(scoredMessages, anchor);
+        const prioritized = assignPriority(scoredMessages, anchor);
         safeTelemetry(() =>
             this.telemetry.record({
                 session,
@@ -116,15 +116,23 @@ export class CCRPipeline {
             }),
         );
 
-        // 5. CONTEXT WINDOW
+        // 5. CONTEXT WINDOW (new WindowResult API)
         const MAX_TOKENS = 4096;
-        const windowed = applyContextWindow(prioritized, MAX_TOKENS);
+        const windowResult = applyContextWindow(prioritized, MAX_TOKENS);
+        const windowed = windowResult.windowed;
+
         safeTelemetry(() =>
             this.telemetry.record({
                 session,
                 provider: "ccr",
                 stage: "window",
                 messageCount: windowed.length,
+                tokens: {
+                    window: windowResult.tokens,
+                    raw: 0,
+                    compressed: 0,
+                    reduced: 0,
+                },
             }),
         );
 
@@ -151,15 +159,9 @@ export class CCRPipeline {
             reconstructed: SMAGEMessage[],
             original: SMAGEMessage[],
         ): SMAGEMessage {
-            if (compressed.length > 0) {
-                return compressed.at(-1)!;
-            }
-            if (reconstructed.length > 0) {
-                return reconstructed.at(-1)!;
-            }
-            if (original.length > 0) {
-                return original.at(-1)!;
-            }
+            if (compressed.length > 0) return compressed.at(-1)!;
+            if (reconstructed.length > 0) return reconstructed.at(-1)!;
+            if (original.length > 0) return original.at(-1)!;
             throw new Error(
                 "CCR pipeline: no messages available for reduction.",
             );
@@ -187,16 +189,20 @@ export class CCRPipeline {
             }),
         );
 
+        // metrics
         safeTelemetry(() =>
             this.telemetry.record({
                 session,
                 provider: "ccr",
                 stage: "metrics",
                 tokens: {
-                    raw: messages.reduce((n, m) => n + m.content.length, 0),
-                    window: windowed.reduce((n, m) => n + m.content.length, 0),
+                    raw: messages.reduce(
+                        (n: number, m: SMAGEMessage) => n + m.content.length,
+                        0,
+                    ),
+                    window: windowResult.tokens,
                     compressed: compressed.reduce(
-                        (n, m) => n + m.content.length,
+                        (n: number, m: SMAGEMessage) => n + m.content.length,
                         0,
                     ),
                     reduced: reduced.content.length,
@@ -210,7 +216,6 @@ export class CCRPipeline {
             }),
         );
 
-        // CCR end
         safeTelemetry(() =>
             this.telemetry.record({
                 session,
