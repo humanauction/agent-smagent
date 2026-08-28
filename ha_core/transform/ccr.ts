@@ -15,6 +15,7 @@ import { cacheAppend } from "../cache/store.js";
 import { applyContextManager } from "./context.js";
 
 import { learn } from "../../ha_learn/index.js";
+import { scoreLearnedAnchors } from "../../ha_cli/commands/learn.js";
 
 export async function applyCCR(
     messages: SMAGEMessage[],
@@ -34,7 +35,7 @@ export async function applyCCR(
     const lastUser = [...messages].reverse().find((m) => m.role === "user");
     const userQuery = lastUser?.content ?? "";
 
-    const learnedAnchors = learn.scoreRelevance(session, userQuery);
+    const learnedAnchors = await scoreLearnedAnchors(session, userQuery);
     const combinedAnchor = { ...anchor, learned: learnedAnchors };
     reversibleLog(session, "ccr_learned_anchors", learnedAnchors);
 

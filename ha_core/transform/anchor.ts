@@ -7,6 +7,7 @@ export interface CCRAnchor {
     lastAssistant?: SMAGEMessage | null;
     lastTool?: SMAGEMessage | null;
     summaryHint?: string | null;
+    learned?: SMAGEMessage[]; // Learned anchors from the learning cycle
     // TODO: add additional metadata fields for anchors
     // intent?: string;          // extracted user intent
     // topic?: string;           // classifier output
@@ -54,6 +55,16 @@ export function applyAnchor(
 ): SMAGEMessage[] {
     const result: SMAGEMessage[] = [];
 
+    // Add learned anchors
+    if (anchor.learned && Array.isArray(anchor.learned)) {
+        for (const la of anchor.learned) {
+            result.push({
+                ...la,
+                meta: { ...la.meta, anchor: true, learned: true },
+            });
+        }
+    }
+
     const pushAnchor = (msg: SMAGEMessage | null | undefined) => {
         if (!msg) return;
         result.push({
@@ -93,13 +104,13 @@ export function mergeAnchor(
     // 1. Build anchor spine
     const spine = applyAnchor([], anchor);
 
-    // 2. Deduplicate shaped messages against anchor spine
+    // 2. Deduplicate learned anchors vs shaped messages
     const spineKeys = new Set(spine.map((m) => `${m.role}:${m.content}`));
 
     const filteredShaped = shaped.filter(
         (m) => !spineKeys.has(`${m.role}:${m.content}`),
     );
 
-    // 3. Merge deterministically
+    // Merge learned anchors into spine deterministically
     return [...spine, ...filteredShaped];
 }

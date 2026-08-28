@@ -37,7 +37,7 @@ export function applyContextWindow(
     for (const m of messages) {
         const meta = m.meta ?? {};
 
-        if (meta.anchor) {
+        if (meta.anchor || meta.learned) {
             anchors.push(m);
             continue;
         }
