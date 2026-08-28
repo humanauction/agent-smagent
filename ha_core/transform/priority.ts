@@ -1,8 +1,17 @@
 import type { SMAGEMessage } from "../index.js";
 import type { CCRAnchor } from "./anchor.js";
 
-/*
- * CCR Priority Tiers
+/**
+ * Stage‑1 CCR Priority Assignment
+ *
+ * Priority tiers:
+ *  - 3: anchor spine + high relevance
+ *  - 2: medium relevance
+ *  - 1: low relevance
+ *  - 0: discardable
+ *
+ * Priority is structural, not semantic.
+ * It determines which messages survive window shaping.
  */
 
 export function assignPriority(
@@ -11,34 +20,32 @@ export function assignPriority(
 ): SMAGEMessage[] {
     return messages.map((m) => {
         const r = m.meta?.relevance ?? 0;
-
         let priority = 0;
 
-        // Anchor messages always highest priority
+        // Tier 3 — highest priority (always keep)
         if (m.meta?.anchor) {
             priority = 3;
-        }
-        // Last user / last assistant / last tool
-        else if (
+        } else if (
             anchor.lastUser === m ||
             anchor.lastAssistant === m ||
             anchor.lastTool === m
         ) {
             priority = 3;
-        }
-        // High relevance
-        else if (r >= 0.75) {
+        } else if (r >= 0.75) {
             priority = 3;
         }
-        // Medium relevance
+
+        // Tier 2 — medium priority
         else if (r >= 0.4) {
             priority = 2;
         }
-        // Low relevance
+
+        // Tier 1 — low priority
         else if (r >= 0.15) {
             priority = 1;
         }
-        // Otherwise discardable (priority 0)
+
+        // Tier 0 — discardable (priority stays 0)
 
         return {
             ...m,
