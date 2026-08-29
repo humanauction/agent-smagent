@@ -71,7 +71,9 @@ export class CCRRouter {
         let urgentCount = 0;
 
         for (const m of messages) {
-            const priority = assignPriority(m); // e.g. 0–3
+            const batch = assignPriority([m], anchor);
+            const prioritizedMsg = batch[0] ?? m;
+            const priority = prioritizedMsg?.meta?.priority ?? 0; // e.g. 0–3
             if (priority >= 2) urgentCount++;
         }
 

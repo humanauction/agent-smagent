@@ -1,6 +1,7 @@
 import type { SMAGEMessage } from "../index.js";
 import { tokenCount } from "../analyze/tokens.js";
 import type { CCRAnchor } from "./anchor.js";
+
 // CCR pipeline relevance scoring. components: keyword overlap, role weighting, recency weighting
 
 const ROLE_WEIGHT = {
@@ -34,6 +35,26 @@ function extractKeywords(text: string): Set<string> {
             .split(/\s+/)
             .filter(Boolean),
     );
+}
+
+function semanticLite(
+    msg: SMAGEMessage,
+    lastUser: SMAGEMessage | undefined,
+): number {
+    if (!lastUser) return 0;
+
+    const a = extractKeywords(msg.content);
+    const b = extractKeywords(lastUser.content);
+
+    if (a.size === 0 || b.size === 0) return 0;
+
+    let overlap = 0;
+    for (const kw of a) {
+        if (b.has(kw)) overlap++;
+    }
+
+    const denom = Math.sqrt(a.size * b.size);
+    return denom === 0 ? 0 : overlap / denom; // 0..1
 }
 
 /**
@@ -129,39 +150,39 @@ export function scoreRelevance(
     total: number,
     anchor: CCRAnchor | null,
 ): number {
-    let score = 0.1;
+    // --- Stage‑1 structural relevance ---
+    let structural = 0.1;
 
-    // Role weighting
-    score += ROLE_WEIGHT[msg.role] ?? 0;
+    structural += ROLE_WEIGHT[msg.role] ?? 0;
 
-    // Recency weighting
     const recency = (index + 1) / total;
-    score += recency * 0.3;
+    structural += recency * 0.3;
 
-    // anchor proximity
     if (anchor) {
-        if (msg === anchor.lastUser) score += 0.2;
-        if (msg === anchor.lastAssistant) score += 0.15;
-        if (msg === anchor.lastTool) score += 0.1;
-        if (msg === anchor.system) score += 0.05;
+        if (msg === anchor.lastUser) structural += 0.2;
+        if (msg === anchor.lastAssistant) structural += 0.15;
+        if (msg === anchor.lastTool) structural += 0.1;
+        if (msg === anchor.system) structural += 0.05;
     }
 
-    // Explicit markers
-    if (msg.content.includes("IMPORTANT")) score += 0.25;
-
-    // keyword boost
     const lower = msg.content.toLowerCase();
     for (const [kw, boost] of KEYWORD_BOOSTS) {
-        if (lower.includes(kw)) score += boost;
+        if (lower.includes(kw)) structural += boost;
     }
 
-    // low info content penalty
-    if (msg.content.length < 10) score -= 0.2;
-    if (/^(ok|sure|thanks|cool)$/i.test(msg.content)) score -= 0.3;
+    if (msg.content.length < 10) structural -= 0.2;
+    if (/^(ok|sure|thanks|cool)$/i.test(msg.content)) structural -= 0.3;
 
-    // Semantic density
     const tokens = msg.content.split(/\s+/).length;
-    score += Math.min(tokens / 50, 0.3);
+    structural += Math.min(tokens / 50, 0.3);
 
-    return Math.max(0, Math.min(score, 1));
+    structural = Math.max(0, Math.min(structural, 1));
+
+    // --- Stage‑2 semantic relevance (synchronous) ---
+    const semantic = semanticLite(msg, anchor?.lastUser ?? undefined);
+
+    // --- Combined relevance ---
+    const final = 0.7 * structural + 0.3 * semantic;
+
+    return Math.max(0, Math.min(final, 1));
 }

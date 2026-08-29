@@ -2,6 +2,11 @@ import { runLearningCycle } from "../../ha_learn/engine.js";
 import type { SMAGEMessage } from "../../ha_core/index.js";
 import type { LearningUpdate, LearningSignal } from "../../ha_learn/types.js";
 
+export async function runLearn(session: string) {
+    const update = await runLearningCycle(session);
+    console.log(JSON.stringify(update, null, 2));
+}
+
 export async function scoreLearnedAnchors(
     session: string,
     userQuery: string,
@@ -12,7 +17,7 @@ export async function scoreLearnedAnchors(
     const anchors: SMAGEMessage[] = [];
 
     for (const sig of signals) {
-        // We’re conservative: use description + data if present
+        // conservative: use description + data if present
         const baseTextParts: string[] = [];
 
         if (sig.description) baseTextParts.push(sig.description);
