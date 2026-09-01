@@ -1,13 +1,8 @@
 import type { SMAGEMessage } from "../index.js";
 import { CCRAnchor } from "../transform/anchor.js";
+
 // multi‑agent compression pipeline
 
-/**
- * Memory entry:
- * - key: string (agent or global)
- * - value: string (fact, summary, preference)
- * - ts: timestamp
- */
 export interface MemoryEntry {
     key: string;
     value: string;
@@ -15,7 +10,6 @@ export interface MemoryEntry {
 }
 
 // persistent memory anchor
-
 export interface AnchorMemory {
     agent: string;
     session: string;
@@ -95,10 +89,11 @@ export function mineMemory(messages: SMAGEMessage[], agent: string): void {
         }
 
         if (msg.role === "user") {
-            if (msg.content.toLowerCase().includes("i like")) {
+            const lower = msg.content.toLowerCase();
+            if (lower.includes("i like")) {
                 remember(agent, "user:likes", msg.content);
             }
-            if (msg.content.toLowerCase().includes("my name is")) {
+            if (lower.includes("my name is")) {
                 remember(agent, "user:name", msg.content);
             }
         }
@@ -117,35 +112,62 @@ export function mineMemory(messages: SMAGEMessage[], agent: string): void {
     }
 }
 
+// relevance scorer for anchor memory
+export function scoreAnchorMemory(am: AnchorMemory, userQuery: string): number {
+    const uq = userQuery.toLowerCase();
+    const summary = am.summary.toLowerCase();
+
+    let score = 0;
+
+    // kw overlap
+    const uqWords = new Set(uq.split(/\s+/));
+    const sumWords = new Set(summary.split(/\s+/));
+
+    for (const w of sumWords) {
+        if (uqWords.has(w)) score += 0.1;
+    }
+
+    // topic hint boost
+    if (am.topicHint && uq.includes(am.topicHint.toLowerCase())) {
+        score += 0.2;
+    }
+
+    // recency boost (with decay)
+    const ageMs = Date.now() - am.createdAt;
+    const days = ageMs / (1000 * 60 * 60 * 24);
+    score += Math.max(0, 0.3 - days * 0.05);
+
+    return Math.min(score, 1);
+}
+
 /**
  * Inject memory back into the context
  */
-export function injectMemory(agent: string): SMAGEMessage[] {
+export function injectMemory(agent: string, userQuery: string): SMAGEMessage[] {
     const base: SMAGEMessage[] = [];
 
-    // Add recent anchors
+    // relevance-scored anchor injection
     const anchors = ANCHOR_MEMORY_STORE.filter((m) => m.agent === agent)
-        .slice(-5) // last few anchors only
-        .map<SMAGEMessage>((am) => {
-            const ageMs = Date.now() - am.createdAt;
-            const days = ageMs / (1000 * 60 * 60 * 24);
-            const relevance = Math.min(0.3, 0.8 - days * 0.05); // decay relevance over time
-            return {
+        .map((am) => ({ am, score: scoreAnchorMemory(am, userQuery) }))
+        .filter((x) => x.score >= 0.4) // relevance threshold
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5) // top 5 relevant anchors
+        .map(
+            ({ am, score }): SMAGEMessage => ({
                 role: "system",
-                content: `Previous anchor: ${am.summary}
-            Last user: ${am.lastUser ?? "none"}
-            Last assistant: ${am.lastAssistant ?? "none"}
-            Topic hint: ${am.topicHint ?? "none"}
-            Relevance: ${relevance.toFixed(2)}
-            `,
+                content: `Relevant anchor (${score.toFixed(2)}): ${am.summary}
+Last user: ${am.lastUser ?? "none"}
+Last assistant: ${am.lastAssistant ?? "none"}
+Topic hint: ${am.topicHint ?? "none"}
+`,
                 meta: {
                     anchor: true,
                     memory: true,
                     priority: 3,
-                    relevance,
+                    relevance: score,
                 },
-            };
-        });
+            }),
+        );
 
     base.push(...anchors);
 

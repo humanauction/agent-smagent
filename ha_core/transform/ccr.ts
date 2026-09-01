@@ -28,7 +28,7 @@ export async function applyCCR(
     mineMemory(messages, agent);
     reversibleLog(session, "ccr_memory_mined", { messages });
 
-    // 2. Extract anchors BEFORE compression
+    // 2. Extract anchors BEFORE compressio
     const anchor = extractAnchor(messages);
     reversibleLog(session, "ccr_anchor_extracted", anchor);
 
@@ -51,7 +51,7 @@ export async function applyCCR(
     reversibleLog(session, "ccr_dedupe", deduped);
 
     // 6. Inject memory
-    const memoryMessages = injectMemory(agent);
+    const memoryMessages = injectMemory(agent, userQuery);
     const merged = [...memoryMessages, ...deduped];
     reversibleLog(session, "ccr_memory_injected", merged);
 
