@@ -16,6 +16,7 @@ import { applyContextManager } from "./context.js";
 
 import { learn } from "../../ha_learn/index.js";
 import { scoreLearnedAnchors } from "../../ha_cli/commands/learn.js";
+import { rememberAnchor } from "../memory/memory.js";
 
 export async function applyCCR(
     messages: SMAGEMessage[],
@@ -30,6 +31,8 @@ export async function applyCCR(
     // 2. Extract anchors BEFORE compression
     const anchor = extractAnchor(messages);
     reversibleLog(session, "ccr_anchor_extracted", anchor);
+
+    rememberAnchor(agent, session, anchor);
 
     // 3. Score learned anchors against user query
     const lastUser = [...messages].reverse().find((m) => m.role === "user");

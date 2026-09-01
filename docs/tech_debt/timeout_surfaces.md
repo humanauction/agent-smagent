@@ -83,6 +83,8 @@ Large message sets can cause slow compression or reconstruction.
 
 ## 8. Memory System (Scoring + Decay + Routing)
 
+The memory system stores and retrieves information across different agents and sessions.
+
 Memory operations can be slow when many entries exist.
 
 ### Memory Timeout Types

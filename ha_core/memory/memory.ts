@@ -1,4 +1,5 @@
-import type { SMAGEMessage } from '../index.js';
+import type { SMAGEMessage } from "../index.js";
+import { CCRAnchor } from "../transform/anchor.js";
 // multi‑agent compression pipeline
 
 /**
@@ -13,10 +14,27 @@ export interface MemoryEntry {
     ts: number;
 }
 
+// persistent memory anchor
+
+export interface AnchorMemory {
+    agent: string;
+    session: string;
+    summary: string;
+    lastUser?: string;
+    lastAssistant?: string;
+    topicHint?: string;
+    createdAt: number;
+}
+
 /**
  * In-memory store (TODO: embeddings, external storage, database e.g. replace with Redis/SQLite)
  */
 const MEMORY = new Map<string, MemoryEntry>();
+
+/**
+ * Anchor memory store
+ */
+const ANCHOR_MEMORY_STORE: AnchorMemory[] = [];
 
 /**
  * Normalize memory keys:
@@ -25,6 +43,26 @@ const MEMORY = new Map<string, MemoryEntry>();
  */
 function keyFor(agent: string, field: string): string {
     return `${agent}:${field}`;
+}
+
+export function rememberAnchor(
+    agent: string,
+    session: string,
+    anchor: CCRAnchor,
+): void {
+    const pivot = anchor.lastUser ?? anchor.lastAssistant ?? anchor.system;
+    if (!pivot) return;
+
+    const summary = pivot.content.slice(0, 256);
+    ANCHOR_MEMORY_STORE.push({
+        agent,
+        session,
+        summary,
+        lastUser: anchor.lastUser?.content,
+        lastAssistant: anchor.lastAssistant?.content,
+        topicHint: anchor.summaryHint ?? undefined,
+        createdAt: Date.now(),
+    });
 }
 
 /**
@@ -83,31 +121,57 @@ export function mineMemory(messages: SMAGEMessage[], agent: string): void {
  * Inject memory back into the context
  */
 export function injectMemory(agent: string): SMAGEMessage[] {
-    const msgs: SMAGEMessage[] = [];
+    const base: SMAGEMessage[] = [];
+
+    // Add recent anchors
+    const anchors = ANCHOR_MEMORY_STORE.filter((m) => m.agent === agent)
+        .slice(-5) // last few anchors only
+        .map<SMAGEMessage>((am) => {
+            const ageMs = Date.now() - am.createdAt;
+            const days = ageMs / (1000 * 60 * 60 * 24);
+            const relevance = Math.min(0.3, 0.8 - days * 0.05); // decay relevance over time
+            return {
+                role: "system",
+                content: `Previous anchor: ${am.summary}
+            Last user: ${am.lastUser ?? "none"}
+            Last assistant: ${am.lastAssistant ?? "none"}
+            Topic hint: ${am.topicHint ?? "none"}
+            Relevance: ${relevance.toFixed(2)}
+            `,
+                meta: {
+                    anchor: true,
+                    memory: true,
+                    priority: 3,
+                    relevance,
+                },
+            };
+        });
+
+    base.push(...anchors);
 
     const system = recall(agent, "system");
-    if (system) msgs.push({ role: "system", content: system });
+    if (system) base.push({ role: "system", content: system });
 
     const name = recall(agent, "user:name");
-    if (name) msgs.push({ role: "assistant", content: `User name: ${name}` });
+    if (name) base.push({ role: "assistant", content: `User name: ${name}` });
 
     const likes = recall(agent, "user:likes");
     if (likes)
-        msgs.push({ role: "assistant", content: `User preference: ${likes}` });
+        base.push({ role: "assistant", content: `User preference: ${likes}` });
 
     const summary = recall(agent, "assistant:lastSummary");
     if (summary)
-        msgs.push({
+        base.push({
             role: "assistant",
             content: `Previous summary: ${summary}`,
         });
 
     const toolResult = recall(agent, "tool:lastResult");
     if (toolResult)
-        msgs.push({
+        base.push({
             role: "assistant",
             content: `Last tool result: ${toolResult}`,
         });
 
-    return msgs;
+    return base;
 }
