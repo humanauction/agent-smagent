@@ -72,7 +72,7 @@ export async function applyCCR(
 
     // 7. Merge anchors (extracted + learned)
 
-    const mergedAnchors = mergeAnchor(combinedAnchor, mergedFusion);
+    const mergedAnchors = mergeAnchor(combinedAnchor, merged);
     reversibleLog(session, "ccr_anchor_merged", mergedAnchors);
 
     // 8. Context manager (priority + relevance + window)

@@ -63,19 +63,22 @@ export async function applyPayloadCompression(
 
         // 6. Semantic compression (long → short)
         const trimmed = msg.content.replace(/\s+/g, " ").trim();
-        const compressedContent =
-            trimmed.length > maxChars
-                ? trimmed.slice(0, maxChars) + " …"
-                : trimmed;
+        const relevance = meta.relevance ?? 0;
 
-        out.push({
-            ...msg,
-            content: compressedContent,
-            meta: {
-                ...meta,
-                compressed: true,
-            },
-        });
+        if (relevance > 0.6) {
+            out.push({
+                ...msg,
+                content:
+                    trimmed.length > maxChars * 2
+                        ? trimmed.slice(0, maxChars * 2) + " …"
+                        : trimmed,
+                meta: {
+                    ...meta,
+                    compressed: true,
+                },
+            });
+            continue;
+        }
     }
 
     return out;

@@ -31,12 +31,12 @@ export function assignPriority(
             anchor.lastTool === m
         ) {
             priority = 3;
-        } else if (r >= 0.75) {
+        } else if (r >= 0.65) {
             priority = 3;
         }
 
         // Tier 2 — medium priority
-        else if (r >= 0.4) {
+        else if (r >= 0.35) {
             priority = 2;
         }
 
