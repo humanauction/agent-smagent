@@ -60,6 +60,23 @@ export function rememberAnchor(
 }
 
 /**
+ * Retrieve relevant anchor memory entries for a given agent and user query
+ * - relevance scoring based on keyword overlap, topic hint, and recency
+ * - returns top 5 relevant anchors
+ */
+export function getRelevantAnchorMemory(
+    agent: string,
+    userQuery: string,
+): AnchorMemory[] {
+    return ANCHOR_MEMORY_STORE.filter((m) => m.agent === agent)
+        .map((am) => ({ am, score: scoreAnchorMemory(am, userQuery) }))
+        .filter((x) => x.score >= 0.4)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5)
+        .map((x) => x.am);
+}
+
+/**
  * Store a memory entry
  */
 export function remember(agent: string, field: string, value: string): void {

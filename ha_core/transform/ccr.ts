@@ -17,6 +17,8 @@ import { applyContextManager } from "./context.js";
 import { learn } from "../../ha_learn/index.js";
 import { scoreLearnedAnchors } from "../../ha_cli/commands/learn.js";
 import { rememberAnchor } from "../memory/memory.js";
+import { getRelevantAnchorMemory } from "../memory/memory.js";
+import { fuseAnchorIntent } from "./anchorFusion.js";
 
 export async function applyCCR(
     messages: SMAGEMessage[],
@@ -55,9 +57,22 @@ export async function applyCCR(
     const merged = [...memoryMessages, ...deduped];
     reversibleLog(session, "ccr_memory_injected", merged);
 
+    // 6b. fuse anchor intent with relevant anchor memory
+    const relevantAnchorMemory = getRelevantAnchorMemory(agent, userQuery);
+    const fusedAnchorIntent = fuseAnchorIntent(
+        anchor,
+        userQuery,
+        relevantAnchorMemory,
+    );
+    reversibleLog(session, "ccr_fused_anchor_intent", fusedAnchorIntent);
+
+    // inject fused anchor at top
+    const mergedFusion = [fusedAnchorIntent, ...merged];
+    reversibleLog(session, "ccr_merged_fusion", mergedFusion);
+
     // 7. Merge anchors (extracted + learned)
 
-    const mergedAnchors = mergeAnchor(combinedAnchor, merged);
+    const mergedAnchors = mergeAnchor(combinedAnchor, mergedFusion);
     reversibleLog(session, "ccr_anchor_merged", mergedAnchors);
 
     // 8. Context manager (priority + relevance + window)
