@@ -1,47 +1,59 @@
+import { classifyIntent } from "../analyze/classifier.js";
 import type { SMAGEMessage } from "../index.js";
 import type { CCRAnchor } from "./anchor.js";
 import type { AnchorMemory } from "../memory/memory.js";
 
-export function fuseAnchorIntent(
+export async function fuseAnchorIntent(
     anchor: CCRAnchor,
     userQuery: string,
-    memoryAnchors: AnchorMemory[],
-): SMAGEMessage {
-    const parts: string[] = [];
+    relevantAnchorMemory: AnchorMemory[],
+): Promise<SMAGEMessage> {
+    const intent = await classifyIntent(userQuery);
+    const summaryParts: string[] = [];
 
     // 1. User intent
-    parts.push(`User intent: ${userQuery}`);
+    summaryParts.push(
+        `User intent: ${intent.intent} (${intent.confidence.toFixed(2)})`,
+    );
 
     // 2. Last user message
     if (anchor.lastUser) {
-        parts.push(`Last user message: ${anchor.lastUser.content}`);
+        summaryParts.push(`Last user message: ${anchor.lastUser.content}`);
     }
 
     // 3. Last assistant message
     if (anchor.lastAssistant) {
-        parts.push(`Last assistant message: ${anchor.lastAssistant.content}`);
+        summaryParts.push(
+            `Last assistant message: ${anchor.lastAssistant.content}`,
+        );
     }
 
     // 4. Topic hint
     if (anchor.summaryHint) {
-        parts.push(`Topic hint: ${anchor.summaryHint}`);
+        summaryParts.push(`Topic hint: ${anchor.summaryHint}`);
     }
 
     // 5. Relevant anchor memory summaries
-    for (const am of memoryAnchors) {
-        parts.push(`Relevant past anchor: ${am.summary}`);
-    }
 
-    const fusedContent = parts.join("\n");
+    if (relevantAnchorMemory.length > 0) {
+        summaryParts.push(
+            `Relevant anchors: ${relevantAnchorMemory
+                .map((am) => am.summary)
+                .join(" | ")}`,
+        );
+    }
 
     return {
         role: "system",
-        content: fusedContent,
+        content: summaryParts.join("\n"),
         meta: {
             anchor: true,
+            memory: true,
             fused: true,
+            intent: intent.intent,
+            intentConfidence: intent.confidence,
             priority: 3,
-            relevance: 1,
+            relevance: 0.9,
         },
     };
 }

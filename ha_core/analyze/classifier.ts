@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from '../index.js';
+import type { SMAGEMessage } from "../index.js";
 
 export type MessageKind =
     | "user"
@@ -10,6 +10,19 @@ export type MessageKind =
     | "code"
     | "other";
 
+export interface IntentResult {
+    intent: string;
+    confidence: number;
+}
+
+const INTENT_PATTERNS: [RegExp, string][] = [
+    [/fix|bug|error|stack trace/i, "debug"],
+    [/explain|why|how/i, "explain"],
+    [/refactor|clean up|rewrite/i, "refactor"],
+    [/test|unit test|coverage/i, "testing"],
+    [/design|architecture|pattern/i, "design"],
+];
+
 export function classifyMessage(msg: SMAGEMessage): MessageKind {
     if (msg.role === "user") return "user";
     if (msg.role === "system") return "system";
@@ -19,4 +32,20 @@ export function classifyMessage(msg: SMAGEMessage): MessageKind {
     if (msg.meta?.log) return "log";
     if (msg.content.trim().startsWith("```")) return "code";
     return "other";
+}
+
+export async function classifyIntent(text: string): Promise<IntentResult> {
+    const trimmed = text.trim();
+    if (!trimmed)
+        return {
+            intent: "general",
+            confidence: 0,
+        };
+
+    for (const [re, label] of INTENT_PATTERNS) {
+        if (re.test(trimmed)) {
+            return { intent: label, confidence: 0.8 };
+        }
+    }
+    return { intent: "general", confidence: 0.4 };
 }

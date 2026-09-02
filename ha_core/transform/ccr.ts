@@ -59,7 +59,7 @@ export async function applyCCR(
 
     // 6b. fuse anchor intent with relevant anchor memory
     const relevantAnchorMemory = getRelevantAnchorMemory(agent, userQuery);
-    const fusedAnchorIntent = fuseAnchorIntent(
+    const fusedAnchorIntent = await fuseAnchorIntent(
         anchor,
         userQuery,
         relevantAnchorMemory,
@@ -72,7 +72,7 @@ export async function applyCCR(
 
     // 7. Merge anchors (extracted + learned)
 
-    const mergedAnchors = mergeAnchor(combinedAnchor, merged);
+    const mergedAnchors = mergeAnchor(combinedAnchor, mergedFusion);
     reversibleLog(session, "ccr_anchor_merged", mergedAnchors);
 
     // 8. Context manager (priority + relevance + window)
