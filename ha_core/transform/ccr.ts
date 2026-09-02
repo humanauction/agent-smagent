@@ -76,7 +76,12 @@ export async function applyCCR(
     reversibleLog(session, "ccr_anchor_merged", mergedAnchors);
 
     // 8. Context manager (priority + relevance + window)
-    const shaped = applyContextManager(mergedAnchors, agent, session, options);
+    const shaped = await applyContextManager(
+        mergedAnchors,
+        agent,
+        session,
+        options,
+    );
     reversibleLog(session, "ccr_shaped", shaped);
 
     cacheAppend(session, { stage: "shaped", messages: shaped });

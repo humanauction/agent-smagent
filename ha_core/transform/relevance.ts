@@ -1,6 +1,7 @@
 import type { SMAGEMessage } from "../index.js";
 import { tokenCount } from "../analyze/tokens.js";
 import type { CCRAnchor } from "./anchor.js";
+import { semanticEmbedding } from "./semantic.js";
 
 // CCR pipeline relevance scoring. components: keyword overlap, role weighting, recency weighting
 
@@ -144,12 +145,12 @@ export function scoreMessages(messages: SMAGEMessage[]): SMAGEMessage[] {
     }));
 }
 
-export function scoreRelevance(
+export async function scoreRelevance(
     msg: SMAGEMessage,
     index: number,
     total: number,
     anchor: CCRAnchor | null,
-): number {
+): Promise<number> {
     // --- Stage‑1 structural relevance ---
     let structural = 0.1;
 
@@ -178,8 +179,11 @@ export function scoreRelevance(
 
     structural = Math.max(0, Math.min(structural, 1));
 
-    // --- Stage‑2 semantic relevance (synchronous) ---
-    const semantic = semanticLite(msg, anchor?.lastUser ?? undefined);
+    // --- Stage‑3 semantic relevance (embeddings) ---
+    const semantic = await semanticEmbedding(
+        msg,
+        anchor?.lastUser?.content ?? "",
+    );
 
     // --- Combined relevance ---
     const final = 0.7 * structural + 0.3 * semantic;
