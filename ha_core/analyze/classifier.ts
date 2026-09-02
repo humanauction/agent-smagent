@@ -49,3 +49,24 @@ export async function classifyIntent(text: string): Promise<IntentResult> {
     }
     return { intent: "general", confidence: 0.4 };
 }
+
+export interface TopicResult {
+    topic: string;
+    confidence: number;
+}
+
+export async function classifyTopic(text: string): Promise<TopicResult> {
+    const lower = text.toLowerCase();
+
+    if (/test|jest|vitest|coverage/.test(lower)) {
+        return { topic: "testing", confidence: 0.8 };
+    }
+    if (/type|ts|typescript|interface/.test(lower)) {
+        return { topic: "typing", confidence: 0.8 };
+    }
+    if (/architecture|design|pattern|module/.test(lower)) {
+        return { topic: "architecture", confidence: 0.8 };
+    }
+
+    return { topic: "general", confidence: 0.4 };
+}

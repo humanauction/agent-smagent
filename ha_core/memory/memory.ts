@@ -1,3 +1,4 @@
+import { classifyTopic } from "../analyze/classifier.js";
 import type { SMAGEMessage } from "../index.js";
 import { CCRAnchor } from "../transform/anchor.js";
 
@@ -17,6 +18,8 @@ export interface AnchorMemory {
     lastUser?: string;
     lastAssistant?: string;
     topicHint?: string;
+    topic?: string;
+    topicConfidence?: number;
     createdAt: number;
 }
 
@@ -39,15 +42,16 @@ function keyFor(agent: string, field: string): string {
     return `${agent}:${field}`;
 }
 
-export function rememberAnchor(
+export async function rememberAnchor(
     agent: string,
     session: string,
     anchor: CCRAnchor,
-): void {
+): Promise<void> {
     const pivot = anchor.lastUser ?? anchor.lastAssistant ?? anchor.system;
     if (!pivot) return;
 
     const summary = pivot.content.slice(0, 256);
+    const topic = await classifyTopic(summary);
     ANCHOR_MEMORY_STORE.push({
         agent,
         session,
@@ -55,6 +59,8 @@ export function rememberAnchor(
         lastUser: anchor.lastUser?.content,
         lastAssistant: anchor.lastAssistant?.content,
         topicHint: anchor.summaryHint ?? undefined,
+        topic: topic.topic,
+        topicConfidence: topic.confidence,
         createdAt: Date.now(),
     });
 }

@@ -38,26 +38,6 @@ function extractKeywords(text: string): Set<string> {
     );
 }
 
-function semanticLite(
-    msg: SMAGEMessage,
-    lastUser: SMAGEMessage | undefined,
-): number {
-    if (!lastUser) return 0;
-
-    const a = extractKeywords(msg.content);
-    const b = extractKeywords(lastUser.content);
-
-    if (a.size === 0 || b.size === 0) return 0;
-
-    let overlap = 0;
-    for (const kw of a) {
-        if (b.has(kw)) overlap++;
-    }
-
-    const denom = Math.sqrt(a.size * b.size);
-    return denom === 0 ? 0 : overlap / denom; // 0..1
-}
-
 /**
  * Compute relevance score between a message and the last user message.
  * - Keyword overlap
@@ -151,7 +131,6 @@ export async function scoreRelevance(
     total: number,
     anchor: CCRAnchor | null,
 ): Promise<number> {
-    // --- Stage‑1 structural relevance ---
     let structural = 0.1;
 
     structural += ROLE_WEIGHT[msg.role] ?? 0;
@@ -177,6 +156,19 @@ export async function scoreRelevance(
     const tokens = msg.content.split(/\s+/).length;
     structural += Math.min(tokens / 50, 0.3);
 
+    // clamp before continuity
+    structural = Math.max(0, Math.min(structural, 1));
+
+    // --- Topic continuity boost ---
+    if (anchor?.summaryHint) {
+        const hintWord = anchor.summaryHint.split(" ")[0]?.toLowerCase() ?? "";
+        const lowerMsg = msg.content.toLowerCase();
+        if (hintWord && lowerMsg.includes(hintWord)) {
+            structural += 0.05;
+        }
+    }
+
+    // clamp again after continuity
     structural = Math.max(0, Math.min(structural, 1));
 
     // --- Stage‑3 semantic relevance (embeddings) ---
@@ -185,8 +177,6 @@ export async function scoreRelevance(
         anchor?.lastUser?.content ?? "",
     );
 
-    // --- Combined relevance ---
     const final = 0.7 * structural + 0.3 * semantic;
-
     return Math.max(0, Math.min(final, 1));
 }
