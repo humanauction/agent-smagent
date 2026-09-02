@@ -80,8 +80,8 @@ export class CCRPipeline {
         );
 
         // 3. RELEVANCE SCORING
-        const scored = deduped.map((m, i) =>
-            scoreRelevance(m, i, deduped.length, anchor),
+        const scored = await Promise.all(
+            deduped.map((m, i) => scoreRelevance(m, i, deduped.length, anchor)),
         );
         safeTelemetry(() =>
             this.telemetry.record({
@@ -96,6 +96,7 @@ export class CCRPipeline {
             ...m,
             meta: { ...m.meta, relevance: scored[i] },
         }));
+
         safeTelemetry(() =>
             this.telemetry.record({
                 session,

@@ -3,7 +3,7 @@ import { scoreRelevance } from "./relevance";
 import type { SMAGEMessage } from "../index";
 
 describe("scoreRelevance", () => {
-    it("scores messages based on role, recency, markers, and token density", () => {
+    it("scores messages based on role, recency, markers, and token density", async () => {
         const messages: SMAGEMessage[] = [
             { role: "system", content: "System boot", meta: {} },
             {
@@ -15,8 +15,9 @@ describe("scoreRelevance", () => {
             { role: "user", content: "ok thanks", meta: {} },
         ];
 
-        const scored: number[] = messages.map((m, i): number =>
-            scoreRelevance(m, i, messages.length, null),
+        // scoreRelevance is async → use Promise.all
+        const scored: number[] = await Promise.all(
+            messages.map((m, i) => scoreRelevance(m, i, messages.length, null)),
         );
 
         // basic sanity: all scores are numbers
