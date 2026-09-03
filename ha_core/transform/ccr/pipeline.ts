@@ -149,10 +149,17 @@ export class CCRPipeline {
         );
 
         // 7. PAYLOAD COMPRESSION (async, heavy) with timeout
-        const compressed = await timeoutGuard(
+        const compressedRaw = await timeoutGuard(
             applyPayloadCompression(reconstructed, options),
             CCR_STAGE_TIMEOUT_MS,
             `ccr-compress-${session}`,
+        );
+
+        // mark surviving messages as compressed
+        const compressed: SMAGEMessage[] = compressedRaw.map((m) =>
+            m.role === "tool"
+                ? { ...m, meta: { ...m.meta, compressed: true } }
+                : m,
         );
 
         function pickLastMsg(
