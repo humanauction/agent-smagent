@@ -70,3 +70,32 @@ export async function classifyTopic(text: string): Promise<TopicResult> {
 
     return { topic: "general", confidence: 0.4 };
 }
+
+export interface IntentRoutingHints {
+    preferDeep?: boolean;
+    preferFast?: boolean;
+    preferCheap?: boolean;
+    preferHighQuality?: boolean;
+}
+
+export function intentToRoutingHints(intent: string): IntentRoutingHints {
+    const i = intent.toLowerCase();
+
+    const hints: IntentRoutingHints = {};
+
+    if (i === "debug") {
+        hints.preferDeep = true;
+        hints.preferHighQuality = true;
+    } else if (i === "explain") {
+        hints.preferHighQuality = true;
+    } else if (i === "refactor") {
+        hints.preferDeep = true;
+    } else if (i === "testing") {
+        hints.preferHighQuality = true;
+    } else if (i === "design") {
+        hints.preferDeep = true;
+        hints.preferHighQuality = true;
+    }
+
+    return hints;
+}

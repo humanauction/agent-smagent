@@ -50,6 +50,9 @@ export function assignPriority(
         }
 
         // Tier 0 — discardable (priority stays 0)
+        else {
+            priority = 0;
+        }
 
         // --- Intent‑aware routing (Stage‑2 CCR) ---
         let tier = priority;
