@@ -57,8 +57,13 @@ export function applyContextWindow(
             const pb = b.meta?.priority ?? 0;
             if (pa !== pb) return pb - pa;
 
-            const ra = a.meta?.relevance ?? 0;
-            const rb = b.meta?.relevance ?? 0;
+            let ra = a.meta?.relevance ?? 0;
+            let rb = b.meta?.relevance ?? 0;
+
+            // topic continuity hint: messages tagged with topic get a tiny boost
+            if (a.meta?.topicMatch) ra += 0.02;
+            if (b.meta?.topicMatch) rb += 0.02;
+
             if (ra !== rb) return rb - ra;
 
             return 0; // stable
