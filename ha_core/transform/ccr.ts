@@ -3,7 +3,7 @@ import type { SMAGEMessage, SMAGEOptions } from "../index.js";
 import { mineMemory, injectMemory } from "../memory/memory.js";
 import { applyPayloadCompression } from "./payload.js";
 import { dedupeMessages } from "./dedupe.js";
-import { extractAnchor, mergeAnchor } from "./anchor.js";
+import { CCRAnchor, extractAnchor, mergeAnchor } from "./anchor.js";
 import { scoreMessage } from "./relevance.js";
 import { assignPriority } from "./priority.js";
 import { applyContextWindow } from "./window.js";
@@ -30,18 +30,17 @@ export async function applyCCR(
     mineMemory(messages, agent);
     reversibleLog(session, "ccr_memory_mined", { messages });
 
-    // 2. Extract anchors BEFORE compressio
+    // 2. Extract anchors BEFORE compression
     const anchor = extractAnchor(messages);
     reversibleLog(session, "ccr_anchor_extracted", anchor);
 
-    rememberAnchor(agent, session, anchor);
+    await rememberAnchor(agent, session, anchor);
 
     // 3. Score learned anchors against user query
     const lastUser = [...messages].reverse().find((m) => m.role === "user");
     const userQuery = lastUser?.content ?? "";
 
     const learnedAnchors = await scoreLearnedAnchors(session, userQuery);
-    const combinedAnchor = { ...anchor, learned: learnedAnchors };
     reversibleLog(session, "ccr_learned_anchors", learnedAnchors);
 
     // 4. Payload compression
@@ -70,7 +69,13 @@ export async function applyCCR(
     const mergedFusion = [fusedAnchorIntent, ...merged];
     reversibleLog(session, "ccr_merged_fusion", mergedFusion);
 
-    // 7. Merge anchors (extracted + learned)
+    // 7. Merge anchors (extracted + learned + topic continuity)
+    const combinedAnchor: CCRAnchor = {
+        ...anchor,
+        learned: learnedAnchors,
+        topic: fusedAnchorIntent.meta?.intent ?? undefined,
+        topicConfidence: fusedAnchorIntent.meta?.intentConfidence ?? undefined,
+    };
 
     const mergedAnchors = mergeAnchor(combinedAnchor, mergedFusion);
     reversibleLog(session, "ccr_anchor_merged", mergedAnchors);
@@ -86,7 +91,7 @@ export async function applyCCR(
 
     cacheAppend(session, { stage: "shaped", messages: shaped });
 
-    // 9. Score relevance
+    // 9. Score relevance (structural scoreMessage)
     const scored = shaped.map((m) => ({
         ...m,
         meta: { ...m.meta, score: scoreMessage(m) },
@@ -94,7 +99,7 @@ export async function applyCCR(
     reversibleLog(session, "ccr_scored", scored);
 
     // 10. Assign priority tiers (new API)
-    const prioritized = assignPriority(scored, anchor);
+    const prioritized = assignPriority(scored, combinedAnchor);
     reversibleLog(session, "ccr_prioritized", prioritized);
 
     // 11. Apply context window (WindowResult API)
@@ -102,7 +107,6 @@ export async function applyCCR(
         prioritized,
         options.maxTokens ?? 4000,
     );
-
     const windowed = windowResult.windowed;
 
     reversibleLog(session, "ccr_windowed", {
@@ -112,7 +116,7 @@ export async function applyCCR(
     });
 
     // 12. Reconstruct final message list
-    const reconstructed = reconstruct(windowed, anchor);
+    const reconstructed = reconstruct(windowed, combinedAnchor);
     reversibleLog(session, "ccr_reconstructed", reconstructed);
 
     // 13. Output reduction

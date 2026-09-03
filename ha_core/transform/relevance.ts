@@ -160,11 +160,19 @@ export async function scoreRelevance(
     structural = Math.max(0, Math.min(structural, 1));
 
     // --- Topic continuity boost ---
-    if (anchor?.summaryHint) {
+    if (anchor?.topic) {
+        const topic = anchor.topic.toLowerCase();
+        const lowerMsg = msg.content.toLowerCase();
+        if (topic && lowerMsg.includes(topic)) {
+            structural += 0.08;
+            msg.meta = { ...msg.meta, topicMatch: true };
+        }
+    } else if (anchor?.summaryHint) {
         const hintWord = anchor.summaryHint.split(" ")[0]?.toLowerCase() ?? "";
         const lowerMsg = msg.content.toLowerCase();
         if (hintWord && lowerMsg.includes(hintWord)) {
             structural += 0.05;
+            msg.meta = { ...msg.meta, topicMatch: false };
         }
     }
 

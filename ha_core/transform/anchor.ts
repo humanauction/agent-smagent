@@ -8,14 +8,16 @@ export interface CCRAnchor {
     lastTool?: SMAGEMessage | null;
     summaryHint?: string | null;
     learned?: SMAGEMessage[]; // Learned anchors from the learning cycle
+    topic?: string;
+    topicConfidence?: number;
     // TODO: add additional metadata fields for anchors
     // intent?: string;          // extracted user intent
-    // topic?: string;           // classifier output
     // summary?: string;         // compressed anchor summary
     // tokens?: number;          // token weight
     // priority?: number;        // anchor priority tier
     // Extract pinned messages and last messages of each role from the message history.
 }
+
 /**
  * Extract pinned messages and last messages of each role from the message history.
  */
