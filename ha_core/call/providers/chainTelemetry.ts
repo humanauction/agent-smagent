@@ -26,6 +26,7 @@ export interface ChainTelemetryEvent {
         | "selection"
         // --- CCR pipeline stages ---
         | "anchor"
+        | "intent"
         | "relevance"
         | "priority"
         | "provider_call"
@@ -37,27 +38,29 @@ export interface ChainTelemetryEvent {
         | "reduce";
 
     agentId?: string;
-    chain?: string;
-    counts?: Record<"raw" | "deduped" | "window" | "compressed", number>;
-    score?: number;
-    scores?: Record<string, number>;
-    metrics?: Record<string, number>;
-    weighted?: Record<string, number>;
-    memoryBoost?: number;
-    finalScore?: number;
     cached?: boolean;
+    chain?: string;
+    confidence?: number;
+    counts?: Record<"raw" | "deduped" | "window" | "compressed", number>;
     error?: string;
+    fallbackTo?: string;
+    finalScore?: number;
+    intent?: string;
+    metrics?: Record<string, number>;
+    memoryBoost?: number;
     messageCount?: number;
     messages?: number;
     model?: string;
+    request?: unknown;
+    response?: unknown;
     resultSize?: number;
     retryCount?: number;
     retryDelay?: number;
-    fallbackTo?: string;
-    request?: unknown;
-    response?: unknown;
+    score?: number;
+    scores?: Record<string, number>;
     timestamp?: number;
     tokens?: Record<"raw" | "window" | "compressed" | "reduced", number>;
+    weighted?: Record<string, number>;
 }
 
 export class ProviderChainTelemetry {

@@ -79,22 +79,33 @@ export interface IntentRoutingHints {
 }
 
 export function intentToRoutingHints(intent: string): IntentRoutingHints {
-    const i = intent.toLowerCase();
-
     const hints: IntentRoutingHints = {};
 
-    if (i === "debug") {
-        hints.preferDeep = true;
-        hints.preferHighQuality = true;
-    } else if (i === "explain") {
-        hints.preferHighQuality = true;
-    } else if (i === "refactor") {
-        hints.preferDeep = true;
-    } else if (i === "testing") {
-        hints.preferHighQuality = true;
-    } else if (i === "design") {
-        hints.preferDeep = true;
-        hints.preferHighQuality = true;
+    switch (intent) {
+        case "debug":
+            hints.preferDeep = true;
+            hints.preferHighQuality = true;
+            break;
+
+        case "explain":
+            hints.preferHighQuality = true;
+            break;
+
+        case "refactor":
+            hints.preferDeep = true;
+            break;
+
+        case "testing":
+            hints.preferHighQuality = true;
+            break;
+
+        case "design":
+            hints.preferDeep = true;
+            hints.preferHighQuality = true;
+            break;
+
+        default:
+            break;
     }
 
     return hints;
