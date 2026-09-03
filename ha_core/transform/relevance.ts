@@ -176,6 +176,29 @@ export async function scoreRelevance(
         }
     }
 
+    // --- Intent vector boost ---
+    if (anchor?.intent) {
+        const intent = anchor.intent.toLowerCase();
+        const lowerMsg = msg.content.toLowerCase();
+
+        // crude routing: if intent is "debug", boost tool/assistant messages mentioning error/stack
+        if (
+            intent === "debug" &&
+            /error|stack trace|exception/.test(lowerMsg)
+        ) {
+            structural += 0.06;
+            msg.meta = { ...msg.meta, intentMatch: "debug" };
+        }
+
+        if (intent === "explain" && /why|how|explain/.test(lowerMsg)) {
+            structural += 0.05;
+            msg.meta = { ...msg.meta, intentMatch: "explain" };
+        }
+
+        // clamp again
+        structural = Math.max(0, Math.min(structural, 1));
+    }
+
     // clamp again after continuity
     structural = Math.max(0, Math.min(structural, 1));
 

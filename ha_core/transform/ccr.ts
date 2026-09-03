@@ -1,6 +1,11 @@
 import type { SMAGEMessage, SMAGEOptions } from "../index.js";
 
-import { mineMemory, injectMemory } from "../memory/memory.js";
+import {
+    mineMemory,
+    injectMemory,
+    rememberAnchor,
+    getRelevantAnchorMemory,
+} from "../memory/memory.js";
 import { applyPayloadCompression } from "./payload.js";
 import { dedupeMessages } from "./dedupe.js";
 import { CCRAnchor, extractAnchor, mergeAnchor } from "./anchor.js";
@@ -14,10 +19,7 @@ import { reversibleLog } from "../cache/log.js";
 import { cacheAppend } from "../cache/store.js";
 import { applyContextManager } from "./context.js";
 
-import { learn } from "../../ha_learn/index.js";
 import { scoreLearnedAnchors } from "../../ha_cli/commands/learn.js";
-import { rememberAnchor } from "../memory/memory.js";
-import { getRelevantAnchorMemory } from "../memory/memory.js";
 import { fuseAnchorIntent } from "./anchorFusion.js";
 
 export async function applyCCR(
@@ -34,29 +36,31 @@ export async function applyCCR(
     const anchor = extractAnchor(messages);
     reversibleLog(session, "ccr_anchor_extracted", anchor);
 
+    // persist anchor snapshot
     await rememberAnchor(agent, session, anchor);
 
-    // 3. Score learned anchors against user query
+    // 3. User query pivot
     const lastUser = [...messages].reverse().find((m) => m.role === "user");
     const userQuery = lastUser?.content ?? "";
 
+    // 4. Learned anchors
     const learnedAnchors = await scoreLearnedAnchors(session, userQuery);
     reversibleLog(session, "ccr_learned_anchors", learnedAnchors);
 
-    // 4. Payload compression
+    // 5. Payload compression
     const compressedInput = await applyPayloadCompression(messages, options);
     reversibleLog(session, "ccr_compressed_input", compressedInput);
 
-    // 5. Dedupe
+    // 6. Dedupe
     const deduped = dedupeMessages(compressedInput);
     reversibleLog(session, "ccr_dedupe", deduped);
 
-    // 6. Inject memory
+    // 7. Inject memory
     const memoryMessages = injectMemory(agent, userQuery);
     const merged = [...memoryMessages, ...deduped];
     reversibleLog(session, "ccr_memory_injected", merged);
 
-    // 6b. fuse anchor intent with relevant anchor memory
+    // 8. Fuse anchor intent with relevant anchor memory
     const relevantAnchorMemory = getRelevantAnchorMemory(agent, userQuery);
     const fusedAnchorIntent = await fuseAnchorIntent(
         anchor,
@@ -66,21 +70,23 @@ export async function applyCCR(
     reversibleLog(session, "ccr_fused_anchor_intent", fusedAnchorIntent);
 
     // inject fused anchor at top
-    const mergedFusion = [fusedAnchorIntent, ...merged];
+    const mergedFusion: SMAGEMessage[] = [fusedAnchorIntent, ...merged];
     reversibleLog(session, "ccr_merged_fusion", mergedFusion);
 
-    // 7. Merge anchors (extracted + learned + topic continuity)
+    // 9. Build combined anchor (structural + learned + intent/topic)
     const combinedAnchor: CCRAnchor = {
         ...anchor,
         learned: learnedAnchors,
-        topic: fusedAnchorIntent.meta?.intent ?? undefined,
-        topicConfidence: fusedAnchorIntent.meta?.intentConfidence ?? undefined,
+        // topic continuity from fused intent/meta
+        intent: fusedAnchorIntent.meta?.intent,
+        intentConfidence: fusedAnchorIntent.meta?.intentConfidence,
     };
 
+    // 10. Merge anchors (extracted + learned + fused intent)
     const mergedAnchors = mergeAnchor(combinedAnchor, mergedFusion);
     reversibleLog(session, "ccr_anchor_merged", mergedAnchors);
 
-    // 8. Context manager (priority + relevance + window)
+    // 11. Context manager (priority + relevance + window)
     const shaped = await applyContextManager(
         mergedAnchors,
         agent,
@@ -91,18 +97,18 @@ export async function applyCCR(
 
     cacheAppend(session, { stage: "shaped", messages: shaped });
 
-    // 9. Score relevance (structural scoreMessage)
+    // 12. Score relevance (structural scoreMessage, separate from semantic)
     const scored = shaped.map((m) => ({
         ...m,
         meta: { ...m.meta, score: scoreMessage(m) },
     }));
     reversibleLog(session, "ccr_scored", scored);
 
-    // 10. Assign priority tiers (new API)
+    // 13. Assign priority tiers (now can use combinedAnchor if you want)
     const prioritized = assignPriority(scored, combinedAnchor);
     reversibleLog(session, "ccr_prioritized", prioritized);
 
-    // 11. Apply context window (WindowResult API)
+    // 14. Apply context window
     const windowResult = applyContextWindow(
         prioritized,
         options.maxTokens ?? 4000,
@@ -115,11 +121,11 @@ export async function applyCCR(
         tokens: windowResult.tokens,
     });
 
-    // 12. Reconstruct final message list
+    // 15. Reconstruct final message list
     const reconstructed = reconstruct(windowed, combinedAnchor);
     reversibleLog(session, "ccr_reconstructed", reconstructed);
 
-    // 13. Output reduction
+    // 16. Output reduction
     const reduced = await applyOutputReduction(reconstructed);
     reversibleLog(session, "ccr_output_reduced", reduced);
 

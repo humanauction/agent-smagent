@@ -10,8 +10,11 @@ export interface CCRAnchor {
     learned?: SMAGEMessage[]; // Learned anchors from the learning cycle
     topic?: string;
     topicConfidence?: number;
+    intent?: string; // extracted user intent
+    intentConfidence?: number; // confidence of extracted intent
+
     // TODO: add additional metadata fields for anchors
-    // intent?: string;          // extracted user intent
+
     // summary?: string;         // compressed anchor summary
     // tokens?: number;          // token weight
     // priority?: number;        // anchor priority tier
