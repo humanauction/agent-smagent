@@ -156,7 +156,11 @@ export class SMAGEOrchestrator {
 
             try {
                 const start = Date.now();
-                const result = await this.callAgent(chosen, messages);
+                const result = await this.callAgent(
+                    chosen,
+                    messages,
+                    intentResult.intent,
+                );
                 const duration = Date.now() - start;
 
                 if (duration > 2000) {
@@ -222,7 +226,11 @@ export class SMAGEOrchestrator {
                         timestamp: Date.now(),
                     });
 
-                    return await this.callAgent(fb.provider, messages);
+                    return await this.callAgent(
+                        fb.provider,
+                        messages,
+                        intentResult.intent,
+                    );
                 }
 
                 throw err;
@@ -240,7 +248,7 @@ export class SMAGEOrchestrator {
                 provider: primary.provider,
             });
 
-            return this.callAgent(primary, messages);
+            return this.callAgent(primary, messages, intentResult.intent);
         }
 
         // ROUND ROBIN
@@ -275,6 +283,7 @@ export class SMAGEOrchestrator {
     private async callAgent(
         agent: OrchestratorConfig["agents"][0],
         messages: SMAGEMessage[],
+        intent?: string | null,
     ): Promise<OrchestratorResult> {
         const session = this.config.session;
 
@@ -333,12 +342,20 @@ export class SMAGEOrchestrator {
             },
             session,
         );
+        const ccrOptions = {
+            ...(agent.options ?? {}),
+            provider: agent.provider,
+            depth: agent.depth,
+            cost: agent.cost,
+            quality: agent.quality,
+            reliability: this.tracker.snapshot(agent.id).reliability,
+        };
 
         const ccr = new CCRPipeline(this.telemetry);
 
         // CCR pipeline with orchestroator-level timeout guard
         const shaped = await timeoutGuard(
-            ccr.run(session, messages, agent.options ?? {}),
+            ccr.run(session, messages, ccrOptions),
             CCR_TIMEOUT_MS,
             `orchestrator-ccr-${agent.id}`,
         );
@@ -350,7 +367,10 @@ export class SMAGEOrchestrator {
                 model: agent.model,
                 provider: agent.provider ?? "openai",
                 messages: shaped.reconstructed,
-                options: agent.options ?? {},
+                options: {
+                    ...(agent.options ?? {}),
+                    intent: intent ?? undefined,
+                },
             }),
             ORCHESTRATOR_TIMEOUT_MS,
             `orchestrator-chain-${agent.id}`,

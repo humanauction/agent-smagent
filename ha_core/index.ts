@@ -6,6 +6,13 @@ export interface SMAGEOptions {
     maxTokens?: number;
     model?: string;
     strategy?: "auto" | "single" | "round_robin" | "fan_out";
+
+    // Provider‑specific CCR shaping metadata
+    provider?: string;
+    depth?: number;
+    cost?: number;
+    quality?: number;
+    reliability?: number;
 }
 
 export interface SMAGEMessage {
