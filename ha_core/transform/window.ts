@@ -28,6 +28,17 @@ export function applyContextWindow(
     messages: SMAGEMessage[],
     maxTokens: number,
 ): WindowResult {
+    // Provider‑specific window shaping
+    const provider = messages[0]?.meta?.provider ?? null;
+
+    if (provider === "local") {
+        maxTokens = Math.floor(maxTokens * 0.5); // local models get smaller windows
+    }
+
+    if (messages.some((m) => Number(m.meta?.depth ?? 0) > 0.6)) {
+        maxTokens = Math.floor(maxTokens * 1.2); // deep models get larger windows
+    }
+
     // --- 1. Partition messages into tiers ---
     const anchors: SMAGEMessage[] = [];
     const high: SMAGEMessage[] = [];

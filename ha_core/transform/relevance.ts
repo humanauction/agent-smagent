@@ -159,6 +159,30 @@ export async function scoreRelevance(
     // clamp before continuity
     structural = Math.max(0, Math.min(structural, 1));
 
+    // Provider‑specific relevance shaping
+    const provider = msg.meta?.provider ?? null;
+    const depth = Number(msg.meta?.depth ?? 0);
+    const quality = Number(msg.meta?.quality ?? 0);
+    const reliability = Number(msg.meta?.reliability ?? 0);
+
+    // Deep models → boost relevance
+    if (depth > 0.6) structural += 0.05;
+
+    // High‑quality models → boost assistant/system relevance
+    if (quality > 0.7 && (msg.role === "assistant" || msg.role === "system")) {
+        structural += 0.04;
+    }
+
+    // Reliable models → boost tool relevance
+    if (reliability > 0.7 && msg.role === "tool") {
+        structural += 0.05;
+    }
+
+    // Local models → reduce relevance
+    if (provider === "local") {
+        structural -= 0.05;
+    }
+
     // --- Topic continuity boost ---
     if (anchor?.topic) {
         const topic = anchor.topic.toLowerCase();

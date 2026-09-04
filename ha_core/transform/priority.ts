@@ -72,6 +72,42 @@ export function assignPriority(
             tier = Math.max(tier, 2); // assistant explanations get medium+
         }
 
+        // --- Provider‑specific CCR shaping (Stage‑4) ---
+        const provider = m.meta?.provider ?? null;
+
+        if (provider) {
+            const depth = Number(m.meta?.depth ?? 0);
+            const quality = Number(m.meta?.quality ?? 0);
+            const reliability = Number(m.meta?.reliability ?? 0);
+
+            // Deep models → keep more context
+            if (depth > 0.6) {
+                tier = Math.max(tier, 2);
+            }
+
+            // High‑quality models → keep assistant/system messages
+            if (
+                quality > 0.7 &&
+                (m.role === "assistant" || m.role === "system")
+            ) {
+                tier = Math.max(tier, 2);
+            }
+
+            // Reliable models → keep tool messages
+            if (reliability > 0.7 && m.role === "tool") {
+                tier = Math.max(tier, 3);
+            }
+
+            // Cheap models → lower priority for assistant chatter
+            if ((m.meta?.cost ?? 0) > 0.7 && m.role === "assistant") {
+                tier = Math.min(tier, 1);
+            }
+
+            // Local models → aggressively trim
+            if (provider === "local") {
+                tier = Math.min(tier, 1);
+            }
+        }
         return {
             ...m,
             meta: { ...m.meta, tier, priority },
