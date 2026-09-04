@@ -1,6 +1,10 @@
 import type { SMAGEMessage } from "../ha_core/index.js";
 import { learn } from "../ha_learn/index.js";
 import { CCRRouter } from "./ccrRouting.js";
+import {
+    classifyIntent,
+    intentToRoutingHints,
+} from "../ha_core/analyze/classifier.js";
 
 // this file defines the MemoryRouter class, responsible for message routing decisions based on learned relevance and context.
 export interface RoutingContext {
@@ -29,41 +33,30 @@ export class MemoryRouter {
         const lastUser = [...messages].reverse().find((m) => m.role === "user");
         const userQuery = lastUser?.content ?? "";
 
+        // learned relevance
         const scored = learn.scoreRelevance(session, userQuery);
         const top = scored[0];
 
         if (top) {
             const text = top.text.toLowerCase();
-
-            if (text.includes("deep") || text.includes("analysis")) {
+            if (text.includes("deep") || text.includes("analysis"))
                 hints.preferDeep = true;
-            }
-            if (text.includes("fast") || text.includes("quick")) {
+            if (text.includes("fast") || text.includes("quick"))
                 hints.preferFast = true;
-            }
-            if (text.includes("cheap") || text.includes("cost")) {
+            if (text.includes("cheap") || text.includes("cost"))
                 hints.preferCheap = true;
-            }
-            if (text.includes("quality") || text.includes("best")) {
+            if (text.includes("quality") || text.includes("best"))
                 hints.preferHighQuality = true;
-            }
         }
 
-        // Simple strategy selection based on hints
-        if (hints.preferDeep) {
-            return { strategy: "fan_out", hints };
-        }
-        if (hints.preferFast) {
-            return { strategy: "single", hints };
-        }
-        if (hints.preferCheap) {
-            return { strategy: "round_robin", hints };
-        }
-        if (hints.preferHighQuality) {
-            return { strategy: "fan_out", hints };
-        }
+        // intent routing is done in orchestrator, not here
 
-        // Default: auto (let provider selector + orchestrator decide)
+        // strategy selection
+        if (hints.preferDeep) return { strategy: "fan_out", hints };
+        if (hints.preferFast) return { strategy: "single", hints };
+        if (hints.preferCheap) return { strategy: "round_robin", hints };
+        if (hints.preferHighQuality) return { strategy: "fan_out", hints };
+
         return { strategy: "auto", hints };
     }
 }

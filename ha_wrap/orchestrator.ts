@@ -15,6 +15,10 @@ import {
     timeoutGuard,
     safeTelemetry,
 } from "../ha_core/call/providers/timeout.js";
+import {
+    classifyIntent,
+    intentToRoutingHints,
+} from "../ha_core/analyze/classifier.js";
 
 const ORCHESTRATOR_TIMEOUT_MS = 90_000; // per agent cap 90s
 const CCR_TIMEOUT_MS = 30_000; // CCR cap 30s
@@ -77,11 +81,21 @@ export class SMAGEOrchestrator {
 
         const lastUser = [...messages].reverse().find((m) => m.role === "user");
         const userQuery = lastUser?.content ?? "";
+        const intentResult = await classifyIntent(userQuery);
+        const ih = intentToRoutingHints(intentResult.intent);
+        this.telemetry.record({
+            session,
+            provider: "orchestrator",
+            stage: "intent",
+            intent: intentResult.intent,
+            confidence: intentResult.confidence,
+        });
 
         const learnedAnchors = learn.scoreRelevance(session, userQuery);
 
         const routing = this.router.decide({ session, messages });
         const effectiveStrategy = routing.strategy;
+        Object.assign(routing.hints, ih); // merge intent hints into routing hints
 
         // reliability-augmented provider list
         const providersWithReliability = agents.map((a) => {
