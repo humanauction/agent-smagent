@@ -251,7 +251,7 @@ export class SMAGEOrchestrator {
         // FAN OUT
         if (effectiveStrategy === "fan_out") {
             const results = await timeoutGuard(
-                this.multi.fanOut(session, messages),
+                this.multi.fanOut(session, messages, intentResult.intent),
                 ORCHESTRATOR_TIMEOUT_MS,
                 "orchestrator-fanout",
             );

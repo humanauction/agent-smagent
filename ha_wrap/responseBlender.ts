@@ -44,7 +44,12 @@ export class ResponseBlender {
         const scored = results.map((r) => {
             const reliability = r.reliability ?? 0;
             const contentScore = this.scoreContent(r.content);
-            const combined = contentScore + reliability * 1.5;
+
+            // intent-aware agent weight
+            const intentWeight = Number((r as any).weight ?? 1);
+
+            const combined =
+                contentScore + reliability * 1.5 + intentWeight * 2;
 
             return {
                 agentId: r.agentId,
