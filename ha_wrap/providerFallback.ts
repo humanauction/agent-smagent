@@ -6,6 +6,7 @@ export interface FallbackContext {
     provider: ProviderMetadata;
     attempt: number;
     error: unknown;
+    intent?: string;
 }
 
 export interface FallbackResult {
@@ -39,14 +40,44 @@ export class ProviderFallback {
         else if (this.isRateLimit(error)) classification = "Rate limit";
         else if (this.isEmptyResponse(error)) classification = "Empty response";
         // 3. Reliability-first fallback
-        const next = [...allProviders]
-            .filter((p) => p.id !== provider.id)
-            .sort(
-                (a, b) =>
-                    (b.reliability ?? 0) - (a.reliability ?? 0) ||
-                    (b.quality ?? 0) - (a.quality ?? 0) ||
-                    (b.depth ?? 0) - (a.depth ?? 0),
-            )[0];
+        const intent = ctx.intent?.toLowerCase();
+        const candidate = allProviders.filter((p) => p.id !== provider.id);
+        const scored = candidate.map((p) => {
+            let s = 1;
+            // baseline reliability-first fallback
+            s += (p.reliability ?? 0) * 0.5;
+            s += (p.quality ?? 0) * 0.3;
+            s += (p.depth ?? 0) * 0.2;
+
+            // intent-aware boosts
+            if (intent === "debug") {
+                s += (p.depth ?? 0) * 0.6;
+                s += (p.quality ?? 0) * 0.4;
+                s += (p.reliability ?? 0) * 0.4;
+            }
+
+            if (intent === "explain") {
+                s += (p.quality ?? 0) * 0.6;
+                s += (p.reliability ?? 0) * 0.3;
+            }
+
+            if (intent === "refactor") {
+                s += (p.depth ?? 0) * 0.7;
+            }
+
+            if (intent === "testing") {
+                s += (p.quality ?? 0) * 0.5;
+                s += (p.reliability ?? 0) * 0.3;
+            }
+
+            if (intent === "design") {
+                s += (p.depth ?? 0) * 0.7;
+                s += (p.quality ?? 0) * 0.5;
+            }
+            return { provider: p, score: s };
+        });
+
+        const next = scored.sort((a, b) => b.score - a.score)[0]?.provider;
 
         if (next) {
             return {

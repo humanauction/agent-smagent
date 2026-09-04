@@ -7,7 +7,7 @@ import { CopilotWrapper } from "./copilot/copilotWrapper.js";
 import { OpencodeWrapper } from "./opencode/opencodeWrapper.js";
 
 import { SMAGEAgent } from "./agent.js";
-import { SMAGEMultiAgent } from "./multi_agent.js";
+import { SMAGEMultiAgent } from "./multiAgent.js";
 import { SMAGEOrchestrator } from "./orchestrator.js";
 
 // ---------------- PROVIDER WRAPPERS ----------------

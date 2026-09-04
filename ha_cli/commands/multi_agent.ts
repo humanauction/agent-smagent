@@ -1,5 +1,5 @@
 import type { SMAGEMessage } from "../../ha_core/index.js";
-import { SMAGEMultiAgent } from "../../ha_wrap/multi_agent.js";
+import { SMAGEMultiAgent } from "../../ha_wrap/multiAgent.js";
 
 // this file contains the implementation of the multi-agent round-robin command for the CLI
 export async function runMultiAgentRR(session: string, prompt: string) {

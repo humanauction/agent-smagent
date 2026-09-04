@@ -1,6 +1,6 @@
 import type { SMAGEMessage } from "../ha_core/index.js";
 import { SMAGEAgent } from "./agent.js";
-import { SMAGEMultiAgent } from "./multi_agent.js";
+import { SMAGEMultiAgent } from "./multiAgent.js";
 import { learn } from "../ha_learn/index.js";
 import { ProviderSelector } from "./providerSelection.js";
 import { ProviderFallback } from "./providerFallback.js";
@@ -207,6 +207,7 @@ export class SMAGEOrchestrator {
                         provider: chosen,
                         attempt: 1,
                         error: err,
+                        intent: intentResult.intent,
                     },
                     providersWithReliability,
                 );

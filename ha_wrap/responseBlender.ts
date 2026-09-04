@@ -1,4 +1,4 @@
-import type { OrchestratedResult } from "./multi_agent.js";
+import type { OrchestratedResult } from "./multiAgent.js";
 
 export interface BlendInput {
     results: OrchestratedResult[];
