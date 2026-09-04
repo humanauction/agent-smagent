@@ -6,10 +6,11 @@ export interface ProviderRequest {
     provider: string;
     messages: SMAGEMessage[];
     options?: {
-        provider?: string;
-        temperature?: number;
+        intent?: string;
         maxTokens?: number;
+        provider?: string;
         retry?: number;
+        temperature?: number;
     };
 }
 

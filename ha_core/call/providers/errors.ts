@@ -12,17 +12,20 @@ export type ProviderErrorType =
     | "internal";
 
 export interface ProviderError {
-    type: ProviderErrorType;
-    provider: string;
-    model: string;
-    session: string;
-    message: string;
+    adaptiveDelay?: number;
+    baseDelay?: number;
     cause?: unknown;
+    message: string;
+    model: string;
+
+    provider: string;
     retryable: boolean;
     retryDelay?: number; // ms milliseconds before retrying
     retryCount?: number; // INT number of retries attempted
+    session: string;
     timestamp: number;
     timeout?: boolean; // indicates if the error was due to a timeout
+    type: ProviderErrorType;
 }
 
 export function providerError(

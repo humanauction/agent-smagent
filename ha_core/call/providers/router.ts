@@ -10,6 +10,35 @@ import { logProviderIO } from "./utils.js";
 import { providerError, ProviderError } from "./errors.js";
 
 export class ProviderRouter {
+    private computeAdaptiveDelay(
+        pe: ProviderError,
+        req: ProviderRequest,
+    ): number {
+        const base = pe.retryDelay ?? 150; // default baseline
+
+        const intent = req.options?.intent ?? null;
+
+        let delay = base;
+
+        // Error-type shaping
+        if (pe.type === "timeout") delay *= 2.0;
+        if (pe.type === "rate_limit") delay *= 1.5;
+        if (pe.type === "internal") delay *= 1.2;
+
+        // Intent shaping
+        if (intent === "debug") delay *= 0.7;
+        if (intent === "explain") delay *= 1.2;
+        if (intent === "testing") delay *= 0.9;
+        if (intent === "design") delay *= 1.1;
+
+        // Exponential backoff
+        const retryCount = pe.retryCount ?? 0;
+        delay *= Math.pow(1.4, retryCount);
+
+        // Clamp
+        return Math.max(50, Math.min(delay, 5000));
+    }
+
     primary: string;
     fallback: string | null;
 
@@ -60,9 +89,9 @@ export class ProviderRouter {
                     (pe.retryCount ?? 0) + 1,
                 );
 
-                await new Promise((r) =>
-                    setTimeout(r, nextRetry.retryDelay ?? 0),
-                );
+                const adaptiveDelay = this.computeAdaptiveDelay(nextRetry, req);
+
+                await new Promise((r) => setTimeout(r, adaptiveDelay));
 
                 return this.call(req);
             }
