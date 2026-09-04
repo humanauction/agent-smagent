@@ -1,7 +1,7 @@
 import type { SMAGEMessage } from "../ha_core/index.js";
 import type { CCRRoutingHints } from "./ccrRouting.js";
 
-import { ProviderMetadataScorer } from "../ha_core/index.js";
+import { ProviderMetadataScorer } from "../ha_core/providerMetadata.js";
 
 export interface ProviderSelectionInput {
     session: string;
@@ -43,6 +43,7 @@ export class ProviderSelector {
             preferFast: hints.preferFast,
             preferCheap: hints.preferCheap,
             preferHighQuality: hints.preferHighQuality,
+            intent: hints.intent,
         });
 
         // 2. Pick best score (no .at(), no destructuring)

@@ -18,6 +18,7 @@ export interface CCRRoutingHints {
     preferSingleAgent?: boolean;
     preferFanOut?: boolean;
     preferRoundRobin?: boolean;
+    intent?: string;
 }
 
 export class CCRRouter {
