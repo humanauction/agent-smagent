@@ -7,6 +7,7 @@ export interface ProviderSelectionInput {
     session: string;
     messages: SMAGEMessage[];
     providers: {
+        depth?: number;
         id: string;
         provider: string;
         model: string;
@@ -20,10 +21,14 @@ export interface ProviderSelectionInput {
 }
 
 export interface ProviderSelectionResult {
+    cost?: number;
+    depth?: number;
     id: string;
-    provider: string;
     model: string;
     options?: Record<string, unknown> | undefined;
+    provider: string;
+    quality?: number;
+    reliability?: number;
 }
 
 export class ProviderSelector {
@@ -87,10 +92,14 @@ export class ProviderSelector {
 
         // 5. Final strict-safe return
         return {
+            cost: chosen.cost,
+            depth: chosen.depth,
             id: chosen.id,
-            provider: chosen.provider,
             model: chosen.model,
             options: chosen.options,
+            provider: chosen.provider,
+            quality: chosen.quality,
+            reliability: chosen.reliability,
         };
     }
 }

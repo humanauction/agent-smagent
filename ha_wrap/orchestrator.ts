@@ -93,7 +93,12 @@ export class SMAGEOrchestrator {
 
         const learnedAnchors = learn.scoreRelevance(session, userQuery);
 
-        const routing = this.router.decide({ session, messages });
+        const routing = this.router.decide({
+            session,
+            messages,
+            providerMetadata: undefined, // no provider yet
+        });
+
         const effectiveStrategy = routing.strategy;
         Object.assign(routing.hints, ih); // merge intent hints into routing hints
 
@@ -147,6 +152,18 @@ export class SMAGEOrchestrator {
                 throw new Error("Orchestrator: selected agent undefined.");
             }
 
+            const routing2 = this.router.decide({
+                session,
+                messages,
+                providerMetadata: {
+                    provider: chosen.provider,
+                    depth: chosen.depth ?? 0,
+                    cost: chosen.cost ?? 0,
+                    quality: chosen.quality ?? 0,
+                    reliability: this.tracker.snapshot(chosen.id).reliability,
+                },
+            });
+
             // orchestrator selection telemetry
             this.telemetry.record({
                 session,
@@ -160,7 +177,9 @@ export class SMAGEOrchestrator {
                     chosen,
                     messages,
                     intentResult.intent,
+                    routing2.window,
                 );
+
                 const duration = Date.now() - start;
 
                 if (duration > 2000) {
@@ -230,6 +249,7 @@ export class SMAGEOrchestrator {
                         fb.provider,
                         messages,
                         intentResult.intent,
+                        routing2.window,
                     );
                 }
 
@@ -248,7 +268,24 @@ export class SMAGEOrchestrator {
                 provider: primary.provider,
             });
 
-            return this.callAgent(primary, messages, intentResult.intent);
+            const routing2 = this.router.decide({
+                session,
+                messages,
+                providerMetadata: {
+                    provider: primary.provider,
+                    depth: primary.depth ?? 0,
+                    cost: primary.cost ?? 0,
+                    quality: primary.quality ?? 0,
+                    reliability: this.tracker.snapshot(primary.id).reliability,
+                },
+            });
+
+            return this.callAgent(
+                primary,
+                messages,
+                intentResult.intent,
+                routing2.window,
+            );
         }
 
         // ROUND ROBIN
@@ -284,6 +321,7 @@ export class SMAGEOrchestrator {
         agent: OrchestratorConfig["agents"][0],
         messages: SMAGEMessage[],
         intent?: string | null,
+        window?: SMAGEMessage[],
     ): Promise<OrchestratorResult> {
         const session = this.config.session;
 
@@ -355,7 +393,7 @@ export class SMAGEOrchestrator {
 
         // CCR pipeline with orchestroator-level timeout guard
         const shaped = await timeoutGuard(
-            ccr.run(session, messages, ccrOptions),
+            ccr.run(session, window ?? messages, ccrOptions),
             CCR_TIMEOUT_MS,
             `orchestrator-ccr-${agent.id}`,
         );

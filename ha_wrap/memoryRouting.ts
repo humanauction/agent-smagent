@@ -1,15 +1,17 @@
 import type { SMAGEMessage } from "../ha_core/index.js";
 import { learn } from "../ha_learn/index.js";
 import { CCRRouter } from "./ccrRouting.js";
-import {
-    classifyIntent,
-    intentToRoutingHints,
-} from "../ha_core/analyze/classifier.js";
 
-// this file defines the MemoryRouter class, responsible for message routing decisions based on learned relevance and context.
 export interface RoutingContext {
     session: string;
     messages: SMAGEMessage[];
+    providerMetadata?: {
+        provider: string;
+        depth: number;
+        cost: number;
+        quality: number;
+        reliability: number;
+    };
 }
 
 export interface RoutingDecision {
@@ -20,20 +22,31 @@ export interface RoutingDecision {
         preferCheap?: boolean;
         preferHighQuality?: boolean;
     };
+    window: SMAGEMessage[];
 }
 
 export class MemoryRouter {
     private ccr = new CCRRouter();
 
     decide(ctx: RoutingContext): RoutingDecision {
+        const { session, messages, providerMetadata } = ctx;
+
+        // --- CCR hints ---
         const ccrHints = this.ccr.decide(ctx);
         const hints: RoutingDecision["hints"] = { ...ccrHints };
-        const { session, messages } = ctx;
 
+        // --- Provider metadata ---
+        const provider = providerMetadata?.provider ?? null;
+        const depth = Number(providerMetadata?.depth ?? 0);
+        const cost = Number(providerMetadata?.cost ?? 0);
+        const quality = Number(providerMetadata?.quality ?? 0);
+        const reliability = Number(providerMetadata?.reliability ?? 0);
+
+        // --- Last user query ---
         const lastUser = [...messages].reverse().find((m) => m.role === "user");
         const userQuery = lastUser?.content ?? "";
 
-        // learned relevance
+        // --- Learned relevance ---
         const scored = learn.scoreRelevance(session, userQuery);
         const top = scored[0];
 
@@ -49,14 +62,27 @@ export class MemoryRouter {
                 hints.preferHighQuality = true;
         }
 
-        // intent routing is done in orchestrator, not here
+        // --- Provider-specific memory shaping ---
+        let memoryLimit = 10;
 
-        // strategy selection
-        if (hints.preferDeep) return { strategy: "fan_out", hints };
-        if (hints.preferFast) return { strategy: "single", hints };
-        if (hints.preferCheap) return { strategy: "round_robin", hints };
-        if (hints.preferHighQuality) return { strategy: "fan_out", hints };
+        if (depth > 0.6) memoryLimit += 10;
+        if (quality > 0.7) memoryLimit += 5;
+        if (cost > 0.7) memoryLimit -= 5;
+        if (reliability > 0.7) memoryLimit += 5;
+        if (provider === "local") memoryLimit = 3;
 
-        return { strategy: "auto", hints };
+        memoryLimit = Math.max(1, Math.min(memoryLimit, 40));
+
+        const window = messages.slice(-memoryLimit);
+
+        // --- Strategy selection ---
+        if (hints.preferDeep) return { strategy: "fan_out", hints, window };
+        if (hints.preferFast) return { strategy: "single", hints, window };
+        if (hints.preferCheap)
+            return { strategy: "round_robin", hints, window };
+        if (hints.preferHighQuality)
+            return { strategy: "fan_out", hints, window };
+
+        return { strategy: "auto", hints, window };
     }
 }
