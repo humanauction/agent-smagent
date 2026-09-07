@@ -126,6 +126,13 @@ export class ProviderChainRouter {
 
     async call(req: ProviderRequest): Promise<ProviderResponse> {
         const chainStart = Date.now();
+        // Provider-specific metadata (available throughout call())
+        const meta = req.options?.providerMeta ?? {};
+        const depth = Number(meta.depth ?? 0);
+        const cost = Number(meta.cost ?? 0);
+        const quality = Number(meta.quality ?? 0);
+        const reliability = Number(meta.reliability ?? 0);
+        const speed = Number(meta.speed ?? 0);
 
         const checkChainTimeout = () => {
             if (Date.now() - chainStart > CHAIN_TIMEOUT_MS) {
@@ -187,9 +194,34 @@ export class ProviderChainRouter {
 
             try {
                 const adapter = this.getAdapter(providerName);
+
+                const meta = req.options?.providerMeta ?? {};
+                const depth = Number(meta.depth ?? 0);
+                const cost = Number(meta.cost ?? 0);
+                const quality = Number(meta.quality ?? 0);
+                const reliability = Number(meta.reliability ?? 0);
+                const speed = Number(meta.speed ?? 0);
+
+                let providerTimeout = PROVIDER_TIMEOUT_MS;
+                // Deep models → more time
+                if (depth > 0.6) providerTimeout *= 1.3;
+
+                // Cheap models → less time
+                if (cost > 0.6) providerTimeout *= 0.7;
+
+                // Reliable models → more time
+                if (reliability > 0.7) providerTimeout *= 1.2;
+
+                // Fast models → less time
+                if (speed > 0.7) providerTimeout *= 0.8;
+
+                providerTimeout = Math.max(
+                    2000,
+                    Math.min(providerTimeout, 60000),
+                );
                 const raw = await timeoutGuard(
                     adapter.call(req),
-                    PROVIDER_TIMEOUT_MS,
+                    providerTimeout,
                     `provider-${providerName}`,
                 );
 
@@ -311,9 +343,23 @@ export class ProviderChainRouter {
                         }),
                     );
 
-                    await new Promise((r) =>
-                        setTimeout(r, retryErr.retryDelay ?? 0),
-                    );
+                    let delay = retryErr.retryDelay ?? 150;
+
+                    // Deep models → longer retry window
+                    if (depth > 0.6) delay *= 1.4;
+
+                    // Cheap models → shorter retry window
+                    if (cost > 0.6) delay *= 0.7;
+
+                    // Reliable models → more patient retry
+                    if (reliability > 0.7) delay *= 1.3;
+
+                    // Fast models → shorter retry
+                    if (speed > 0.7) delay *= 0.8;
+
+                    delay = Math.max(50, Math.min(delay, 5000));
+
+                    await new Promise((r) => setTimeout(r, delay));
 
                     try {
                         const adapter = this.getAdapter(providerName);
@@ -345,7 +391,21 @@ export class ProviderChainRouter {
                         );
                         return normalized;
                     } catch {
-                        // continue to next provider
+                        // Provider-specific fallback shaping
+                        if (depth > 0.6 && reliability > 0.7) {
+                            // Deep + reliable → try again before fallback
+                            continue;
+                        }
+
+                        if (cost > 0.7) {
+                            // Cheap → fallback immediately
+                            break;
+                        }
+
+                        if (speed > 0.7) {
+                            // Fast → fallback quickly
+                            continue;
+                        }
                     }
                 }
             }

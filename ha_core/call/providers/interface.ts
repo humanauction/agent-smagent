@@ -11,6 +11,14 @@ export interface ProviderRequest {
         provider?: string;
         retry?: number;
         temperature?: number;
+        providerMeta?: {
+            provider?: string;
+            depth?: number;
+            cost?: number;
+            quality?: number;
+            reliability?: number;
+            speed?: number;
+        };
     };
 }
 

@@ -408,6 +408,15 @@ export class SMAGEOrchestrator {
                 options: {
                     ...(agent.options ?? {}),
                     intent: intent ?? undefined,
+                    providerMeta: {
+                        provider: agent.provider,
+                        depth: agent.depth,
+                        cost: agent.cost,
+                        quality: agent.quality,
+                        reliability: this.tracker.snapshot(agent.id)
+                            .reliability,
+                        speed: agent.speed,
+                    },
                 },
             }),
             ORCHESTRATOR_TIMEOUT_MS,
