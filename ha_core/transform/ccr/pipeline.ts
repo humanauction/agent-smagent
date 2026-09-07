@@ -11,6 +11,7 @@ import { reconstruct } from "../reconstruct.js";
 import { applyPayloadCompression } from "../payload.js";
 import { reduceOutput } from "../../output/reducer.js";
 import { timeoutGuard, safeTelemetry } from "../../call/providers/timeout.js";
+import { semanticAnchorFusion } from "../anchorSemanticFusion.js";
 
 // this file contains the CCR pipeline for processing SMAGE messages through various stages
 
@@ -139,6 +140,7 @@ export class CCRPipeline {
 
         // 6. RECONSTRUCT
         const reconstructed = reconstruct(windowed, anchor);
+
         safeTelemetry(() =>
             this.telemetry.record({
                 session,
@@ -147,10 +149,10 @@ export class CCRPipeline {
                 messageCount: reconstructed.length,
             }),
         );
-
+        const withSemanticFusion = semanticAnchorFusion(reconstructed);
         // 7. PAYLOAD COMPRESSION (async, heavy) with timeout
         const compressedRaw = await timeoutGuard(
-            applyPayloadCompression(reconstructed, options),
+            applyPayloadCompression(withSemanticFusion, options),
             CCR_STAGE_TIMEOUT_MS,
             `ccr-compress-${session}`,
         );
