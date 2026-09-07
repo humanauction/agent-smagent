@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from "../index.js";
+import type { SMAGEMessage, SMAGEOptions } from "../index.js";
 import { tokenCount } from "../analyze/tokens.ts";
 
 // this file contains the context windowing logic for SMAGE messages.
@@ -27,7 +27,21 @@ export interface WindowResult {
 export function applyContextWindow(
     messages: SMAGEMessage[],
     maxTokens: number,
+    options?: SMAGEOptions,
 ): WindowResult {
+    const freeze = options?.baselineFreeze === true;
+
+    if (!freeze) {
+        const provider = messages[0]?.meta?.provider ?? null;
+
+        if (provider === "local") {
+            maxTokens = Math.floor(maxTokens * 0.5);
+        }
+
+        if (messages.some((m) => Number(m.meta?.depth ?? 0) > 0.6)) {
+            maxTokens = Math.floor(maxTokens * 1.2);
+        }
+    }
     // Provider‑specific window shaping
     const provider = messages[0]?.meta?.provider ?? null;
 

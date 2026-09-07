@@ -189,6 +189,7 @@ export class CCRPipeline {
         // 8. OUTPUT REDUCTION
         const reduced = reduceOutput(
             pickLastMsg(compressed, reconstructed, messages),
+            options,
         );
         safeTelemetry(() =>
             this.telemetry.record({

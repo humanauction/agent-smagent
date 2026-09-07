@@ -1,11 +1,13 @@
 export * from "./providerMetadata.js";
 export interface SMAGEOptions {
     ast?: boolean;
+    intent?: string;
     maxAge?: number; // ms
     maxPayloadChars?: number;
     maxTokens?: number;
     model?: string;
     strategy?: "auto" | "single" | "round_robin" | "fan_out";
+    baselineFreeze?: boolean;
 
     // Provider‑specific CCR shaping metadata
     provider?: string;

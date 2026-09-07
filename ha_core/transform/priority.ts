@@ -1,4 +1,4 @@
-import type { SMAGEMessage } from "../index.js";
+import type { SMAGEMessage, SMAGEOptions } from "../index.js";
 import type { CCRAnchor } from "./anchor.js";
 
 /**
@@ -17,7 +17,9 @@ import type { CCRAnchor } from "./anchor.js";
 export function assignPriority(
     messages: SMAGEMessage[],
     anchor: CCRAnchor | null,
+    options?: SMAGEOptions,
 ): SMAGEMessage[] {
+    const freeze = options?.baselineFreeze === true;
     const intent = anchor?.intent ?? null;
 
     return messages.map((m) => {
@@ -56,20 +58,21 @@ export function assignPriority(
 
         // --- Intent‑aware routing (Stage‑2 CCR) ---
         let tier = priority;
+        if (!freeze) {
+            if (intent === "debug" && m.role === "tool") {
+                tier = Math.max(tier, 3); // keep tool outputs
+            }
 
-        if (intent === "debug" && m.role === "tool") {
-            tier = Math.max(tier, 3); // keep tool outputs
-        }
+            if (
+                intent === "testing" &&
+                /test|jest|vitest/.test(m.content.toLowerCase())
+            ) {
+                tier = Math.max(tier, 3); // keep test-related messages
+            }
 
-        if (
-            intent === "testing" &&
-            /test|jest|vitest/.test(m.content.toLowerCase())
-        ) {
-            tier = Math.max(tier, 3); // keep test-related messages
-        }
-
-        if (intent === "explain" && m.role === "assistant") {
-            tier = Math.max(tier, 2); // assistant explanations get medium+
+            if (intent === "explain" && m.role === "assistant") {
+                tier = Math.max(tier, 2); // assistant explanations get medium+
+            }
         }
 
         // --- Provider‑specific CCR shaping (Stage‑4) ---
