@@ -1,5 +1,4 @@
 // this file defines provider metadata including their capabilities, scoring preferences.
-
 export interface ProviderMetadata {
     id: string;
     provider: string;
@@ -73,6 +72,25 @@ export class ProviderMetadataScorer {
             if (intent === "design") {
                 if (p.depth) s += p.depth * 0.7;
                 if (p.quality) s += p.quality * 0.5;
+            }
+            // --- intent-aware depth boost ---
+            if (intent) {
+                if (
+                    intent.includes("analysis") ||
+                    intent.includes("reason") ||
+                    intent.includes("deep") ||
+                    intent.includes("complex") ||
+                    intent.includes("multi") ||
+                    intent.includes("chain") ||
+                    intent.includes("math") ||
+                    intent.includes("logic") ||
+                    intent.includes("investigate") ||
+                    intent.includes("research")
+                ) {
+                    if (p.depth) s += p.depth * 0.5;
+                    if (p.quality) s += p.quality * 0.3;
+                    if (p.reliability) s += p.reliability * 0.2;
+                }
             }
 
             scored.push({ id: p.id, score: s });
