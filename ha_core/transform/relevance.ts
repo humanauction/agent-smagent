@@ -223,7 +223,64 @@ export async function scoreRelevance(
         structural = Math.max(0, Math.min(structural, 1));
     }
 
-    // clamp again after continuity
+    // --- Semantic anchor continuity scoring ---
+    if (anchor) {
+        const msgText = msg.content.toLowerCase();
+        // 1. continuity with system anchor
+        if (anchor.system) {
+            const sys = anchor.system.content.toLowerCase();
+            if (msgText.includes(sys.split(" ")[0] ?? "")) {
+                structural += 0.04;
+                msg.meta = { ...msg.meta, continuity: "system" };
+            }
+        }
+        // 2. continuity with lastUser
+        if (anchor.lastUser) {
+            const lu = anchor.lastUser.content.toLowerCase();
+            if (msgText.includes(lu.split(" ")[0] ?? "")) {
+                structural += 0.06;
+                msg.meta = { ...msg.meta, continuity: "lastUser" };
+            }
+        }
+
+        // 3. continuity with lastAssistant
+        if (anchor.lastAssistant) {
+            const la = anchor.lastAssistant.content.toLowerCase();
+            if (msgText.includes(la.split(" ")[0] ?? "")) {
+                structural += 0.06;
+                msg.meta = { ...msg.meta, continuity: "lastAssistant" };
+            }
+        }
+        // 4. continuity with lastTool
+        if (anchor.lastTool) {
+            const lt = anchor.lastTool.content.toLowerCase();
+            if (msgText.includes(lt.split(" ")[0] ?? "")) {
+                structural += 0.05;
+                msg.meta = { ...msg.meta, continuity: "lastTool" };
+            }
+        }
+        // 5. continuity with  learned anchors
+        if (anchor.learned && Array.isArray(anchor.learned)) {
+            for (const la of anchor.learned) {
+                const learnedText = la.content.toLowerCase();
+                if (msgText.includes(learnedText.split(" ")[0] ?? "")) {
+                    structural += 0.07;
+                    msg.meta = { ...msg.meta, continuity: "learned" };
+                    break;
+                }
+            }
+        }
+        // 6. continuity with fused semantic anchors
+        if (msg.meta?.fusedSemantic === true) {
+            structural += 0.05;
+            msg.meta = { ...msg.meta, continuity: "fusedSemantic" };
+        }
+
+        // 7. continuity decay for older messages
+        const ageFactor = 1 - (index / total) * 0.1; // slight decay
+        structural *= ageFactor;
+    }
+    // final clamp again after continuity
     structural = Math.max(0, Math.min(structural, 1));
 
     // --- Stage‑3 semantic relevance (embeddings) ---

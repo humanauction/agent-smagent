@@ -6,7 +6,7 @@ export const mockConfig = {
             id: "agent1",
             provider: "openai",
             model: "gpt-4o-mini",
+            options: { baselineFreeze: true },
         },
     ],
-    options: { baselineFreeze: true },
 };
