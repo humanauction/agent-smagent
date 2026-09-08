@@ -10,20 +10,27 @@ describe("CCRPipeline baselineFreeze", () => {
         const ccr = new CCRPipeline(telemetry);
 
         const agent = mockConfig.agents[0];
-        if (!agent) {
-            throw new Error("No agent found in mockConfig");
-        }
-        const options = {
-            ...(agent.options ?? {}),
+        if (!agent) throw new Error("No agent found in mockConfig");
+
+        const ccrOptions = {
             provider: agent.provider,
-            depth: agent.options?.depth ?? 0,
-            cost: agent.options?.cost ?? 0,
-            quality: agent.options?.quality ?? 0,
+            depth: agent.depth ?? 0,
+            cost: agent.cost ?? 0,
+            quality: agent.quality ?? 0,
             reliability: 0.9,
+            baselineFreeze: true,
         };
 
-        const run1 = await ccr.run(mockConfig.session, mockMessages, options);
-        const run2 = await ccr.run(mockConfig.session, mockMessages, options);
+        const run1 = await ccr.run(
+            mockConfig.session,
+            mockMessages,
+            ccrOptions,
+        );
+        const run2 = await ccr.run(
+            mockConfig.session,
+            mockMessages,
+            ccrOptions,
+        );
 
         expect(JSON.stringify(run1.windowed)).toBe(
             JSON.stringify(run2.windowed),

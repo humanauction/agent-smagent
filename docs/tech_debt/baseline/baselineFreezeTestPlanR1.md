@@ -4,12 +4,12 @@ This is the official SMAGE baseline‑freeze plan.
 
 ## 1️⃣ Test Matrix
 
-#### Run CCR pipeline with
+### Run CCR pipeline with
 
 - baselineFreeze: true
 - baselineFreeze: false
 
-#### Across
+### Across
 
 - 3 providers: openai, anthropic, local
 - 3 intents: debug, explain, summarize
@@ -19,7 +19,7 @@ This is the official SMAGE baseline‑freeze plan.
 
 ## 2️⃣ Expected Freeze Behavior
 
-#### With baselineFreeze: true
+### With baselineFreeze: true
 
 - provider‑specific shaping disabled
 - window size fixed
@@ -33,58 +33,62 @@ This is the official SMAGE baseline‑freeze plan.
 
 ## 3️⃣ Tests to write
 
-#### A. CCR Pipeline Freeze Test
+### A. CCR Pipeline Freeze Test
 
-##### File
+#### File
 
 - tests/transform/ccrPipeline.freeze.test.ts
 
-##### Assertions
+#### Assertions
 
 - shaped.windowed identical across runs
 - shaped.reconstructed identical
 - shaped.compressed identical
 - shaped.reduced.content identical
 
-#### B. Chain Router Freeze Test
+### B. Chain Router Freeze Test
 
-##### File
+#### File1
 
 - tests/chain/chainRouter.freeze.test.ts
 
-##### Assertions
+#### Assertions1
 
 - chain.chain identical
 - chain.getTelemetry() identical
 - chain.call() output identical
 
-#### C. Provider Selection Freeze Test
+### C. Provider Selection Freeze Test
 
-##### File: tests/orchestrator/orchestrator.freeze.test.ts
+#### File2
 
-##### Assertions
+- tests/orchestrator/orchestrator.freeze.test.ts
+
+#### Assertions2
 
 - selected provider identical
 - selected strategy identical
 - providerMeta identical
 
-#### D. Semantic Fusion Freeze Test
+### D. Semantic Fusion Freeze Test
 
-##### File: tests/transform/anchorSemanticFusion.freeze.test.ts
+#### File3
 
-##### Assertions
+- tests/transform/anchorSemanticFusion.freeze.test.ts
+
+#### Assertions3
 
 - fused anchors identical
 - fusedCount identical
 - fusedSemantic flag identical
 
-#### E. Relevance Freeze Test
+### E. Relevance Freeze Test
 
-##### File
+#### File4
 
 - tests/transform/relevance.freeze.test.ts
 
-##### Assertions
+#### Assertions4
 
 - relevance scores identical
 - continuity flags identical
@@ -93,7 +97,7 @@ This is the official SMAGE baseline‑freeze plan.
 
 ## 4️⃣ Freeze Diff Checker
 
-##### Add a helper
+### Add a helper
 
 ```Code
 tests/utils/diffFreeze.ts
