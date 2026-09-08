@@ -3,6 +3,12 @@ import { tokenCount } from "../analyze/tokens.js";
 import type { CCRAnchor } from "./anchor.js";
 import { semanticEmbedding } from "./semantic.js";
 
+// NOTE: CCR-only meta shaping.
+// scoreRelevance may mutate msg.meta (topicMatch, intentMatch, continuity).
+// Callers MUST pass CCR-local clones, not shared message objects.
+
+// TODO: fully remove mutation? next step: change scoreRelevance to return { score, metaPatch }, apply metaPatch in pipeline
+
 // CCR pipeline relevance scoring. components: keyword overlap, role weighting, recency weighting
 
 const ROLE_WEIGHT = {

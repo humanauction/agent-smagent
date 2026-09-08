@@ -19,11 +19,6 @@ Before hardening, confirm the baseline is frozen:
 
 #### Run full test suite
 
-- Files 15 passed (15)
-- Tests 24 passed (24)
-- Start at 12:38:34
-- Duration 393ms
-
 #### Run wrapper integration tests
 
 #### Run orchestrator tests
