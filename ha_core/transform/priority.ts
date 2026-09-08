@@ -78,7 +78,7 @@ export function assignPriority(
         // --- Provider‑specific CCR shaping (Stage‑4) ---
         const provider = m.meta?.provider ?? null;
 
-        if (provider) {
+        if (!freeze && provider) {
             const depth = Number(m.meta?.depth ?? 0);
             const quality = Number(m.meta?.quality ?? 0);
             const reliability = Number(m.meta?.reliability ?? 0);

@@ -8,4 +8,5 @@ export const mockConfig = {
             model: "gpt-4o-mini",
         },
     ],
+    options: { baselineFreeze: true },
 };
