@@ -127,6 +127,24 @@ tasks:
             - arch -arm64 npx vitest --watch
 
     # -----------------------------
+    # Freeze Baseline + Regression
+    # -----------------------------
+    frzbl:
+        desc: "Generate freeze baseline snapshots"
+        cmds:
+            - echo "Generating freeze baseline..."
+            - arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeBaseline.test.ts
+            - echo "Freeze baseline generated in tests/_freeze"
+
+    frztst:
+        desc: "Run freeze regression tests"
+        cmds:
+            - echo "Running freeze regression suite..."
+            - arch -arm64 npx vitest --run --reporter=verbose tests/transform/ccrPipeline.freeze.test.ts
+            - arch -arm64 npx vitest --run --reporter=verbose tests/chain/chainRouter.freeze.test.ts
+            - echo "Freeze regression completed"
+
+    # -----------------------------
     # Provider / Router checks
     # -----------------------------
     provider:check:

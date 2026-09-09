@@ -1,0 +1,40 @@
+name: SMAGE Freeze Regression
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+jobs:
+    freeze:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Build TypeScript
+              run: npx tsc
+
+            - name: Generate freeze baseline (only if missing)
+              run: |
+                  if [ ! -d "tests/_freeze" ]; then
+                    echo "Freeze baseline missing — generating..."
+                    npx vitest --run --reporter=verbose tests/freeze/freezeBaseline.test.ts
+                  else
+                    echo "Freeze baseline exists — skipping generation."
+                  fi
+
+            - name: Run freeze regression tests
+              run: |
+                  echo "Running freeze regression..."
+                  npx vitest --run --reporter=verbose tests/transform/ccrPipeline.freeze.test.ts
+                  npx vitest --run --reporter=verbose tests/chain/chainRouter.freeze.test.ts
