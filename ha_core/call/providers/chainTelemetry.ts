@@ -45,6 +45,7 @@ export interface ChainTelemetryEvent {
     error?: string;
     fallbackTo?: string;
     finalScore?: number;
+    freeze?: boolean;
     intent?: string;
     metrics?: Record<string, number>;
     memoryBoost?: number;
@@ -67,9 +68,11 @@ export class ProviderChainTelemetry {
     private events: ChainTelemetryEvent[] = [];
 
     record(event: ChainTelemetryEvent) {
+        const freeze = event.freeze === true;
+
         this.events.push({
             ...event,
-            timestamp: Date.now(),
+            timestamp: freeze ? 0 : Date.now(),
         });
     }
 

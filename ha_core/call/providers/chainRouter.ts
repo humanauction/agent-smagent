@@ -26,6 +26,7 @@ export interface ProviderMetrics {
 export interface ProviderChainConfig {
     metrics: Record<string, Partial<ProviderMetrics>>;
     weights: ProviderMetrics;
+    baselineFreeze?: boolean;
 }
 
 export function safeMetric(value: number | undefined): number {
@@ -85,6 +86,7 @@ export class ProviderChainRouter {
                     memoryBoost: entry.memoryBoost,
                     finalScore: entry.finalScore,
                     cached: entry.cached,
+                    freeze: this.config.baselineFreeze === true,
                 }),
             );
         }
@@ -111,6 +113,7 @@ export class ProviderChainRouter {
                     provider: top.providerName,
                     stage: "selection",
                     score: top.score,
+                    freeze: this.config.baselineFreeze === true,
                 }),
             );
         }
@@ -157,6 +160,7 @@ export class ProviderChainRouter {
                         stage: "cache_hit",
                         cached: true,
                         response: this.cache.get(providerName),
+                        freeze: this.config.baselineFreeze === true,
                     }),
                 );
             }
@@ -171,6 +175,7 @@ export class ProviderChainRouter {
                         error:
                             this.cache.getReason(providerName) ??
                             "recent failure",
+                        freeze: this.config.baselineFreeze === true,
                     }),
                 );
                 continue;
@@ -181,6 +186,7 @@ export class ProviderChainRouter {
                     session: req.session,
                     provider: providerName,
                     stage: "adapter",
+                    freeze: this.config.baselineFreeze === true,
                 }),
             );
 
@@ -189,6 +195,7 @@ export class ProviderChainRouter {
                     session: req.session,
                     provider: providerName,
                     stage: "call",
+                    freeze: this.config.baselineFreeze === true,
                 }),
             );
 
@@ -235,6 +242,7 @@ export class ProviderChainRouter {
                         provider: providerName,
                         stage: "routing",
                         metrics,
+                        freeze: this.config.baselineFreeze === true,
                     }),
                 );
 
@@ -244,6 +252,7 @@ export class ProviderChainRouter {
                         provider: providerName,
                         stage: "call",
                         finalScore: score,
+                        freeze: this.config.baselineFreeze === true,
                         response: raw,
                     }),
                 );
@@ -259,6 +268,7 @@ export class ProviderChainRouter {
                         provider: providerName,
                         stage: "normalize",
                         response: normalized,
+                        freeze: this.config.baselineFreeze === true,
                     }),
                 );
 
@@ -271,6 +281,7 @@ export class ProviderChainRouter {
                         provider: providerName,
                         stage: "adapter_error",
                         error: err?.message ?? String(err),
+                        freeze: this.config.baselineFreeze === true,
                     }),
                 );
 
@@ -304,6 +315,7 @@ export class ProviderChainRouter {
                         error: pe.message,
                         retryCount: pe.retryCount,
                         retryDelay: pe.retryDelay,
+                        freeze: this.config.baselineFreeze === true,
                     }),
                 );
 
@@ -318,6 +330,7 @@ export class ProviderChainRouter {
                         provider: providerName,
                         stage: "fallback",
                         error: pe.message,
+                        freeze: this.config.baselineFreeze === true,
                     }),
                 );
 
@@ -340,6 +353,7 @@ export class ProviderChainRouter {
                             error: pe.message,
                             retryCount: retryErr.retryCount,
                             retryDelay: retryErr.retryDelay,
+                            freeze: this.config.baselineFreeze === true,
                         }),
                     );
 
@@ -380,6 +394,7 @@ export class ProviderChainRouter {
                                 provider: providerName,
                                 stage: "normalize",
                                 response: normalized,
+                                freeze: this.config.baselineFreeze === true,
                             }),
                         );
 
@@ -416,6 +431,7 @@ export class ProviderChainRouter {
                 session: req.session,
                 provider: "chain",
                 stage: "failure",
+                freeze: this.config.baselineFreeze === true,
                 error: `provider chain failure: ${this.chain.join(" → ")}`,
             }),
         );
@@ -425,6 +441,7 @@ export class ProviderChainRouter {
                 session: req.session,
                 provider: "chain",
                 stage: "normalize",
+                freeze: this.config.baselineFreeze === true,
                 response: `[provider chain failure: ${this.chain.join(" → ")}]`,
             }),
         );
@@ -435,6 +452,7 @@ export class ProviderChainRouter {
                 provider: "chain",
                 stage: "finalize",
                 chain: this.chain.join(" → "),
+                freeze: this.config.baselineFreeze === true,
             }),
         );
 
