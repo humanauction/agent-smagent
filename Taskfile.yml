@@ -144,6 +144,25 @@ tasks:
             - arch -arm64 npx vitest --run --reporter=verbose tests/chain/chainRouter.freeze.test.ts
             - echo "Freeze regression completed"
 
+    frzbm:
+        desc: "Run freeze benchmark suite"
+        cmds:
+            - echo "Running freeze benchmark..."
+            - arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeBenchmark.test.ts
+            - echo "Freeze benchmark written to tests/_freeze_bench"
+
+    frzbmopen:
+        desc: "Open freeze benchmark JSON"
+        cmds:
+            - cat tests/_freeze_bench/freeze_benchmark.json
+
+    frzdelta:
+        desc: "Run freeze delta reporter"
+        cmds:
+            - echo "Running freeze delta reporter..."
+            - arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeDelta.test.ts
+            - echo "Freeze delta report written to tests/_freeze_delta"
+
     # -----------------------------
     # Provider / Router checks
     # -----------------------------

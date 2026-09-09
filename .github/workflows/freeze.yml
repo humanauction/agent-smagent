@@ -38,3 +38,9 @@ jobs:
                   echo "Running freeze regression..."
                   npx vitest --run --reporter=verbose tests/transform/ccrPipeline.freeze.test.ts
                   npx vitest --run --reporter=verbose tests/chain/chainRouter.freeze.test.ts
+
+            - name: Run freeze benchmark
+              run: npx vitest --run --reporter=verbose tests/freeze/freezeBenchmark.test.ts
+
+            - name: Run freeze delta reporter
+              run: npx vitest --run --reporter=verbose tests/freeze/freezeDelta.test.ts
