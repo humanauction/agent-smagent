@@ -144,24 +144,43 @@ tasks:
             - arch -arm64 npx vitest --run --reporter=verbose tests/chain/chainRouter.freeze.test.ts
             - echo "Freeze regression completed"
 
-    frzbm:
+    frzbmrk:
         desc: "Run freeze benchmark suite"
         cmds:
             - echo "Running freeze benchmark..."
             - arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeBenchmark.test.ts
             - echo "Freeze benchmark written to tests/_freeze_bench"
 
-    frzbmopen:
+    # -----------------------------
+    # Freeze Benchmark
+    # -----------------------------
+    frzbench:
+        desc: "Generate freeze benchmark baseline"
+        cmds:
+            - echo "Generating freeze benchmark baseline..."
+            - cd $(pwd) && arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeBenchmark.test.ts
+            - echo "Baseline benchmark written."
+
+    frzbench:current:
+        desc: "Generate current freeze benchmark"
+        cmds:
+            - echo "Generating current freeze benchmark..."
+            - cd $(pwd) && arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeBenchmark.test.ts
+            - cp tests/_freeze_bench/freeze_benchmark.json tests/_freeze_bench/freeze_benchmark_current.json
+            - echo "Current benchmark written."
+
+    frzbenchopen:
         desc: "Open freeze benchmark JSON"
         cmds:
             - cat tests/_freeze_bench/freeze_benchmark.json
 
-    frzdelta:
+    frzdlt:
         desc: "Run freeze delta reporter"
         cmds:
             - echo "Running freeze delta reporter..."
             - arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeDelta.test.ts
             - echo "Freeze delta report written to tests/_freeze_delta"
+            - cat tests/_freeze_delta/freeze_delta_report.json
 
     # -----------------------------
     # Provider / Router checks

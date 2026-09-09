@@ -26,6 +26,19 @@ export interface CCRPipelineResult {
     reconstructed: SMAGEMessage[];
     compressed: SMAGEMessage[];
     reduced: SMAGEMessage;
+    tokens?: {
+        raw: number;
+        window: number;
+        compressed: number;
+        reduced: number;
+    };
+    counts?: {
+        raw: number;
+        deduped: number;
+        window: number;
+        compressed: number;
+        reduced: number;
+    };
 }
 
 export class CCRPipeline {
@@ -236,6 +249,27 @@ export class CCRPipeline {
             }),
         );
 
+        const tokens = {
+            raw: messages.reduce(
+                (n: number, m: SMAGEMessage) => n + m.content.length,
+                0,
+            ),
+            window: windowResult.tokens,
+            compressed: compressed.reduce(
+                (n: number, m: SMAGEMessage) => n + m.content.length,
+                0,
+            ),
+            reduced: reduced.content.length,
+        };
+
+        const counts = {
+            raw: messages.length,
+            deduped: deduped.length,
+            window: windowed.length,
+            compressed: compressed.length,
+            reduced: 1,
+        };
+
         return {
             original: messages,
             anchor,
@@ -246,6 +280,8 @@ export class CCRPipeline {
             reconstructed,
             compressed,
             reduced,
+            tokens,
+            counts,
         };
     }
 }
