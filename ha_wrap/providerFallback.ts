@@ -1,3 +1,4 @@
+import { existsSync } from "fs";
 import type { SMAGEMessage, ProviderMetadata } from "../ha_core/index.js";
 
 export interface FallbackContext {
@@ -42,6 +43,13 @@ export class ProviderFallback {
         // 3. Reliability-first fallback
         const intent = ctx.intent?.toLowerCase();
         const candidate = allProviders.filter((p) => p.id !== provider.id);
+
+        if (!candidate.length) {
+            throw new Error(
+                `No fallback providers available for provider ${provider.id} after ${attempt} attempts. Classification: ${classification}`,
+            );
+        }
+
         const scored = candidate.map((p) => {
             let s = 1;
             // baseline reliability-first fallback
@@ -107,26 +115,5 @@ export class ProviderFallback {
 
     private isRateLimit(err: unknown): boolean {
         return typeof err === "string" && err.toLowerCase().includes("rate");
-    }
-
-    private pickBest(
-        providers: ProviderMetadata[],
-        metric: keyof ProviderMetadata,
-    ): ProviderMetadata {
-        let best: ProviderMetadata | null = null;
-
-        for (const p of providers) {
-            if (!best) {
-                best = p;
-                continue;
-            }
-            const current = (p[metric] as number | undefined) ?? 0;
-            const previous = (best[metric] as number | undefined) ?? 0;
-            if (current > previous) {
-                best = p;
-            }
-        }
-
-        return best!;
     }
 }

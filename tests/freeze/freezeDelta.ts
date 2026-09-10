@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
 interface FreezeBenchEntry {
@@ -21,6 +21,17 @@ export function freezeDelta(mode: "current" | "candidate" = "current") {
         mode === "current"
             ? "tests/_freeze_bench/freeze_benchmark_current.json"
             : "tests/_freeze_bench/freeze_benchmark_candidate.json";
+
+    if (!existsSync(baselinePath)) {
+        throw new Error(
+            `Baseline missing: ${baselinePath}. Please run the benchmark first to generate the baseline benchmark file.`,
+        );
+    }
+    if (!existsSync(comparePath)) {
+        throw new Error(
+            `Compare file missing: ${comparePath}. Please run the benchmark first to generate the current or candidate benchmark file.`,
+        );
+    }
 
     const baseline: FreezeBenchEntry[] = JSON.parse(
         readFileSync(join(process.cwd(), baselinePath), "utf8"),

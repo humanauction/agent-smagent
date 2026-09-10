@@ -32,15 +32,16 @@ jobs:
                   else
                     echo "Freeze baseline exists — skipping generation."
                   fi
+            - name: Generate baseline benchmark
+              run: npx vitest --run tests/freeze/freezeBenchmark.test.ts
+
+            - name: Copy baseline → current benchmark
+              run: cp tests/_freeze_bench/freeze_benchmark.json tests/_freeze_bench/freeze_benchmark_current.json
 
             - name: Run freeze regression tests
               run: |
                   echo "Running freeze regression..."
                   npx vitest --run --reporter=verbose tests/transform/ccrPipeline.freeze.test.ts
                   npx vitest --run --reporter=verbose tests/chain/chainRouter.freeze.test.ts
-
-            - name: Run freeze benchmark
-              run: npx vitest --run --reporter=verbose tests/freeze/freezeBenchmark.test.ts
-
             - name: Run freeze delta reporter
               run: npx vitest --run --reporter=verbose tests/freeze/freezeDelta.test.ts
