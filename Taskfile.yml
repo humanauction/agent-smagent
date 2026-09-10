@@ -169,12 +169,20 @@ tasks:
             - cp tests/_freeze_bench/freeze_benchmark.json tests/_freeze_bench/freeze_benchmark_current.json
             - echo "Current benchmark written."
 
-    frzbenchopen:
+    frzbench:candidate:
+        desc: "Generate candidate freeze benchmark baseline"
+        cmds:
+            - echo "Generating candidate baseline..."
+            - arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeBenchmark.test.ts
+            - cp tests/_freeze_bench/freeze_benchmark.json tests/_freeze_bench/freeze_benchmark_candidate.json
+            - echo "Candidate baseline written."
+
+    frzbench:open:
         desc: "Open freeze benchmark JSON"
         cmds:
             - cat tests/_freeze_bench/freeze_benchmark.json
 
-    frzdlt:
+    frzdlta:
         desc: "Run freeze delta reporter"
         cmds:
             - echo "Running freeze delta reporter..."

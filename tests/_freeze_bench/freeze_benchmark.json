@@ -1,0 +1,3566 @@
+[
+  {
+    "provider": "openai",
+    "intent": "debug",
+    "size": "short",
+    "latency_ms": 1.0121249999999975,
+    "tokens": {
+      "raw": 20,
+      "window": 4,
+      "compressed": 20,
+      "reduced": 9
+    },
+    "windowed_count": 2,
+    "reconstructed_count": 2,
+    "compressed_count": 2,
+    "reduced_length": 9,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "openai",
+    "intent": "debug",
+    "size": "medium",
+    "latency_ms": 0.2204579999999794,
+    "tokens": {
+      "raw": 60,
+      "window": 12,
+      "compressed": 40,
+      "reduced": 17
+    },
+    "windowed_count": 5,
+    "reconstructed_count": 5,
+    "compressed_count": 3,
+    "reduced_length": 17,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "openai",
+    "intent": "debug",
+    "size": "long",
+    "latency_ms": 0.21583400000000097,
+    "tokens": {
+      "raw": 135,
+      "window": 27,
+      "compressed": 98,
+      "reduced": 12
+    },
+    "windowed_count": 9,
+    "reconstructed_count": 9,
+    "compressed_count": 6,
+    "reduced_length": 12,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "openai",
+    "intent": "explain",
+    "size": "short",
+    "latency_ms": 0.10775000000001,
+    "tokens": {
+      "raw": 20,
+      "window": 4,
+      "compressed": 20,
+      "reduced": 9
+    },
+    "windowed_count": 2,
+    "reconstructed_count": 2,
+    "compressed_count": 2,
+    "reduced_length": 9,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "openai",
+    "intent": "explain",
+    "size": "medium",
+    "latency_ms": 0.10733300000001122,
+    "tokens": {
+      "raw": 60,
+      "window": 12,
+      "compressed": 40,
+      "reduced": 17
+    },
+    "windowed_count": 5,
+    "reconstructed_count": 5,
+    "compressed_count": 3,
+    "reduced_length": 17,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "openai",
+    "intent": "explain",
+    "size": "long",
+    "latency_ms": 0.13391699999999673,
+    "tokens": {
+      "raw": 135,
+      "window": 27,
+      "compressed": 98,
+      "reduced": 12
+    },
+    "windowed_count": 9,
+    "reconstructed_count": 9,
+    "compressed_count": 6,
+    "reduced_length": 12,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "openai",
+    "intent": "summarize",
+    "size": "short",
+    "latency_ms": 0.07124999999999204,
+    "tokens": {
+      "raw": 20,
+      "window": 4,
+      "compressed": 20,
+      "reduced": 9
+    },
+    "windowed_count": 2,
+    "reconstructed_count": 2,
+    "compressed_count": 2,
+    "reduced_length": 9,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "openai",
+    "intent": "summarize",
+    "size": "medium",
+    "latency_ms": 0.0817079999999919,
+    "tokens": {
+      "raw": 60,
+      "window": 12,
+      "compressed": 40,
+      "reduced": 17
+    },
+    "windowed_count": 5,
+    "reconstructed_count": 5,
+    "compressed_count": 3,
+    "reduced_length": 17,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "openai",
+    "intent": "summarize",
+    "size": "long",
+    "latency_ms": 0.11687499999999318,
+    "tokens": {
+      "raw": 135,
+      "window": 27,
+      "compressed": 98,
+      "reduced": 12
+    },
+    "windowed_count": 9,
+    "reconstructed_count": 9,
+    "compressed_count": 6,
+    "reduced_length": 12,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "anthropic",
+    "intent": "debug",
+    "size": "short",
+    "latency_ms": 0.07683300000002191,
+    "tokens": {
+      "raw": 20,
+      "window": 4,
+      "compressed": 20,
+      "reduced": 9
+    },
+    "windowed_count": 2,
+    "reconstructed_count": 2,
+    "compressed_count": 2,
+    "reduced_length": 9,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "anthropic",
+    "intent": "debug",
+    "size": "medium",
+    "latency_ms": 0.07841700000000174,
+    "tokens": {
+      "raw": 60,
+      "window": 12,
+      "compressed": 40,
+      "reduced": 17
+    },
+    "windowed_count": 5,
+    "reconstructed_count": 5,
+    "compressed_count": 3,
+    "reduced_length": 17,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "anthropic",
+    "intent": "debug",
+    "size": "long",
+    "latency_ms": 0.08408299999999258,
+    "tokens": {
+      "raw": 135,
+      "window": 27,
+      "compressed": 98,
+      "reduced": 12
+    },
+    "windowed_count": 9,
+    "reconstructed_count": 9,
+    "compressed_count": 6,
+    "reduced_length": 12,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "anthropic",
+    "intent": "explain",
+    "size": "short",
+    "latency_ms": 0.039499999999975444,
+    "tokens": {
+      "raw": 20,
+      "window": 4,
+      "compressed": 20,
+      "reduced": 9
+    },
+    "windowed_count": 2,
+    "reconstructed_count": 2,
+    "compressed_count": 2,
+    "reduced_length": 9,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "anthropic",
+    "intent": "explain",
+    "size": "medium",
+    "latency_ms": 0.05587499999998613,
+    "tokens": {
+      "raw": 60,
+      "window": 12,
+      "compressed": 40,
+      "reduced": 17
+    },
+    "windowed_count": 5,
+    "reconstructed_count": 5,
+    "compressed_count": 3,
+    "reduced_length": 17,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "anthropic",
+    "intent": "explain",
+    "size": "long",
+    "latency_ms": 0.08066700000000537,
+    "tokens": {
+      "raw": 135,
+      "window": 27,
+      "compressed": 98,
+      "reduced": 12
+    },
+    "windowed_count": 9,
+    "reconstructed_count": 9,
+    "compressed_count": 6,
+    "reduced_length": 12,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "anthropic",
+    "intent": "summarize",
+    "size": "short",
+    "latency_ms": 0.03220799999999713,
+    "tokens": {
+      "raw": 20,
+      "window": 4,
+      "compressed": 20,
+      "reduced": 9
+    },
+    "windowed_count": 2,
+    "reconstructed_count": 2,
+    "compressed_count": 2,
+    "reduced_length": 9,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "anthropic",
+    "intent": "summarize",
+    "size": "medium",
+    "latency_ms": 0.04666699999998514,
+    "tokens": {
+      "raw": 60,
+      "window": 12,
+      "compressed": 40,
+      "reduced": 17
+    },
+    "windowed_count": 5,
+    "reconstructed_count": 5,
+    "compressed_count": 3,
+    "reduced_length": 17,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "anthropic",
+    "intent": "summarize",
+    "size": "long",
+    "latency_ms": 0.08541700000000674,
+    "tokens": {
+      "raw": 135,
+      "window": 27,
+      "compressed": 98,
+      "reduced": 12
+    },
+    "windowed_count": 9,
+    "reconstructed_count": 9,
+    "compressed_count": 6,
+    "reduced_length": 12,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "local",
+    "intent": "debug",
+    "size": "short",
+    "latency_ms": 0.03595800000002214,
+    "tokens": {
+      "raw": 20,
+      "window": 4,
+      "compressed": 20,
+      "reduced": 9
+    },
+    "windowed_count": 2,
+    "reconstructed_count": 2,
+    "compressed_count": 2,
+    "reduced_length": 9,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "local",
+    "intent": "debug",
+    "size": "medium",
+    "latency_ms": 0.09512500000002433,
+    "tokens": {
+      "raw": 60,
+      "window": 12,
+      "compressed": 40,
+      "reduced": 17
+    },
+    "windowed_count": 5,
+    "reconstructed_count": 5,
+    "compressed_count": 3,
+    "reduced_length": 17,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "local",
+    "intent": "debug",
+    "size": "long",
+    "latency_ms": 0.0800830000000019,
+    "tokens": {
+      "raw": 135,
+      "window": 27,
+      "compressed": 98,
+      "reduced": 12
+    },
+    "windowed_count": 9,
+    "reconstructed_count": 9,
+    "compressed_count": 6,
+    "reduced_length": 12,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "local",
+    "intent": "explain",
+    "size": "short",
+    "latency_ms": 0.03387499999999477,
+    "tokens": {
+      "raw": 20,
+      "window": 4,
+      "compressed": 20,
+      "reduced": 9
+    },
+    "windowed_count": 2,
+    "reconstructed_count": 2,
+    "compressed_count": 2,
+    "reduced_length": 9,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "local",
+    "intent": "explain",
+    "size": "medium",
+    "latency_ms": 0.05174999999999841,
+    "tokens": {
+      "raw": 60,
+      "window": 12,
+      "compressed": 40,
+      "reduced": 17
+    },
+    "windowed_count": 5,
+    "reconstructed_count": 5,
+    "compressed_count": 3,
+    "reduced_length": 17,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "local",
+    "intent": "explain",
+    "size": "long",
+    "latency_ms": 0.08758299999999508,
+    "tokens": {
+      "raw": 135,
+      "window": 27,
+      "compressed": 98,
+      "reduced": 12
+    },
+    "windowed_count": 9,
+    "reconstructed_count": 9,
+    "compressed_count": 6,
+    "reduced_length": 12,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "local",
+    "intent": "summarize",
+    "size": "short",
+    "latency_ms": 0.05341699999999605,
+    "tokens": {
+      "raw": 20,
+      "window": 4,
+      "compressed": 20,
+      "reduced": 9
+    },
+    "windowed_count": 2,
+    "reconstructed_count": 2,
+    "compressed_count": 2,
+    "reduced_length": 9,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "local",
+    "intent": "summarize",
+    "size": "medium",
+    "latency_ms": 0.09862500000002683,
+    "tokens": {
+      "raw": 60,
+      "window": 12,
+      "compressed": 40,
+      "reduced": 17
+    },
+    "windowed_count": 5,
+    "reconstructed_count": 5,
+    "compressed_count": 3,
+    "reduced_length": 17,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  },
+  {
+    "provider": "local",
+    "intent": "summarize",
+    "size": "long",
+    "latency_ms": 0.19716700000000742,
+    "tokens": {
+      "raw": 135,
+      "window": 27,
+      "compressed": 98,
+      "reduced": 12
+    },
+    "windowed_count": 9,
+    "reconstructed_count": 9,
+    "compressed_count": 6,
+    "reduced_length": 12,
+    "chain_order": [
+      "openai",
+      "anthropic",
+      "google",
+      "local"
+    ],
+    "chain_telemetry": [
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "anthropic",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "google",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "local",
+        "stage": "scoring",
+        "score": 2.5,
+        "metrics": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "weighted": {
+          "speed": 0.5,
+          "cost": 0.5,
+          "depth": 0.5,
+          "quality": 0.5,
+          "reliability": 0.5
+        },
+        "memoryBoost": 0,
+        "finalScore": 2.5,
+        "cached": false,
+        "freeze": true,
+        "timestamp": 0
+      },
+      {
+        "session": "bench-session",
+        "provider": "openai",
+        "stage": "selection",
+        "score": 2.5,
+        "freeze": true,
+        "timestamp": 0
+      }
+    ]
+  }
+]

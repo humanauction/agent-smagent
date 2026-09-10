@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 
 interface FreezeBenchEntry {
@@ -81,6 +81,12 @@ export function freezeDelta() {
             });
         }
     }
+    mkdirSync("tests/_freeze_delta", { recursive: true });
+    writeFileSync(
+        "tests/_freeze_delta/freeze_delta_report.json",
+        JSON.stringify(deltas, null, 2),
+        "utf8",
+    );
 
     return deltas;
 }
