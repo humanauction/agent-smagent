@@ -15,22 +15,19 @@ interface FreezeBenchEntry {
     chain_telemetry: unknown;
 }
 
-export function freezeDelta() {
+export function freezeDelta(mode: "current" | "candidate" = "current") {
+    const baselinePath = "tests/_freeze_bench/freeze_benchmark.json";
+    const comparePath =
+        mode === "current"
+            ? "tests/_freeze_bench/freeze_benchmark_current.json"
+            : "tests/_freeze_bench/freeze_benchmark_candidate.json";
+
     const baseline: FreezeBenchEntry[] = JSON.parse(
-        readFileSync(
-            join(process.cwd(), "tests/_freeze_bench/freeze_benchmark.json"),
-            "utf8",
-        ),
+        readFileSync(join(process.cwd(), baselinePath), "utf8"),
     );
 
     const current: FreezeBenchEntry[] = JSON.parse(
-        readFileSync(
-            join(
-                process.cwd(),
-                "tests/_freeze_bench/freeze_benchmark_current.json",
-            ),
-            "utf8",
-        ),
+        readFileSync(join(process.cwd(), comparePath), "utf8"),
     );
 
     const deltas: {

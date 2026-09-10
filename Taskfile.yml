@@ -177,6 +177,13 @@ tasks:
             - cp tests/_freeze_bench/freeze_benchmark.json tests/_freeze_bench/freeze_benchmark_candidate.json
             - echo "Candidate baseline written."
 
+    frzbench:approve:
+        desc: "Approve candidate baseline and promote it to official baseline"
+        cmds:
+            - echo "Approving candidate baseline..."
+            - cp tests/_freeze_bench/freeze_benchmark_candidate.json tests/_freeze_bench/freeze_benchmark.json
+            - echo "Baseline updated."
+
     frzbench:open:
         desc: "Open freeze benchmark JSON"
         cmds:
@@ -190,6 +197,13 @@ tasks:
             - echo "Freeze delta report written to tests/_freeze_delta"
             - cat tests/_freeze_delta/freeze_delta_report.json
 
+    frzdlta:candidate:
+        desc: "Run freeze delta reporter against candidate baseline"
+        cmds:
+            - echo "Running freeze delta reporter against candidate baseline..."
+            - arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeDeltaCandidate.test.ts
+            - echo "Freeze delta report written to tests/_freeze_delta"
+            - cat tests/_freeze_delta/freeze_delta_report.json
     # -----------------------------
     # Provider / Router checks
     # -----------------------------
