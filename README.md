@@ -4,42 +4,54 @@
 
 ## Intro
 
-i built this because i got murdered on tokens asking stupid questions. i found solutions, started reading code, didnt know why a bunch of it was there. mostly, because i just didnt understand it and if i don’t understand something - i try to build it. so i thought feck it, i'll just write my own compression and context‑management layer. least then i know what it’s doing and what it’s not doing. for now. probably. i mean, it cant be THAT hard, right?
+i built this because i got murdered on tokens asking stupid questions. i found solutions, started reading code, didnt know why a bunch of it was there. mostly, because i just didnt understand it. and if i don’t understand something i try to build it. so i thought feck it, i'll just write my own compression and context‑management layer. least then i know what it’s doing and what it’s not doing. for now. probably. i mean, it cant be THAT hard, right?
 
 Right?
 
 ---
 
-## Current Stage: CCR Upgrade Stage 1 (MVP‑Critical)
+## Current Stage: CCR Upgrade — Stage 1 (MVP‑Critical)
 
-### Modules being stabilised now
+SMAGE is in CCR Upgrade Stage 1, the first hardening pass focused on stabilising the deterministic compression pipeline. This stage is the foundation for the freeze baseline, benchmark runner, delta reporter, and the learning engine that follows.
+
+### Modules Being Stabilised Now (Stage 1)
+
+These CCR components are under active refinement and freeze‑baseline locking:
 
 - anchors
 - dedupe
-- relevance scoring
-- priority tiers
-- window shaping
+- relevance_scoring
+- priority_tiers
+- window_shaping
 - reconstruction
-- payload compression
-- output reduction
+- payload_compression
+- output_reduction
 
-### What’s already stable
+These modules form the deterministic CCR pipeline and are the core of the freeze harness.
+
+### What’s Already Stable
+
+These subsystems are locked, deterministic, and fully freeze‑tested:
 
 - ProviderChainRouter
-- Telemetry (Stage 2 complete)
-- reversible logging
+- Telemetry
+- reversible_logging
 - proxy
 - MCP
 - wrappers
 - CLI
-- multi‑agent routing
-- provider fallback
-- response blending
-- memory routing
+- multi_agent_routing
+- provider_fallback
+- response_blending
+- memory_routing
 
-## Roadmap
+These components are already part of the freeze baseline and do not change during Stage 1.
 
-### 1. MVP Baseline (current)
+### Roadmap
+
+#### 1. MVP Baseline (current)
+
+The MVP baseline includes:
 
 - deterministic CCR pipeline
 - reversible logging
@@ -49,22 +61,32 @@ Right?
 - binary builds
 - Docker + Compose
 - baseline token tests
+  This is the foundation for the freeze baseline and approval workflow.
 
-### 2. Learning Engine
+#### 2. Learning Engine
+
+Next milestone introduces adaptive behaviour:
 
 - failure miner
 - memory scoring
 - auto‑tuning
 - CLAUDE.md / AGENTS.md writer
 
-### 3. UI
+This layer uses freeze baselines to measure improvements.
 
+#### 3. UI Layer
+
+- Interactive visualisation:
 - dashboard
 - CCR visualiser
 - memory visualiser
 - provider routing visualiser
 
-### 4. Crush‑Tech Zone
+These are powered by the proxy dashboard modules.
+
+#### 4. Crush‑Tech Zone (advanced compression)
+
+High‑impact compression research:
 
 - entity dictionary compression
 - schema factoring
@@ -73,11 +95,13 @@ Right?
 - semantic anchors
 - relevance‑tier chunking
 
+These are Stage 3+ improvements measured against freeze benchmarks.
+
 ## Architecture Overview
 
 ### ha_core — The Engine
 
-Contains:
+Core SMAGE functionality:
 
 - message model
 - CCR pipeline
@@ -95,6 +119,8 @@ Contains:
 
 ### ha_proxy — Drop‑in HTTP Proxy
 
+Implements:
+
 - OpenAI/Anthropic/Google‑style API
 - CCR shaping
 - provider forwarding
@@ -103,6 +129,8 @@ Contains:
 - HTML dashboards
 
 ### ha_mcp — MCP Server
+
+Tools:
 
 - humanAuction_compress
 - humanAuction_retrieve
@@ -120,8 +148,11 @@ One‑command wrappers for:
 - cursor
 - copilot
 - opencode
+- Wrappers unify provider behaviour and inject CCR shaping.
 
 ### ha_learn — Auto‑Tuning Layer
+
+Includes:
 
 - failure miner
 - memory scoring
@@ -144,9 +175,7 @@ Everything is explicit.
 Everything is logged.
 Everything is reversible.
 
----
-
-## What’s Working Right Now
+### What’s Working Right Now
 
 - Core message model
 - Provider adapters (OpenAI, Anthropic, Google, Local)
@@ -166,13 +195,11 @@ Everything is reversible.
 - Tests for proxy, MCP, learn
 - Docsite generator
 
----
+## What’s Being Built Now (Active Milestone)
 
-## What’s Being Built Now (active milestone)
+### Current Stage: CCR Upgrade Stage 1
 
-Current Stage: CCR Upgrade Stage 1
-
-In progress (MVP‑critical):
+#### In progress (MVP‑critical)
 
 - relevance.ts
 - priority.ts
@@ -185,7 +212,7 @@ Complete:
 
 - anchor.ts
 - dedupe.ts
-- basic compressor (compressors/basic.ts)
+- basic compressor
 - reversible logging
 - provider adapters
 - proxy server
@@ -196,15 +223,14 @@ Complete:
 - Docker + Compose
 - multi‑platform CI
 
----
-
-## Project Structure (updated)
+## Project Structure
 
 ```text
 agent-smagent/
 │
 ├── ha_core/                                   # [Core Engine]
 │   ├── analyze/
+│   │   ├── embeddings.ts
 │   │   ├── classifier.ts
 │   │   └── tokens.ts
 │   ├── transform/
@@ -249,7 +275,6 @@ agent-smagent/
 │   │   └── memory.ts
 │   ├── output/
 │   │   └── reducer.ts
-│   ├── stats/
 │   ├── compress.ts
 │   ├── compress.py
 │   ├── smoke-test.ts
@@ -312,8 +337,8 @@ agent-smagent/
 │   ├── ccrRouting.ts
 │   ├── index.ts
 │   ├── memoryRouting.ts
-│   ├── mcp-client.ts
-│   ├── multi_agent.ts
+│   ├── mcpClient.ts
+│   ├── multiAgent.ts
 │   ├── orchestrator.ts
 │   ├── providerFallback.ts
 │   ├── providerMetadata.ts
@@ -365,25 +390,37 @@ agent-smagent/
 │   └── walk.ts
 │
 ├── docs/                                      # [Documentation]
-│   ├── ccr_stage1.md
-│   ├── ccr_anchor_design/
 │   ├── tech_debt/
-│   │   ├── schema_factor.md
-│   │   ├── provider_adaptive.md
-│   │   ├── relevance_tiers.md
-│   │   ├── semantic_anchors.md
-│   │   ├── entity_dictionary.md
-│   │   └── ast_compress.md
+│   │   ├── improvements/
+│   │   │   ├── schema_factor.md
+│   │   │   ├── provider_adaptive.md
+│   │   │   ├── relevance_tiers.md
+│   │   │   ├── semantic_anchors.md
+│   │   │   ├── entity_dictionary.md
+│   │   │   └── ast_compress.md
+│   │   ├── baseline/
+│   │   │   ├── ccr_stage1.md
+│   │   │   ├── baselineStage2.md
+│   │   │   ├── hardening_pass_checklist.md
+│   │   │   ├── ccr_anchor_design/
+│   │   │   ├── baseline_sequence.md
+│   │   │   ├── timeout_surfaces.md
+│   │   │   └── baselineFreezeTestPlanR1.md
 │
 ├── tests/                                     # [Test Suite]
-│   ├── providers/
-│   │   ├── openai.integration.test.ts
-│   │   ├── openai.test.ts
-│   │   ├── anthropic.test.ts
-│   │   ├── google.test.ts
-│   │   └── local.test.ts
+│   ├── freeze/
+│   │   ├── freezeBaseline.ts
+│   │   ├── freezeBaseline.test.ts
+│   │   ├── freezeBenchmark.ts
+│   │   ├── freezeBenchmark.test.ts
+│   │   ├── freezeDelta.ts
+│   │   ├── freezeDelta.test.ts
+│   │   ├── freezeDeltaCandidate.test.ts
+│   │   ├── freezeDiff.ts
+│   │   └── freezeSnapshot.ts
 │   ├── chain/
 │   │   ├── chainRouter.test.ts
+│   │   ├── chainRouter.freeze.test.ts
 │   │   ├── chainTelemetry.test.ts
 │   │   ├── chainTelemetryFull.test.ts
 │   │   ├── chainScore.test.ts
@@ -396,22 +433,40 @@ agent-smagent/
 │   │   └── chainMultiProvider.test.ts
 │   ├── orchestrator/
 │   │   ├── orchestrator.test.ts
-│   │   └── orchestratorFallback.test.ts
+│   │   ├── orchestratorFallback.test.ts
+│   │   └── orchestrator.freeze.test.ts
 │   ├── transform/
-│   │   └── ccrPipeline.test.ts
+│   │   ├── ccrPipeline.test.ts
+│   │   ├── ccrPipeline.freeze.test.ts
+│   │   ├── anchorSemanticFusion.freeze.test.ts
+│   │   └── relevance.freeze.test.ts
+│   ├── providers/
+│   │   ├── openai.integration.test.ts
+│   │   ├── openai.test.ts
+│   │   └── providers.ts
 │   ├── utils/
+│   │   ├── diffFreeze.ts
 │   │   ├── mockMessages.ts
 │   │   └── mockConfig.ts
 │   ├── _setup/
 │   │   └── providerRegistry.ts
 │   ├── _mocks/
 │   │   └── providers.ts
+│   ├── _freeze/
+│   │   ├── ccr.json
+│   │   └── chainRouter.json
+│   ├── _freeze_bench/
+│   │   ├── freeze_benchmark.json
+│   │   ├── freeze_benchmark_current.json
+│   │   └── freeze_benchmark_candidate.json
+│   ├── _freeze_delta/
+│   │   └── freeze_delta_report.json
 │   ├── esm-test.js
 │   ├── setup.ts
-│   ├── vitest.config.js
-│   └── tsconfig.test.json
+│   ├── tsconfig.test.json
+│   └── vitest.config.js
 │
-├── smage/                                     # [Binary Output]
+├── smage/                                     # [Binary Output / Python Bindings]
 │   ├── smage.ts
 │   ├── __init__.py
 │   ├── config.ts
@@ -419,7 +474,7 @@ agent-smagent/
 │   ├── .env
 │   └── smage-linux
 │
-├── scripts/                                   # [Scripts]
+├── scripts/
 │   └── treeGen/
 │
 ├── dist/                                      # Bun-compiled JS
@@ -428,7 +483,7 @@ agent-smagent/
 │
 ├── Dockerfile
 ├── Dockerfile.build
-├── compose.yaml
+├── compose.yml
 ├── compose.override.yml
 ├── Taskfile.yml
 ├── Taskfile.dev.yml
@@ -441,7 +496,6 @@ agent-smagent/
 ├── mcp.sh
 ├── project-tree.txt
 └── .gitignore
-
 ```
 
 ## Current Stage
@@ -452,24 +506,29 @@ CCR Upgrade Stage 1 (MVP-critical)
 
 The MVP is not full CCR. The MVP is a testable baseline for token consumption. Includes:
 
-- Core
+### Core Engine
+
 - anchors
 - dedupe
-- relevance scoring
-- priority tiers
-- window shaping
+- relevance_scoring
+- priority_tiers
+- window_shaping
 - reconstruction
-- payload shaping
-- reversible logging
-- Runtime
+- payload_shaping
+- reversible_logging
+
+### Runtime
+
 - proxy (/v1/chat/completions, /health)
-- MCP server
-- CLI commands
-- provider adapters
+- MCP_server
+- CLI_commands
+- provider_adapters
 - binary builds (Linux/macOS/Windows)
 - Docker runtime
 - Compose multi‑service runtime
-- Testing
+
+### Testing
+
 - deterministic CCR modules
 - provider selection
 - provider fallback
@@ -498,9 +557,11 @@ Implement CCR Stage 1 baseline tests:
 
 ## Module Boundaries
 
-### ha_core — The Library
+### ha_core — The Library (Engine)
 
-This is the engine, everything else in the repo depends on this. It contains:
+everything depends on this.
+
+It contains:
 
 - message model
 - CCR pipeline
@@ -525,8 +586,9 @@ This is the engine, everything else in the repo depends on this. It contains:
 
 ### ha_proxy — Zero‑code‑change proxy
 
-This is the drop‑in replacement for any app. A thin wrapper around `ha_core`,
-it:
+Drop‑in replacement for any app. A thin wrapper around `ha_core`.
+
+Functions:
 
 - accepts OpenAI / Anthropic / Google‑style requests
 - runs `compress()`
@@ -534,6 +596,7 @@ it:
 - applies output reduction
 - returns the response
 - stores originals
+- exposes HTML dashboards
 
 ### ha_mcp — MCP server
 
@@ -561,45 +624,48 @@ One‑command wrappers for:
 
 ### ha_learn — Self‑improving layer
 
-This is the auto‑tuning brain. Mines failed sessions → writes corrections to:
+Auto‑tuning brain. Mines failed sessions → writes corrections to:
 
 - `CLAUDE.md`
 - `AGENTS.md`
 
+Includes:
+
+- failure miner
+- memory scoring
+- session weighting
+- auto‑tuning
+
 ### Build Order
 
-- `ha_core`
-- message model
-- cache
-- CCR pipeline
-  anchors (next)
-  dedupe
-  relevance
-  priority
-  window
-  reconstruction
-- `compress()` Python + TS
-- provider adapters
-- reversible logging
-- `ha_proxy`
-- HTTP server
-- provider adapters
-- reversible logging
-- `ha_mcp`
-- compress
-- retrieve
-- stats
-- `ha_wrap`
-- agent wrappers
-- `ha_learn`
-- failure miner
-- `CLAUDE.md` / `AGENTS.md` writer
-- `ha_cli`
-- unify everything
-- docs
-- architecture
-- roadmap
-- usage
+1. `ha_core`
+2. message model
+3. cache
+4. CCR pipeline
+    - anchors (next)
+    - dedupe
+    - relevance
+    - priority
+    - window
+    - reconstruction
+5. `compress()` Python + TS
+6. provider adapters
+7. reversible logging
+8. `ha_proxy`
+    - HTTP server
+    - provider adapters
+    - reversible logging
+9. `ha_mcp`
+    - compress
+    - retrieve
+    - stats
+10. `ha_wrap`
+11. `ha_learn`
+12. `ha_cli`
+13. docs
+14. architecture
+15. roadmap
+16. usage
 
 ## Current Status
 
@@ -615,8 +681,8 @@ This is the auto‑tuning brain. Mines failed sessions → writes corrections to
 
 ### 3. Cache
 
-- ✔ cache/store.ts
-- ✔ cache/log.ts
+- ✔ store.ts
+- ✔ log.ts
 - ✔ reversible logging unified
 - ⬆ multi‑backend pending
 
@@ -711,7 +777,7 @@ Pending:
 
 ## Running SMAGE
 
-CLI
+### CLI
 
 ```bash
 smage proxy
@@ -721,14 +787,15 @@ smage agent
 smage learn default
 ```
 
-Proxy
+### Proxy
 
 ```bash
 POST /v1/chat/completions
 GET  /health
 ```
 
-MCP
+### MCP
+
 Claude Desktop / Cursor connect via MCP server.
 Docker
 
@@ -737,63 +804,64 @@ docker build -t smage .
 docker run --rm smage proxy
 ```
 
-Compose
+### Compose
 
 ```bash
 docker compose up
 ```
 
 Services:
-proxy
-agent
-docs
-test
+
+- proxy
+- agent
+- docs
+- test
 
 ## Quick Commands
 
-Dev mode (tsx MCP)
+### Dev mode (tsx MCP)
 
 ```bash
 ts dev
 ```
 
-Build dist
+### Build dist
 
 ```bash
 ts bd
 ```
 
-Run tests
+### Run tests
 
 ```bash
 ts tst
 ```
 
-Run learning engine tests
+### Run learning engine tests
 
 ```bash
 ts learn
 ```
 
-Run proxy
+### Run proxy
 
 ```bash
 humanAuction proxy
 ```
 
-Run agent wrapper
+### Run agent wrapper
 
 ```bash
 humanAuction wrap aider
 ```
 
-Generate docs
+### Generate docs
 
 ```bash
 humanAuction docs
 ```
 
-### Useful One‑Liners
+## Useful One‑Liners
 
 Run MCP directly:
 
@@ -825,22 +893,16 @@ Rebuild clean:
 rm -rf dist && ts bd
 ```
 
-Run docker commands locally:
-override commands automatically:
+Run docker services:
 
 ```bash
 docker compose up
-```
-
-Or run specific services:
-
-```bash
 docker compose run smage-proxy
 docker compose run smage-agent
 docker compose run smage-docs
 ```
 
-## Testing
+## Test Suite
 
 ```bash
 npm test
