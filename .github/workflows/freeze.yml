@@ -1,12 +1,11 @@
-name: SMAGE Freeze Regression
+name: SMAGE Freeze Approval
 
 on:
-    push:
-        branches: [main]
     pull_request:
+        branches: [main]
 
 jobs:
-    freeze:
+    freeze-approval:
         runs-on: ubuntu-latest
 
         steps:
@@ -16,7 +15,7 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 24
 
             - name: Install dependencies
               run: npm install
@@ -24,24 +23,28 @@ jobs:
             - name: Build TypeScript
               run: npx tsc
 
-            - name: Generate freeze baseline (only if missing)
-              run: |
-                  if [ ! -d "tests/_freeze" ]; then
-                    echo "Freeze baseline missing — generating..."
-                    npx vitest --run --reporter=verbose tests/freeze/freezeBaseline.test.ts
-                  else
-                    echo "Freeze baseline exists — skipping generation."
-                  fi
+            # 1. Generate baseline benchmark
             - name: Generate baseline benchmark
               run: npx vitest --run tests/freeze/freezeBenchmark.test.ts
 
-            - name: Copy baseline → current benchmark
-              run: cp tests/_freeze_bench/freeze_benchmark.json tests/_freeze_bench/freeze_benchmark_current.json
-
-            - name: Run freeze regression tests
+            # 2. Generate candidate baseline
+            - name: Generate candidate baseline
               run: |
-                  echo "Running freeze regression..."
-                  npx vitest --run --reporter=verbose tests/transform/ccrPipeline.freeze.test.ts
-                  npx vitest --run --reporter=verbose tests/chain/chainRouter.freeze.test.ts
-            - name: Run freeze delta reporter
-              run: npx vitest --run --reporter=verbose tests/freeze/freezeDelta.test.ts
+                  cp tests/_freeze_bench/freeze_benchmark.json \
+                     tests/_freeze_bench/freeze_benchmark_candidate.json
+
+            # 3. Run candidate delta reporter
+            - name: Run candidate delta reporter
+              run: npx vitest --run tests/freeze/freezeDeltaCandidate.test.ts
+
+            # 4. Fail PR if deltas exist
+            - name: Check candidate deltas
+              run: |
+                  deltas=$(cat tests/_freeze_delta/freeze_delta_report.json)
+                  if [ "$deltas" != "[]" ]; then
+                    echo "PROBLEM - Freeze baseline changed — approval required."
+                    echo "Deltas:"
+                    echo "$deltas"
+                    exit 1
+                  fi
+                  echo "✔ No deltas — baseline stable."
