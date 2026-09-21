@@ -231,5 +231,7 @@ test("CCR baseline: full pipeline shape", async () => {
         "reconstructed",
         "compressed",
         "reduced",
+        "tokens",
+        "counts",
     ]);
 });
