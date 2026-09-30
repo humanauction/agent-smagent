@@ -155,27 +155,23 @@ tasks:
     # Freeze Benchmark
     # -----------------------------
     frzbench:
-        desc: "Generate freeze benchmark baseline"
+        desc: "Generate a candidate benchmark for baseline review"
         cmds:
-            - echo "Generating freeze benchmark baseline..."
-            - cd $(pwd) && arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeBenchmark.test.ts
-            - echo "Baseline benchmark written."
+            - task frzbench:candidate
 
     frzbench:current:
         desc: "Generate current freeze benchmark"
         cmds:
             - echo "Generating current freeze benchmark..."
-            - cd $(pwd) && arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeBenchmark.test.ts
-            - cp tests/_freeze_bench/freeze_benchmark.json tests/_freeze_bench/freeze_benchmark_current.json
+            - SMAGE_FREEZE_OUTPUT=tests/_freeze_bench/freeze_benchmark_current.json arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeBenchmark.test.ts
             - echo "Current benchmark written."
 
     frzbench:candidate:
         desc: "Generate candidate freeze benchmark baseline"
         cmds:
-            - echo "Generating candidate baseline..."
-            - arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeBenchmark.test.ts
-            - cp tests/_freeze_bench/freeze_benchmark.json tests/_freeze_bench/freeze_benchmark_candidate.json
-            - echo "Candidate baseline written."
+            - echo "Generating candidate benchmark..."
+            - SMAGE_FREEZE_OUTPUT=tests/_freeze_bench/freeze_benchmark_candidate.json arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeBenchmark.test.ts
+            - echo "Candidate benchmark written."
 
     frzbench:approve:
         desc: "Approve candidate baseline and promote it to official baseline"
@@ -193,7 +189,7 @@ tasks:
         desc: "Run freeze delta reporter"
         cmds:
             - echo "Running freeze delta reporter..."
-            - arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeDelta.test.ts
+            - SMAGE_FREEZE_GATE=1 SMAGE_FREEZE_MODE=current arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeDeltaGate.test.ts
             - echo "Freeze delta report written to tests/_freeze_delta"
             - cat tests/_freeze_delta/freeze_delta_report.json
 
@@ -201,7 +197,7 @@ tasks:
         desc: "Run freeze delta reporter against candidate baseline"
         cmds:
             - echo "Running freeze delta reporter against candidate baseline..."
-            - arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeDeltaCandidate.test.ts
+            - SMAGE_FREEZE_GATE=1 SMAGE_FREEZE_MODE=candidate SMAGE_FREEZE_REPORT_ONLY=1 arch -arm64 npx vitest --run --reporter=verbose tests/freeze/freezeDeltaGate.test.ts
             - echo "Freeze delta report written to tests/_freeze_delta"
             - cat tests/_freeze_delta/freeze_delta_report.json
     # -----------------------------

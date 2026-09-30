@@ -1,49 +1,75 @@
-name: SMAGE Freeze Approval
+name: SMAGE Freeze Regression
 
 on:
     pull_request:
         branches: [main]
+        types: [opened, synchronize, reopened, labeled]
 
 jobs:
-    freeze-approval:
+    freeze-regression:
         runs-on: ubuntu-latest
+        env:
+            BASE_REF: ${{ github.base_ref }}
+            FREEZE_APPROVAL_LABEL: freeze-baseline-approved
 
         steps:
-            - name: Checkout repository
+            - name: Checkout pull request
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 1
 
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
                   node-version: 24
+                  cache: npm
 
             - name: Install dependencies
-              run: npm install
+              run: npm ci
 
             - name: Build TypeScript
-              run: npx tsc
+              run: npx tsc --noEmit
 
-            # 1. Generate baseline benchmark
-            - name: Generate baseline benchmark
+            - name: Fetch target branch baseline
+              run: |
+                  git fetch --no-tags --depth=1 origin "$BASE_REF"
+                  git show "origin/$BASE_REF:tests/_freeze_bench/freeze_benchmark.json" \
+                    > tests/_freeze_bench/freeze_benchmark_base.json
+
+            - name: Generate current benchmark
               run: npx vitest --run tests/freeze/freezeBenchmark.test.ts
 
-            # 2. Generate candidate baseline
-            - name: Generate candidate baseline
+            - name: Check baseline update approval
+              if: contains(github.event.pull_request.labels.*.name, 'freeze-baseline-approved')
               run: |
-                  cp tests/_freeze_bench/freeze_benchmark.json \
-                     tests/_freeze_bench/freeze_benchmark_candidate.json
-
-            # 3. Run candidate delta reporter
-            - name: Run candidate delta reporter
-              run: npx vitest --run tests/freeze/freezeDeltaCandidate.test.ts
-
-            # 4. Fail PR if deltas exist
-            - name: Check candidate deltas
-              run: |
-                  deltas=$(cat tests/_freeze_delta/freeze_delta_report.json)
-                  if [ "$deltas" != "[]" ]; then
-                    echo "❌ Freeze baseline changed — approval required."
-                    echo "$deltas"
+                  if git diff --quiet "origin/$BASE_REF" -- tests/_freeze_bench/freeze_benchmark.json; then
+                    echo "An approved baseline PR must update freeze_benchmark.json."
                     exit 1
                   fi
-                  echo "✔ No deltas — baseline stable."
+
+            - name: Compare against target baseline
+              if: ${{ !contains(github.event.pull_request.labels.*.name, 'freeze-baseline-approved') }}
+              env:
+                  SMAGE_FREEZE_BASELINE: tests/_freeze_bench/freeze_benchmark_base.json
+                  SMAGE_FREEZE_GATE: "1"
+              run: npx vitest --run tests/freeze/freezeDeltaGate.test.ts
+
+            - name: Verify approved baseline matches current behavior
+              if: contains(github.event.pull_request.labels.*.name, 'freeze-baseline-approved')
+              env:
+                  SMAGE_FREEZE_BASELINE: tests/_freeze_bench/freeze_benchmark.json
+                  SMAGE_FREEZE_GATE: "1"
+              run: npx vitest --run tests/freeze/freezeDeltaGate.test.ts
+
+            - name: Enforce zero stable behavior deltas
+              run: |
+                  node --input-type=module -e '
+                    import { readFileSync } from "node:fs";
+                    const report = JSON.parse(readFileSync("tests/_freeze_delta/freeze_delta_report.json", "utf8"));
+                    if (report.length !== 0) {
+                      console.error(`Freeze behavior changed in ${report.length} case(s):`);
+                      console.error(JSON.stringify(report, null, 2));
+                      process.exit(1);
+                    }
+                    console.log("Freeze baseline matches all deterministic benchmark fields.");
+                  '
