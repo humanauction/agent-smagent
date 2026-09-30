@@ -54,14 +54,26 @@ export function freezeDelta(mode: "current" | "candidate" = "current") {
         >;
     }[] = [];
 
-    const length = Math.min(baseline.length, current.length);
+    const identity = (entry: FreezeBenchEntry) =>
+        `${entry.provider}\0${entry.intent}\0${entry.size}`;
+    const comparedFields: (keyof FreezeBenchEntry)[] = [
+        "tokens",
+        "windowed_count",
+        "reconstructed_count",
+        "compressed_count",
+        "reduced_length",
+        "chain_order",
+        "chain_telemetry",
+    ];
+    const currentByIdentity = new Map(
+        current.map((entry) => [identity(entry), entry]),
+    );
+    const baselineIds = new Set(baseline.map(identity));
 
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < baseline.length; i++) {
         const base = baseline[i];
-        const curr = current[i];
-
-        // Guard against undefined
-        if (!base || !curr) continue;
+        if (!base) continue;
+        const curr = currentByIdentity.get(identity(base));
 
         const diff: Partial<
             Record<
@@ -70,12 +82,16 @@ export function freezeDelta(mode: "current" | "candidate" = "current") {
             >
         > = {};
 
-        for (const key of Object.keys(base) as (keyof FreezeBenchEntry)[]) {
-            if (JSON.stringify(base[key]) !== JSON.stringify(curr[key])) {
-                diff[key] = {
-                    baseline: base[key],
-                    current: curr[key],
-                };
+        if (!curr) {
+            diff.provider = { baseline: base.provider, current: "<missing>" };
+        } else {
+            for (const key of comparedFields) {
+                if (JSON.stringify(base[key]) !== JSON.stringify(curr[key])) {
+                    diff[key] = {
+                        baseline: base[key],
+                        current: curr[key],
+                    };
+                }
             }
         }
 
@@ -88,6 +104,20 @@ export function freezeDelta(mode: "current" | "candidate" = "current") {
                 diff,
             });
         }
+    }
+
+    for (let i = 0; i < current.length; i++) {
+        const curr = current[i];
+        if (!curr || baselineIds.has(identity(curr))) continue;
+        deltas.push({
+            index: baseline.length + i,
+            provider: curr.provider,
+            intent: curr.intent,
+            size: curr.size,
+            diff: {
+                provider: { baseline: "<missing>", current: curr.provider },
+            },
+        });
     }
     mkdirSync("tests/_freeze_delta", { recursive: true });
     writeFileSync(

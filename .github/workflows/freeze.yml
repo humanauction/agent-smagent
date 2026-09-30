@@ -15,7 +15,7 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 24
 
             - name: Install dependencies
               run: npm install
@@ -42,8 +42,7 @@ jobs:
               run: |
                   deltas=$(cat tests/_freeze_delta/freeze_delta_report.json)
                   if [ "$deltas" != "[]" ]; then
-                    echo "PROBLEM - Freeze baseline changed — approval required."
-                    echo "Deltas:"
+                    echo "❌ Freeze baseline changed — approval required."
                     echo "$deltas"
                     exit 1
                   fi

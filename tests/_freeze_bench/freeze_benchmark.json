@@ -3,7 +3,7 @@
     "provider": "openai",
     "intent": "debug",
     "size": "short",
-    "latency_ms": 1.0496669999999995,
+    "latency_ms": 1.1680419999999572,
     "tokens": {
       "raw": 20,
       "window": 4,
@@ -135,7 +135,7 @@
     "provider": "openai",
     "intent": "debug",
     "size": "medium",
-    "latency_ms": 0.20708400000000893,
+    "latency_ms": 0.2412079999999719,
     "tokens": {
       "raw": 60,
       "window": 12,
@@ -267,7 +267,7 @@
     "provider": "openai",
     "intent": "debug",
     "size": "long",
-    "latency_ms": 0.20770899999999415,
+    "latency_ms": 0.21712500000001,
     "tokens": {
       "raw": 135,
       "window": 27,
@@ -399,7 +399,7 @@
     "provider": "openai",
     "intent": "explain",
     "size": "short",
-    "latency_ms": 0.10112499999999613,
+    "latency_ms": 0.10216700000000856,
     "tokens": {
       "raw": 20,
       "window": 4,
@@ -531,7 +531,7 @@
     "provider": "openai",
     "intent": "explain",
     "size": "medium",
-    "latency_ms": 0.10316700000001333,
+    "latency_ms": 0.11883300000005192,
     "tokens": {
       "raw": 60,
       "window": 12,
@@ -663,7 +663,7 @@
     "provider": "openai",
     "intent": "explain",
     "size": "long",
-    "latency_ms": 0.1548750000000041,
+    "latency_ms": 0.1444590000000403,
     "tokens": {
       "raw": 135,
       "window": 27,
@@ -795,7 +795,7 @@
     "provider": "openai",
     "intent": "summarize",
     "size": "short",
-    "latency_ms": 0.06475000000000364,
+    "latency_ms": 0.06649999999996226,
     "tokens": {
       "raw": 20,
       "window": 4,
@@ -927,7 +927,7 @@
     "provider": "openai",
     "intent": "summarize",
     "size": "medium",
-    "latency_ms": 0.10395900000000324,
+    "latency_ms": 0.08650000000000091,
     "tokens": {
       "raw": 60,
       "window": 12,
@@ -1059,7 +1059,7 @@
     "provider": "openai",
     "intent": "summarize",
     "size": "long",
-    "latency_ms": 0.109958000000006,
+    "latency_ms": 0.119624999999985,
     "tokens": {
       "raw": 135,
       "window": 27,
@@ -1191,7 +1191,7 @@
     "provider": "anthropic",
     "intent": "debug",
     "size": "short",
-    "latency_ms": 0.07741599999999949,
+    "latency_ms": 0.07212499999997135,
     "tokens": {
       "raw": 20,
       "window": 4,
@@ -1323,7 +1323,7 @@
     "provider": "anthropic",
     "intent": "debug",
     "size": "medium",
-    "latency_ms": 0.07224999999999682,
+    "latency_ms": 0.08224999999998772,
     "tokens": {
       "raw": 60,
       "window": 12,
@@ -1455,7 +1455,7 @@
     "provider": "anthropic",
     "intent": "debug",
     "size": "long",
-    "latency_ms": 0.09212499999998158,
+    "latency_ms": 0.08825000000001637,
     "tokens": {
       "raw": 135,
       "window": 27,
@@ -1587,7 +1587,7 @@
     "provider": "anthropic",
     "intent": "explain",
     "size": "short",
-    "latency_ms": 0.037916999999993095,
+    "latency_ms": 0.040083999999978914,
     "tokens": {
       "raw": 20,
       "window": 4,
@@ -1719,7 +1719,7 @@
     "provider": "anthropic",
     "intent": "explain",
     "size": "medium",
-    "latency_ms": 0.05508299999999622,
+    "latency_ms": 0.06387499999999591,
     "tokens": {
       "raw": 60,
       "window": 12,
@@ -1851,7 +1851,7 @@
     "provider": "anthropic",
     "intent": "explain",
     "size": "long",
-    "latency_ms": 0.07974999999999,
+    "latency_ms": 0.08733399999999847,
     "tokens": {
       "raw": 135,
       "window": 27,
@@ -1983,7 +1983,7 @@
     "provider": "anthropic",
     "intent": "summarize",
     "size": "short",
-    "latency_ms": 0.034874999999999545,
+    "latency_ms": 0.037332999999989624,
     "tokens": {
       "raw": 20,
       "window": 4,
@@ -2115,7 +2115,7 @@
     "provider": "anthropic",
     "intent": "summarize",
     "size": "medium",
-    "latency_ms": 0.05570800000000986,
+    "latency_ms": 0.053458000000034644,
     "tokens": {
       "raw": 60,
       "window": 12,
@@ -2247,7 +2247,7 @@
     "provider": "anthropic",
     "intent": "summarize",
     "size": "long",
-    "latency_ms": 0.08012499999998113,
+    "latency_ms": 0.08808299999998326,
     "tokens": {
       "raw": 135,
       "window": 27,
@@ -2379,7 +2379,7 @@
     "provider": "local",
     "intent": "debug",
     "size": "short",
-    "latency_ms": 0.041833999999994376,
+    "latency_ms": 0.04341599999997925,
     "tokens": {
       "raw": 20,
       "window": 4,
@@ -2511,7 +2511,7 @@
     "provider": "local",
     "intent": "debug",
     "size": "medium",
-    "latency_ms": 0.05062499999999659,
+    "latency_ms": 0.05824999999998681,
     "tokens": {
       "raw": 60,
       "window": 12,
@@ -2643,7 +2643,7 @@
     "provider": "local",
     "intent": "debug",
     "size": "long",
-    "latency_ms": 0.08370800000000145,
+    "latency_ms": 0.07400000000001228,
     "tokens": {
       "raw": 135,
       "window": 27,
@@ -2775,7 +2775,7 @@
     "provider": "local",
     "intent": "explain",
     "size": "short",
-    "latency_ms": 0.033999999999991815,
+    "latency_ms": 0.04383299999994961,
     "tokens": {
       "raw": 20,
       "window": 4,
@@ -2907,7 +2907,7 @@
     "provider": "local",
     "intent": "explain",
     "size": "medium",
-    "latency_ms": 0.06066699999999514,
+    "latency_ms": 0.05633299999999508,
     "tokens": {
       "raw": 60,
       "window": 12,
@@ -3039,7 +3039,7 @@
     "provider": "local",
     "intent": "explain",
     "size": "long",
-    "latency_ms": 0.08091699999999946,
+    "latency_ms": 0.09616599999998243,
     "tokens": {
       "raw": 135,
       "window": 27,
@@ -3171,7 +3171,7 @@
     "provider": "local",
     "intent": "summarize",
     "size": "short",
-    "latency_ms": 0.04029199999999378,
+    "latency_ms": 0.04512499999998454,
     "tokens": {
       "raw": 20,
       "window": 4,
@@ -3303,7 +3303,7 @@
     "provider": "local",
     "intent": "summarize",
     "size": "medium",
-    "latency_ms": 0.04974999999998886,
+    "latency_ms": 0.05750000000000455,
     "tokens": {
       "raw": 60,
       "window": 12,
@@ -3435,7 +3435,7 @@
     "provider": "local",
     "intent": "summarize",
     "size": "long",
-    "latency_ms": 0.06954100000001517,
+    "latency_ms": 0.07583299999998871,
     "tokens": {
       "raw": 135,
       "window": 27,
