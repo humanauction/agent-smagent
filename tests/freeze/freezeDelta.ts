@@ -1,95 +1,133 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, isAbsolute, join } from "node:path";
 
 interface FreezeBenchEntry {
+    case_id?: string;
+    category?: string;
     provider: string;
     intent: string;
-    size: string;
-    latency_ms: number;
-    tokens: Record<string, number>;
-    windowed_count: number;
-    reconstructed_count: number;
-    compressed_count: number;
-    reduced_length: number;
-    chain_order: string[];
-    chain_telemetry: unknown;
+    size?: string;
+    input_count?: number;
+    tokens?: unknown;
+    windowed?: unknown;
+    reconstructed?: unknown;
+    compressed?: unknown;
+    reduced?: unknown;
+    counts?: unknown;
+    reconstruction_check?: unknown;
+    chain_order?: unknown;
+    chain_telemetry?: unknown;
+    performance?: unknown;
 }
 
-export function freezeDelta(mode: "current" | "candidate" = "current") {
-    const baselinePath = "tests/_freeze_bench/freeze_benchmark.json";
-    const comparePath =
-        mode === "current"
-            ? "tests/_freeze_bench/freeze_benchmark_current.json"
-            : "tests/_freeze_bench/freeze_benchmark_candidate.json";
+type FreezeDeltaEntry = {
+    index: number;
+    case_id?: string;
+    category?: string;
+    provider: string;
+    intent: string;
+    size?: string;
+    diff: Partial<
+        Record<keyof FreezeBenchEntry, { baseline: unknown; current: unknown }>
+    >;
+};
 
-    if (!existsSync(baselinePath)) {
-        throw new Error(
-            `Baseline missing: ${baselinePath}. Please run the benchmark first to generate the baseline benchmark file.`,
-        );
-    }
-    if (!existsSync(comparePath)) {
-        throw new Error(
-            `Compare file missing: ${comparePath}. Please run the benchmark first to generate the current or candidate benchmark file.`,
-        );
-    }
+export interface FreezeDeltaOptions {
+    baselinePath?: string;
+    comparePath?: string;
+    reportPath?: string;
+}
 
-    const baseline: FreezeBenchEntry[] = JSON.parse(
-        readFileSync(join(process.cwd(), baselinePath), "utf8"),
+function resolvePath(path: string) {
+    return isAbsolute(path) ? path : join(process.cwd(), path);
+}
+
+function readEntries(path: string): FreezeBenchEntry[] {
+    if (!existsSync(path)) {
+        throw new Error(`Freeze benchmark file missing: ${path}`);
+    }
+    const value: unknown = JSON.parse(readFileSync(path, "utf8"));
+    if (!Array.isArray(value)) {
+        throw new Error(`Freeze benchmark must be an array: ${path}`);
+    }
+    return value as FreezeBenchEntry[];
+}
+
+function identity(entry: FreezeBenchEntry) {
+    return `${entry.provider}\0${entry.intent}\0${entry.case_id ?? entry.size ?? ""}`;
+}
+
+export function freezeDelta(
+    mode: "current" | "candidate" = "current",
+    options: FreezeDeltaOptions = {},
+) {
+    const baselinePath = resolvePath(
+        options.baselinePath ??
+            process.env.SMAGE_FREEZE_BASELINE ??
+            "tests/_freeze_bench/freeze_benchmark.json",
+    );
+    const comparePath = resolvePath(
+        options.comparePath ??
+            (mode === "current"
+                ? "tests/_freeze_bench/freeze_benchmark_current.json"
+                : "tests/_freeze_bench/freeze_benchmark_candidate.json"),
+    );
+    const reportPath = resolvePath(
+        options.reportPath ?? "tests/_freeze_delta/freeze_delta_report.json",
     );
 
-    const current: FreezeBenchEntry[] = JSON.parse(
-        readFileSync(join(process.cwd(), comparePath), "utf8"),
-    );
-
-    const deltas: {
-        index: number;
-        provider: string;
-        intent: string;
-        size: string;
-        diff: Partial<
-            Record<
-                keyof FreezeBenchEntry,
-                { baseline: unknown; current: unknown }
-            >
-        >;
-    }[] = [];
-
-    const identity = (entry: FreezeBenchEntry) =>
-        `${entry.provider}\0${entry.intent}\0${entry.size}`;
-    const comparedFields: (keyof FreezeBenchEntry)[] = [
+    const baseline = readEntries(baselinePath);
+    const current = readEntries(comparePath);
+    const deltas: FreezeDeltaEntry[] = [];
+    const stableFields: (keyof FreezeBenchEntry)[] = [
+        "category",
+        "input_count",
         "tokens",
-        "windowed_count",
-        "reconstructed_count",
-        "compressed_count",
-        "reduced_length",
+        "windowed",
+        "reconstructed",
+        "compressed",
+        "reduced",
+        "counts",
+        "reconstruction_check",
         "chain_order",
         "chain_telemetry",
     ];
-    const currentByIdentity = new Map(
-        current.map((entry) => [identity(entry), entry]),
-    );
-    const baselineIds = new Set(baseline.map(identity));
+    const currentByIdentity = new Map<string, FreezeBenchEntry>();
+    for (const entry of current) {
+        const key = identity(entry);
+        if (currentByIdentity.has(key)) {
+            throw new Error(
+                `Duplicate benchmark case identity in compare file: ${key}`,
+            );
+        }
+        currentByIdentity.set(key, entry);
+    }
 
+    const baselineIds = new Set<string>();
     for (let i = 0; i < baseline.length; i++) {
         const base = baseline[i];
         if (!base) continue;
-        const curr = currentByIdentity.get(identity(base));
+        const key = identity(base);
+        if (baselineIds.has(key)) {
+            throw new Error(
+                `Duplicate benchmark case identity in baseline file: ${key}`,
+            );
+        }
+        baselineIds.add(key);
 
-        const diff: Partial<
-            Record<
-                keyof FreezeBenchEntry,
-                { baseline: unknown; current: unknown }
-            >
-        > = {};
-
+        const curr = currentByIdentity.get(key);
+        const diff: FreezeDeltaEntry["diff"] = {};
         if (!curr) {
-            diff.provider = { baseline: base.provider, current: "<missing>" };
+            diff.case_id = {
+                baseline: base.case_id ?? base.size,
+                current: "<missing>",
+            };
         } else {
-            for (const key of comparedFields) {
-                if (JSON.stringify(base[key]) !== JSON.stringify(curr[key])) {
-                    diff[key] = {
-                        baseline: base[key],
-                        current: curr[key],
+            for (const field of stableFields) {
+                if (JSON.stringify(base[field]) !== JSON.stringify(curr[field])) {
+                    diff[field] = {
+                        baseline: base[field],
+                        current: curr[field],
                     };
                 }
             }
@@ -98,6 +136,8 @@ export function freezeDelta(mode: "current" | "candidate" = "current") {
         if (Object.keys(diff).length > 0) {
             deltas.push({
                 index: i,
+                case_id: base.case_id,
+                category: base.category,
                 provider: base.provider,
                 intent: base.intent,
                 size: base.size,
@@ -111,20 +151,21 @@ export function freezeDelta(mode: "current" | "candidate" = "current") {
         if (!curr || baselineIds.has(identity(curr))) continue;
         deltas.push({
             index: baseline.length + i,
+            case_id: curr.case_id,
+            category: curr.category,
             provider: curr.provider,
             intent: curr.intent,
             size: curr.size,
             diff: {
-                provider: { baseline: "<missing>", current: curr.provider },
+                case_id: {
+                    baseline: "<missing>",
+                    current: curr.case_id ?? curr.size,
+                },
             },
         });
     }
-    mkdirSync("tests/_freeze_delta", { recursive: true });
-    writeFileSync(
-        "tests/_freeze_delta/freeze_delta_report.json",
-        JSON.stringify(deltas, null, 2),
-        "utf8",
-    );
 
+    mkdirSync(dirname(reportPath), { recursive: true });
+    writeFileSync(reportPath, JSON.stringify(deltas, null, 2), "utf8");
     return deltas;
 }

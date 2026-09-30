@@ -1,18 +1,47 @@
 import { describe, it, expect } from "vitest";
+import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { freezeDelta } from "./freezeDelta.js";
 
 describe("Freeze Delta Candidate Reporter", () => {
-    it("runs candidate delta reporter", () => {
-        const deltas = freezeDelta("candidate");
-        // Candidate deltas may be 0 or >0 depending on approval workflow.
-        // Only assert that the reporter returns an array.
-        expect(Array.isArray(deltas)).toBe(true);
+    it("compares the candidate file against the selected baseline", () => {
+        const dir = mkdtempSync(join(tmpdir(), "smage-freeze-candidate-"));
+        try {
+            const baselinePath = join(dir, "baseline.json");
+            const comparePath = join(dir, "candidate.json");
+            const reportPath = join(dir, "report.json");
+            const row = {
+                case_id: "case-1",
+                category: "minimal",
+                provider: "local",
+                intent: "debug",
+                input_count: 1,
+                tokens: { raw: 4 },
+                windowed: [],
+                reconstructed: [],
+                compressed: [],
+                reduced: {},
+                counts: {},
+                chain_order: ["local"],
+                chain_telemetry: [],
+                performance: { latency_ms: [1] },
+            };
+            writeFileSync(baselinePath, JSON.stringify([row]));
+            writeFileSync(
+                comparePath,
+                JSON.stringify([{ ...row, performance: { latency_ms: [99] } }]),
+            );
+
+            expect(
+                freezeDelta("candidate", {
+                    baselinePath,
+                    comparePath,
+                    reportPath,
+                }),
+            ).toEqual([]);
+        } finally {
+            rmSync(dir, { recursive: true, force: true });
+        }
     });
 });
-
-// describe("Freeze Delta Candidate Reporter", () => {
-//     it("detects deltas between baseline and candidate", () => {
-//         const deltas = freezeDelta("candidate");
-//         expect(deltas.length).toBeGreaterThanOrEqual(0);
-//     });
-// });
