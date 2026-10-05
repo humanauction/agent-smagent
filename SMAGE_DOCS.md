@@ -1,47 +1,110 @@
 # SMAGE Documentation
 
-## `ha_core/memory/memory.ts`
+## `ha_core/analyze/tokens.ts`
 
-### interface `MemoryEntry`
+### function `tokenCount`
 
 ```ts
-interface MemoryEntry
+function tokenCount(text: string): number {
 ```
 
-Memory entry:
+Minimal deterministic token counter for CCR Stage 1.
+Always returns a number. Never returns undefined or bigint.
 
-- key: string (agent or global)
-- value: string (fact, summary, preference)
-- ts: timestamp
+Rules:
+- Empty or falsy input → 0
+- Split on whitespace
+- Filter out empty segments
+- Count remaining segments
+
+## `ha_core/call/providers/providerNormalize.ts`
+
+### function `normalizeProviderResponse`
+
+```ts
+function normalizeProviderResponse(
+```
+
+Normalizes provider output into safe normalizeProviderResponse.
+Guarantees:
+- role is always "assistant"
+- content is always a string
+- never returns undefined
+
+## `ha_core/call/providers/timeout.ts`
+
+### const `DEFAULT_TIMEOUT_MS`
+
+```ts
+const DEFAULT_TIMEOUT_MS = 15000; // fetch timeout
+```
+
+Global timeout constants
+
+### function `timeoutGuard`
+
+```ts
+function timeoutGuard<T>(
+```
+
+Generic timeout guard for any promise
+
+### function `fetchWithTimeout`
+
+```ts
+async function fetchWithTimeout(
+```
+
+Unified fetch-with-timeout wrapper
+
+### function `jsonParseWithTimeout`
+
+```ts
+async function jsonParseWithTimeout(
+```
+
+Unified JSON parse with timeout + size guard
+
+### function `safeTelemetry`
+
+```ts
+function safeTelemetry(fn: () => void): void {
+```
+
+telemetry wrapper — safe, never blocks provider call
+
+### function `normalizeTimeoutUnknown`
+
+```ts
+function normalizeTimeoutUnknown(
+```
+
+Unified timeout classification for unknown errors
+
+## `ha_core/memory/memory.ts`
+
+### function `getRelevantAnchorMemory`
+
+```ts
+function getRelevantAnchorMemory(
+```
+
+Retrieve relevant anchor memory entries for a given agent and user query
+- relevance scoring based on keyword overlap, topic hint, and recency
+- returns top 5 relevant anchors
 
 ### function `remember`
 
 ```ts
-function remember
+function remember(agent: string, field: string, value: string): void {
 ```
 
-In-memory store (TODO: embeddings, external storage, database e.g. replace with Redis/SQLite)
-/
-const MEMORY = new Map<string, MemoryEntry>();
-
-/\*\*
-Normalize memory keys:
-
-- agent-specific: "agent:<agent>"
-
-- global: "global"
-  /
-  function keyFor(agent: string, field: string): string {
-  return `${agent}:${field}`;
-  }
-
-/\*\*
 Store a memory entry
 
 ### function `recall`
 
 ```ts
-function recall
+function recall(agent: string, field: string): string | undefined {
 ```
 
 Retrieve a memory entry
@@ -49,11 +112,10 @@ Retrieve a memory entry
 ### function `mineMemory`
 
 ```ts
-function mineMemory
+function mineMemory(messages: SMAGEMessage[], agent: string): void {
 ```
 
 Extract memory-worthy facts from messages
-
 - user preferences
 - tool results
 - assistant statements
@@ -62,89 +124,235 @@ Extract memory-worthy facts from messages
 ### function `injectMemory`
 
 ```ts
-function injectMemory
+function injectMemory(agent: string, userQuery: string): SMAGEMessage[] {
 ```
 
 Inject memory back into the context
 
-## `ha_core/output/reducer.ts`
+## `ha_core/transform/anchor.ts`
 
-### function `reduceOutput`
-
-```ts
-function reduceOutput
-```
-
-Reduce verbosity in assistant/tool messages.
-
-- Collapse repeated whitespace
-- Remove filler sentences
-- Trim long paragraphs
-- Keep first N sentences
-- Keep last N sentences
-
-### function `applyOutputReduction`
+### function `extractAnchor`
 
 ```ts
-function applyOutputReduction
+function extractAnchor(messages: SMAGEMessage[]): CCRAnchor {
 ```
 
-Apply reduction to all messages in the final output.
+Extract pinned messages and last messages of each role from the message history.
+
+### function `applyAnchor`
+
+```ts
+function applyAnchor(
+```
+
+Build the anchor spine in deterministic order.
+
+### function `mergeAnchor`
+
+```ts
+function mergeAnchor(
+```
+
+CCR integration helper: inject anchors at top of shaped window.
+Stage‑1 compliant:
+- tags anchors
+- dedupes against shaped messages
+- deterministic ordering
 
 ## `ha_core/transform/dedupe.ts`
 
 ### function `dedupeMessages`
 
 ```ts
-function dedupeMessages
+function dedupeMessages(messages: SMAGEMessage[]): SMAGEMessage[] {
 ```
 
-Stable hash for dedupe.
+CCR Dedupe:
 
-- Ignores metadata (meta)
-- Ignores name
-- Ignores whitespace differences
-- Role + normalized content
-  /
-  function stableHash(msg: SMAGEMessage): string {
-  const normalized = msg.content.replace(/\s+/g, " ").trim().toLowerCase();
+System messages:
+- NEVER deduped
 
-return `${msg.role}:${normalized}`;
-}
+User messages:
+- Deduped only on exact content match
 
-/\*\*
-Role-aware dedupe:
+Assistant / tool messages:
+- Aggressive dedupe (stableHash)
 
-- System messages: dedupe never
-- User messages: dedupe ONLY exact repeats
-- Assistant messages: dedupe aggressive
-- Tool messages: dedupe aggressive
-- Logs/RAG: dedupe aggressive
+Ordering:
+- Always preserve original order
+
+Deterministic:
+- Same input → same output
+
+## `ha_core/transform/payload.ts`
+
+### function `applyPayloadCompression`
+
+```ts
+async function applyPayloadCompression(
+```
+
+CCR Payload Compression (Stage 1)
+
+Goals:
+- collapse semantic duplicates
+- remove filler / low‑signal messages
+- preserve anchors and high‑priority content
+- enforce soft token budget per message
+- keep behaviour deterministic
+
+## `ha_core/transform/priority.ts`
+
+### function `assignPriority`
+
+```ts
+function assignPriority(
+```
+
+Stage‑1 CCR Priority Assignment
+
+Priority tiers:
+- 3: anchor spine + high relevance
+- 2: medium relevance
+- 1: low relevance
+- 0: discardable
+
+Priority is structural, not semantic.
+It determines which messages survive window shaping.
+
+## `ha_core/transform/reconstruct.ts`
+
+### function `reconstruct`
+
+```ts
+function reconstruct(
+```
+
+CCR Reconstruction (Stage 1)
+
+Responsibilities:
+- Re‑inject anchor spine at the top
+- Preserve windowed message order
+- Deduplicate deterministically
+- Deterministic + reversible
+- Pure (no mutation)
 
 ## `ha_core/transform/relevance.ts`
 
 ### function `relevanceScore`
 
 ```ts
-function relevanceScore
+function relevanceScore(
 ```
 
-Extract keywords from a message.
-Lowercase, remove punctuation, split on whitespace.
-/
-function extractKeywords(text: string): Set<string> {
-return new Set(
-text
-.toLowerCase()
-.replace(/[^\w\s]/g, "")
-.split(/\s+/)
-.filter(Boolean),
-);
-}
-
-/\*\*
 Compute relevance score between a message and the last user message.
-
 - Keyword overlap
 - Role weighting
 - Recency weighting
+
+### function `scoreMessage`
+
+```ts
+function scoreMessage(msg: SMAGEMessage): number {
+```
+
+CCR Relevance Scoring (MVP)
+
+Goals:
+- deterministic
+- cheap
+- role-aware
+- stable across compression
+- safe for window shaping
+
+Scoring rules:
+- system messages: highest relevance
+- last user intent: very high relevance
+- last assistant reply: high relevance
+- tool messages: medium relevance
+- older messages: decreasing relevance
+
+No NLP, no embeddings, no classifiers.
+Pure structural relevance.
+
+### function `scoreMessages`
+
+```ts
+function scoreMessages(messages: SMAGEMessage[]): SMAGEMessage[] {
+```
+
+Score list of messages deterministically.
+
+## `ha_core/transform/window.ts`
+
+### interface `WindowResult`
+
+```ts
+interface WindowResult {
+```
+
+CCR Window Shaping (Stage 1)
+
+Deterministic, priority‑tiered, relevance‑aware, token‑bounded window.
+
+Invariants:
+- Anchors are always preserved.
+- Priority tiers enforced.
+- Relevance used for trimming.
+- Output is ≤ maxTokens.
+- Original chronological order preserved.
+
+## `ha_wrap/aider/aiderWrapper.ts`
+
+### class `AiderWrapper`
+
+```ts
+class AiderWrapper extends BaseWrapper {
+```
+
+AiderWrapper
+Extends BaseWrapper and implements provider call via LocalAdapter.
+
+## `ha_wrap/claude/claudeWrapper.ts`
+
+### class `ClaudeWrapper`
+
+```ts
+class ClaudeWrapper extends BaseWrapper {
+```
+
+ClaudeWrapper
+Extends BaseWrapper and implements provider call via AnthropicAdapter.
+
+## `ha_wrap/copilot/copilotWrapper.ts`
+
+### class `CopilotWrapper`
+
+```ts
+class CopilotWrapper extends BaseWrapper {
+```
+
+CopilotWrapper
+Extends BaseWrapper and implements provider call via OpenAIAdapter.
+
+## `ha_wrap/cursor/cursorWrapper.ts`
+
+### class `CursorWrapper`
+
+```ts
+class CursorWrapper extends BaseWrapper {
+```
+
+CursorWrapper
+Extends BaseWrapper and implements provider call via OpenAIAdapter.
+
+## `ha_wrap/opencode/opencodeWrapper.ts`
+
+### class `OpencodeWrapper`
+
+```ts
+class OpencodeWrapper extends BaseWrapper {
+```
+
+OpencodeWrapper
+Extends BaseWrapper and implements provider call via LocalAdapter.

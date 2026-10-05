@@ -10,7 +10,7 @@ function extractSymbols(file: string): DocSymbol[] {
     const symbols: DocSymbol[] = [];
 
     const jsdocRegex =
-        /\/\*\*([\s\S]*?)\*\/\s*(export\s+(?:const|function|class|interface|type)\s+([A-Za-z0-9_]+))/g;
+        /\/\*\*((?:(?!\*\/)[\s\S])*?)\*\/[\t \r\n]*(export\s+(?:(?:async|default)\s+)*(?:const|function|class|interface|type)\s+([A-Za-z0-9_]+)[^\n]*)/g;
     let match: RegExpExecArray | null;
 
     while ((match = jsdocRegex.exec(src))) {
