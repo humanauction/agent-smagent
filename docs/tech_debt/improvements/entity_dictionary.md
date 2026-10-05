@@ -1,41 +1,19 @@
-# Tech Debt: Entity Dictionary Compression
+# Improvement Proposal: Entity Dictionary Compression
 
-## Idea
+Status: proposed. The current transform pipeline has no entity extraction, dictionary lifecycle, or reference encoder.
 
-Replace repeated entities with symbolic handles:
+## Hypothesis
 
-@E1 = "United Nations"  
-@E2 = "Water Quality Index"
+Repeated named entities in suitable reports or long conversations may be replaced by short handles plus a reversible mapping. The earlier estimate of 30–60% reduction is an unvalidated hypothesis and is likely workload-dependent.
 
-Then compress text:
+## Dependencies and design questions
 
-@E1 reported @E2 anomalies in region 4.
+- Define entity detection scope and a deterministic mapping format.
+- Prevent handle collisions with literal user text and with other references.
+- Scope maps to a request/session; do not leak mappings between users or agents.
+- Specify reconstruction, logging, expiry, and deletion behavior.
+- Decide how to handle ambiguous names, aliases, and low-frequency entities.
 
-## Expected Crush
+## Evaluation plan
 
-- 30–60% on entity‑heavy domains
-- Best for reports, logs, long conversations
-
-## Difficulty
-
-- Medium
-
-## Risk
-
-- Low, if mapping is reversible and logged
-
-## Dependencies
-
-- Stable message model (SMAGEMessage)
-- CCR Stage 1 (relevance, priority, window, reconstruct)
-- Memory store for entity dictionary
-
-## Milestone Placement
-
-- After MVP + CCR Stage 1
-- Before UI visualisation (so UI can show entity maps)
-
-## Current Blockers
-
-- No stable entity extraction pipeline yet
-- No agreed dictionary format in `ha_core/memory`
+Use entity-heavy and ordinary prose fixtures. Require exact round-trip reconstruction, verify no cross-session mapping reuse, and measure net token savings after including the dictionary itself. Reject the strategy for cases where the dictionary costs more than it saves.

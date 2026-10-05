@@ -1,145 +1,65 @@
-# SMAGE Baseline Sequence
+# SMAGE Baseline and Improvement Sequence
 
-A stable reference for system hardening, testing, documentation and improvement cycles.
+Use this sequence to establish a repeatable reference and then evaluate one change at a time. The freeze benchmark is an offline CCR benchmark; it does not substitute for wrapper or live-provider validation.
 
-## 1. Stabilise Runtime Behaviour
+## 1. Establish a known working tree
 
-Before improving anything, ensure the system behaves consistently across all wrappers and providers.
-Wrapper Layer Validation
+- Review `git status` and separate unrelated edits from the baseline work.
+- Build and run the full test suite.
+- Run the focused freeze regression tests and any subsystem tests affected by pending work.
+- Record the runtime/toolchain used for measurements.
 
-### Run each wrapper via CLI
+## 2. Generate and review a candidate baseline
 
-- Copilot
-- Cursor
-- Claude
-- Aider
-- Opencode
+The fixed input corpus currently has eight cases. With three provider options and three intents, the benchmark produces 72 rows.
 
-Confirm
-
-- Anchors injected correctly
-- CCR applied
-- Provider role mapped
-- meta.provider matches orchestrator agent
-- Output shape stable
-- Orchestrator Layer Validation
-
-### Exercise strategies
-
-- single
-- round_robin
-- fan_out
-- auto
-
-Confirm
-
-- Multi-agent fan-out
-- ResponseBlender output
-- Reliability-first fallback
-- Reliability deltas applied
-- Provider selection stable
-
-## 2. Lock In Tests Around Current Behaviour
-
-Add or extend tests to capture the current behaviour as the baseline.
-
-### Critical Test Areas
-
-#### Orchestrator
-
-- orchestrator.test.ts
-- orchestratorFallback.test.ts
-
-#### ChainRouter
-
-- Multi-provider
-- Fallback order
-- Telemetry
-
-#### CCR
-
-- Anchor injection
-- Compression shaping
-- Wrapper Integration:
-- New suite: tests/wrap/wrapperIntegration.test.ts
-
-These tests freeze the baseline so future improvements can be measured.
-
-## 3. Document Current Behaviour & Metrics
-
-Create documentation snapshots describing current system behaviour.
-
-### Documentation Areas
-
-- Wrapper profiles
-- Orchestrator strategies
-- Scoring weights
-- Fallback rules
-- Reliability model
-- CCR stages
-- Memory scoring/decay/routing
-- Benchmark Snapshot
-- Run 5–10 representative prompts per wrapper and record:
-- Latency
-- Tokens
-- Provider chosen
-- Reliability score
-- Fallback usage
-
-#### Store as
-
-— docs/benchmarks/{date}\_baseline.md
-
-## 4. Freeze Baseline
-
-Tag a git reference:
-
-```Code
-bp-sop-baseline-v1
+```bash
+task frzbench:candidate
+task frzdlta:candidate
 ```
 
-This becomes the comparison point for all future improvements.
+Review `tests/_freeze_delta/freeze_delta_report.json`, then inspect the candidate in `tests/_freeze_bench/freeze_benchmark_candidate.json`. Stable fields are exact-comparison inputs. The 20 latency samples and median/p95 summaries are observational performance data.
 
-## 5. Attack Tech Debt One Slice at a Time
+Promote only the reviewed candidate:
 
-For each tech debt item in docs/tech\*debt:
+```bash
+task frzbench:approve
+```
 
-### Step A — Define Target Metrics
+The PR workflow compares a fresh benchmark against the proposed baseline. Baseline updates use a branch and PR to `main` with the `freeze-baseline-approved` GitHub label. A direct push to `main` bypasses this PR workflow.
 
-Examples:
+## 3. Record benchmark results
 
-- Schema factor → fewer schema mismatches
-- Provider adaptive → better provider selection
-- Relevance tiers → improved CCR shaping
+For each approved run, retain:
 
-### Step B — Implement Change
+- baseline commit/tag and runtime version;
+- corpus version and row count;
+- token counts and full CCR stage outputs;
+- required-phrase reconstruction diagnostic results;
+- routing order and telemetry;
+- latency samples and their median/p95 summaries.
 
-Modify only one subsystem at a time:
+The phrase check only looks for exact required strings in reconstructed content. It is a useful loss signal, not a complete semantic assessment. The provider names vary local CCR options; no hosted provider requests are made.
 
-- providerSelection
-- CCR pipeline
-- memory routing
-- fallback logic
-- scoring weights
+## 4. Validate runtime integrations separately
 
-### Step C — Add/Extend Tests
+The repository contains adapter, router, orchestrator, wrapper, proxy, and MCP tests. Run the relevant suites when changing those surfaces. A local corpus benchmark does not prove live API behavior, real provider costs, end-to-end wrapper correctness, or production reliability.
 
-Ensure new behaviour is covered.
+For a release-quality baseline, record which wrapper commands and provider integrations were exercised, their configuration, and any failures. Use safe test credentials and avoid recording secrets or personal prompt data in fixtures.
 
-### Step D — Re-run Benchmarks
+## 5. Select improvements from evidence
 
-- Store results as:
-  docs/benchmarks/{date}\*{tech_debt_name}\_improvement.md
+For each proposal in `docs/tech_debt/improvements/`:
 
-### Step E — Compare Against Baseline
+1. Link it to baseline cases or an observed limitation.
+2. State the intended metric movement and correctness constraints.
+3. Implement one narrow change behind a reversible option where practical.
+4. Run the same corpus and affected tests on the candidate.
+5. Compare stable outputs, reconstruction checks, token changes, and performance measurements.
+6. Keep or revert based on the recorded evidence; update the proposal with actual results.
 
-Only keep changes that show measurable improvement.
+The expected compression percentages in proposal documents are hypotheses until measured against this corpus and additional task-specific evaluation.
 
-## 6. Rinse & Repeat
+## 6. Hardening and release tags
 
-This BP/SOP loop ensures:
-Stability
-Measurable improvements
-Documentation
-Test coverage
-Predictable evolution
+After the baseline is established, continue with `hardening_pass_checklist.md`. Create a hardening tag only after its runtime, test, benchmark, and documentation acceptance criteria have actually passed. A baseline tag and a hardening-completion tag represent different checkpoints.

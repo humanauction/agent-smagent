@@ -1,124 +1,31 @@
-# SMAGE Timeout Surfaces — Full System Enumeration
+# Timeout Surface Inventory
 
-## 1. Provider Adapters (Primary Timeout Surface)
+This is a source-level inventory for the hardening checklist, not a certification that timeout behavior is uniform or fully tested.
 
-first and most common timeout points — each adapter performs network I/O, streaming, and response parsing.
-OpenAIAdapter timeouts
-AnthropicAdapter timeouts
-GoogleAdapter timeouts
-LocalAdapter timeouts
+## Shared implementation
 
-### Provider Adapter Timeout Types
+`ha_core/call/providers/timeout.ts` provides `timeoutGuard`, `fetchWithTimeout`, `jsonParseWithTimeout`, `normalizeTimeoutUnknown`, and `safeTelemetry`. `ha_core/call/providers/errors.ts` defines `ProviderError` and provider error classification. The current error shape uses `type`, `provider`, `model`, `session`, `timestamp`, `cause`, retry fields, and an optional timeout boolean.
 
-- request timeout
-- streaming timeout
-- provider‑side timeout
-- response parse timeout
-- network stall
+## Known call sites
 
-## 2. ChainRouter (Multi‑Provider Routing)
+| Surface | Current code | Verification still needed |
+| --- | --- | --- |
+| Provider adapters | OpenAI, Anthropic, Google, and Local use shared timeout/error helpers | Consistent classification, streaming behavior, error response bodies, and retry policy |
+| Chain router | `chainRouter.ts` wraps provider calls, chain duration, and retry delays | Per-provider/global boundary interactions and retry exhaustion |
+| Provider routing | `router.ts` adjusts retry delay based on provider errors | Bounded retries and accurate timeout classification |
+| Orchestrator | `orchestrator.ts` guards fan-out, CCR, and provider calls | Cancellation and cleanup when a guard expires |
+| CCR | `ccr/pipeline.ts` guards payload compression | Other stages and mutation/partial results after timeout |
+| Proxy | `ha_proxy/routing/router.ts` guards shaping and forwarding | HTTP cancellation and response mapping |
+| MCP | `ha_mcp/server.ts` and `ha_mcp/tools/compress.ts` guard tool operations | JSON-RPC timeout shape and cancellation |
+| CLI | `ha_cli/main.ts` and `ha_cli/mcp_client.ts` use timeout guards/timers | Consistent surfaced error and process cleanup |
+| Memory and learning | No complete timeout policy is established by this inventory | Assess before adding async persistence or remote services |
 
-The router fans out calls to multiple providers — each call can timeout independently.
+## Known gaps to verify
 
-### ChainRouter Timeout Types
+- `timeoutGuard` rejects the wrapper promise but does not itself cancel the underlying work.
+- `jsonParseWithTimeout` currently classifies failures from parsing/size handling through its timeout error path; confirm the intended distinction between parse, content-size, and timeout errors.
+- `ProviderError.classifyRetry` marks `timeout` non-retryable, while several call paths have separate retry behavior. Check the combined policy before changing it.
+- `ha_wrap/providerFallback.ts` has its own timeout detection logic; compare it with `ProviderError` handling.
+- Confirm every boundary emits telemetry once and preserves provider/session context.
 
-- per‑provider call timeout
-- global router timeout
-- scoring timeout
-- selection timeout
-
-## 3. ChainRetry (Retry Loop)
-
-Retries amplify timeout behaviour — if not bounded, they can cascade.
-ChainRetry timeouts
-
-### ChainRetry Timeout Types
-
-- retry loop timeout
-- exponential backoff misconfiguration
-- retry exhaustion timeout
-
-## 4. ChainFallback (Fallback Logic)
-
-Fallback is triggered by timeouts — but fallback itself can timeout.
-
-### ChainFallback Timeout Types
-
-- fallback provider timeout
-- fallback loop timeout
-- fallback exhaustion timeout
-
-## 5. ChainCache (Cache Layer)
-
-Cache operations can timeout under load or slow storage.
-
-### ChainCache Timeout Types
-
-- cache read timeout
-- cache write timeout
-- cache skip timeout
-
-## 6. Orchestrato r (Multi‑Agent Execution)
-
-The orchestrator coordinates the entire multi‑agent pipeline.
-
-### Orchestrator Timeout Types
-
-- multi-agent fan-out timeout
-- blending timeout
-- scoring timeout
-- CCR shaping timeout
-
-## 7. CCR Pipeline (Compression + Reconstruction)
-
-Large message sets can cause slow compression or reconstruction.
-
-### CCR Timeout Types
-
-- anchor extraction timeout
-- dedupe timeout
-- windowing timeout
-- reconstruction timeout
-- payload compression timeout
-
-## 8. Memory System (Scoring + Decay + Routing)
-
-The memory system stores and retrieves information across different agents and sessions.
-
-Memory operations can be slow when many entries exist.
-
-### Memory Timeout Types
-
-- memory scoring timeout
-- memory decay timeout
-- memory routing timeout
-
-## 9. Proxy Layer (HTTP Boundary)
-
-The proxy is a timeout surface because it sits between CLI and wrappers.
-
-### Proxy Timeout Types
-
-- request forwarding timeout
-- dashboard rendering timeout
-- provider test endpoint timeout
-
-## 10. CLI Layer (User-Facing Commands)
-
-CLI commands can timeout if wrapper calls stall.
-
-### CLI Timeout Types
-
-- wrapper call timeout
-- MCP client timeout
-- docs generation timeout
-
-## 11. MCP Tools (Compression, Retrieval, Stats)
-
-These tools operate on large payloads and can stall.
-
-### MCP Tools Timeout Types
-
-- retrieval timeout
-- compression timeout
-- stats timeout
+Use the linked hardening checklist to turn these observations into tests and completion evidence.

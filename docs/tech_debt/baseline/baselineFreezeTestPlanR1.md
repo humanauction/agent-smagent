@@ -1,130 +1,57 @@
-# Baseline Freeze Test Plan (Round‑1)
+# Freeze Baseline Test Plan
 
-This is the official SMAGE baseline‑freeze plan.
+Status: the original Round 1 plan has been replaced by the current deterministic benchmark and approval workflow described here. The CCR stage tests remain useful unit and regression coverage; this file is the operating guide for benchmark baselines.
 
-## 1️⃣ Test Matrix
+## What the harness measures
 
-### Run CCR pipeline with
+`tests/freeze/freezeCorpus.ts` defines eight fixed, offline conversation cases. The benchmark combines them with three CCR provider options (`openai`, `anthropic`, `local`) and three intents (`debug`, `explain`, `summarize`), for 72 rows.
 
-- baselineFreeze: true
-- baselineFreeze: false
+Each row records the full windowed, reconstructed, compressed, and reduced output; token and message counts; routing order and telemetry; reconstruction phrase-retention diagnostics; and 20 local latency samples with median and p95 summaries.
 
-### Across
+The provider field is an option passed to local CCR code. The benchmark does not call those hosted providers, and it does not measure live provider quality, network latency, or cost. Phrase retention is a lexical diagnostic, not a semantic-quality score.
 
-- 3 providers: openai, anthropic, local
-- 3 intents: debug, explain, summarize
-- 3 message sets: short, medium, long
+## Artifacts
 
-#### Total: 27 runs
+- `tests/_freeze_bench/freeze_benchmark.json` — approved stable-behavior reference.
+- `tests/_freeze_bench/freeze_benchmark_current.json` — fresh working-tree benchmark.
+- `tests/_freeze_bench/freeze_benchmark_candidate.json` — proposed replacement reference.
+- `tests/_freeze_delta/freeze_delta_report.json` — comparison output. Latency samples are intentionally excluded from exact delta checks.
+- `tests/_freeze/ccr.json` and `tests/_freeze/chainRouter.json` — focused regression snapshots.
 
-## 2️⃣ Expected Freeze Behavior
+## Local workflow
 
-### With baselineFreeze: true
+Run the full test suite first. Generate and compare current behavior with:
 
-- provider‑specific shaping disabled
-- window size fixed
-- priority shaping fixed
-- compression deterministic
-- reducer deterministic
-- chain routing deterministic
-- semantic fusion deterministic
-- continuity scoring deterministic
-- Outputs must be byte‑for‑byte identical across runs.
-
-## 3️⃣ Tests to write
-
-### A. CCR Pipeline Freeze Test
-
-#### File
-
-- tests/transform/ccrPipeline.freeze.test.ts
-
-#### Assertions
-
-- shaped.windowed identical across runs
-- shaped.reconstructed identical
-- shaped.compressed identical
-- shaped.reduced.content identical
-
-### B. Chain Router Freeze Test
-
-#### File1
-
-- tests/chain/chainRouter.freeze.test.ts
-
-#### Assertions1
-
-- chain.chain identical
-- chain.getTelemetry() identical
-- chain.call() output identical
-
-### C. Provider Selection Freeze Test
-
-#### File2
-
-- tests/orchestrator/orchestrator.freeze.test.ts
-
-#### Assertions2
-
-- selected provider identical
-- selected strategy identical
-- providerMeta identical
-
-### D. Semantic Fusion Freeze Test
-
-#### File3
-
-- tests/transform/anchorSemanticFusion.freeze.test.ts
-
-#### Assertions3
-
-- fused anchors identical
-- fusedCount identical
-- fusedSemantic flag identical
-
-### E. Relevance Freeze Test
-
-#### File4
-
-- tests/transform/relevance.freeze.test.ts
-
-#### Assertions4
-
-- relevance scores identical
-- continuity flags identical
-- topicMatch identical
-- intentMatch identical
-
-## 4️⃣ Freeze Diff Checker
-
-### Add a helper
-
-```Code
-tests/utils/diffFreeze.ts
+```bash
+task frzbench:current
+task frzdlta
 ```
 
-Compare:
+To prepare a baseline update, generate a candidate and inspect its report:
 
-```ts
-expect(JSON.stringify(output1)).toBe(JSON.stringify(output2));
+```bash
+task frzbench:candidate
+task frzdlta:candidate
 ```
 
-## 5️⃣ Freeze Snapshot
+Candidate reporting is review-only and may contain expected deltas. Review the report and the candidate JSON before promotion. Promote the reviewed candidate with:
 
-Store baseline outputs in:
-
-```Code
-tests/\_snapshots/baseline/
+```bash
+task frzbench:approve
 ```
 
-Use Vitest snapshots.
+Commit the baseline change on a branch and open a PR to `main` with the GitHub label `freeze-baseline-approved`. The freeze workflow compares a fresh run with the proposed baseline. Direct pushes to `main` do not execute this PR approval workflow.
 
-## 6️⃣ Freeze Mode Activation
+## Deterministic checks
 
-Ensure:
+The delta reporter compares case identity, category, input count, token counts, stage outputs, counts, reconstruction diagnostics, routing order, and telemetry. It also reports missing and additional cases and rejects duplicate case identities. Latency is reported as performance data rather than a frozen field.
 
-```ts
-agent.options.baselineFreeze = true;
-```
+Focused tests remain in:
 
-in mockConfig.ts.
+- `tests/transform/ccrPipeline.freeze.test.ts`
+- `tests/chain/chainRouter.freeze.test.ts`
+- `tests/orchestrator/orchestrator.freeze.test.ts`
+- `tests/transform/anchorSemanticFusion.freeze.test.ts`
+- `tests/transform/relevance.freeze.test.ts`
+
+The harness captures deterministic local pipeline behavior. Wrapper integration, live provider behavior, cost, and end-to-end quality require separate test runs and must not be inferred from these 72 rows.

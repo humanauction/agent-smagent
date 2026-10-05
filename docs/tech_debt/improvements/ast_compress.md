@@ -1,35 +1,19 @@
-# Tech Debt: AST Compression for Code
+# Improvement Proposal: AST Compression for Code
 
-## Idea
+Status: proposed. No AST parser/encoder or source reconstruction module currently exists in the CCR transforms.
 
-Convert code → AST → compress → send to LLM.
+## Hypothesis
 
-LLM sees structured AST instead of raw source.
+For selected code tasks, a syntax-aware representation may reduce repeated syntax while retaining code semantics. The earlier 70–90% estimate is unvalidated and should not be used for planning until measured on representative code.
 
-## Expected Crush
+## Dependencies and risks
 
-- 70–90% on large code snippets
+- Choose supported languages and parser versions, beginning with TypeScript/JavaScript only if justified.
+- Preserve comments, formatting-sensitive constructs, directives, and source locations where needed.
+- Define a lossless representation and exact reconstruction contract before attempting semantic compression.
+- Fall back to original source on parse errors or unsupported syntax.
+- Measure parser/runtime overhead as well as token reduction.
 
-## Difficulty
+## Evaluation plan
 
-- High
-
-## Risk
-
-- Medium (AST fidelity, language coverage, tooling complexity)
-
-## Dependencies
-
-- Language‑specific parsers (TS/JS first)
-- Stable CCR pipeline
-- Robust reconstruct step (AST → code)
-
-## Milestone Placement
-
-- After MVP + CCR Stage 1
-- After basic UI (to debug AST behaviour)
-
-## Current Blockers
-
-- No AST module in `ha_core/transform`
-- No language selection / fallback strategy
+Start with fixed code fixtures covering ordinary syntax, comments, generics, decorators, malformed input, and large files. Require parse/print or round-trip correctness checks, compilation of reconstructed examples, and no regressions on non-code corpus cases. Expand language support only after the first language has evidence of safe net benefit.

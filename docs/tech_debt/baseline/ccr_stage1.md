@@ -1,76 +1,34 @@
-# CCR Stage 1 plan
+# CCR Stage 1: implementation and verification status
 
-implementation plan for CCR Stage 1 in ha_core/transform/:
+Stage 1's main pipeline is implemented in `ha_core/transform/ccr/pipeline.ts`. This document records the current module roles and the remaining evidence needed before treating the behavior as a stable product contract.
 
-1. Relevance scoring (relevance.ts)
-   Goal: assign a relevance score to each message (SMAGEMessage) based on:
-    - role (user/system/assistant)
-    - recency
-    - explicit markers (e.g. “IMPORTANT”)
-    - token density
-      Output: relevance: number on each message or a parallel structure.
-      Used by: priority.ts, window.ts, reconstruct.ts.
-2. Priority tiers (priority.ts)
-   Goal: map relevance scores into discrete tiers:
-   Tier 1: must‑keep
-   Tier 2: nice‑to‑have
-   Tier 3: discardable unless needed
-   Input: relevance scores from relevance.ts.
-   Output: tier labels per message.
-   Used by: window.ts (selection), later relevance‑tier tech debt.
-3. Window shaping (window.ts)
-   Goal: select which messages enter the provider window under a token budget.
-   Inputs:
-    - tiers from priority.ts
-    - token estimates from analyze/tokens.ts
-    - budget (from options/provider metadata)
-      Output: ordered subset of messages to send.
-      Used by: ccr.ts and provider call path.
-4. Reconstruction (reconstruct.ts)
-   Goal: reconstruct a coherent view of the conversation from:
-    - compressed window
-    - anchors
-    - dedupe decisions
-    - Inputs:
-    - original messages
-    - shaped window
-    - anchor references
-      Output: structure suitable for logging and potential replay.
-      Used by: reversible logging, learning engine.
-5. Payload shaping (payload.ts)
-   Goal: apply basic compression to message content:
-    - trim boilerplate
-    - collapse repeated phrases
-    - apply compressors/basic.ts where safe
-      Inputs:
-    - messages selected by window.ts
-      Output: compressed message contents.
-      Used by: final provider payload.
-6. Context shaping (context.ts)
-   Goal: assemble:
-    - system messages
-    - anchors
-    - memory snippets
-    - selected user/assistant messages
-      into a single coherent context block.
-      Inputs:
-    - anchors
-    - memory (ha_core/memory)
-    - windowed messages
-      Output: final context structure passed into provider adapters.
-7. Integration (ccr.ts)
-   Wire the above into a single CCR pipeline:
-    - start from SMAGEMessage[]
-    - apply anchors + dedupe
-    - compute relevance
-    - assign tiers
-    - shape window under budget
-    - compress payload
-    - assemble context
-    - return shaped messages + metadata
-      This is what applyCCR should expose to the rest of the system.
-8. Tests (minimum)
-   For Stage 1 to be “done”:
-   unit tests for: - relevance.ts - priority.ts - window.ts - reconstruct.ts - payload.ts - context.ts
-   integration test for ccr.ts:
-   given a synthetic conversation, assert: - fewer tokens - Tier 1 always kept - reconstruction preserves semantics - logs contain both original + shaped views
+## Pipeline stages
+
+1. **Anchors** — `anchor.ts` retains the last system, user, assistant, and tool messages and derives a short summary hint.
+2. **Dedupe** — `dedupe.ts` applies role-aware duplicate handling while preserving message order.
+3. **Relevance** — `relevance.ts` combines structural, recency, keyword, continuity, and local semantic-stub signals.
+4. **Priority** — `priority.ts` assigns priorities and can apply intent/provider adjustments when given the corresponding options.
+5. **Windowing** — `window.ts` selects messages under a token budget using priority and relevance.
+6. **Reconstruction** — `reconstruct.ts` merges the window with the anchor spine and removes duplicate role/content pairs.
+7. **Semantic fusion** — `anchorSemanticFusion.ts` groups identical normalized anchor content. This is structural grouping, not semantic clustering.
+8. **Payload compression** — `payload.ts` removes duplicates and low-priority content and applies deterministic truncation rules.
+9. **Output reduction** — `ha_core/output/reducer.ts` reduces the selected final message.
+
+The pipeline also records stage telemetry and returns intermediate outputs, token counts, and message counts.
+
+## Existing test coverage
+
+- Unit coverage: `ha_core/transform/anchor.test.ts`, `ha_core/transform/relevance.test.ts`, and the transform tests under `tests/`.
+- Pipeline regression and repeatability: `tests/transform/ccrPipeline.freeze.test.ts`.
+- Additional freeze coverage: relevance and semantic-anchor-fusion tests.
+- Benchmark comparison: 72 fixed offline cases, three provider-option values, and three intents; see `baselineFreezeTestPlanR1.md`.
+
+## Verification gaps and cautions
+
+- The benchmark's required-phrase check examines reconstructed text only and is not a semantic-equivalence evaluation.
+- The benchmark varies a local CCR provider option; it does not make network calls or measure provider quality/cost.
+- The pipeline currently calls `assignPriority` and `applyContextWindow` without forwarding `baselineFreeze` options. Do not document freeze mode as disabling every provider- or intent-specific adjustment until this wiring is corrected and tested.
+- `scoreRelevance` can mutate message metadata, so callers should pass CCR-local message objects rather than shared input objects.
+- The semantic embedding implementation uses deterministic local embeddings and should not be described as production semantic understanding.
+
+Stage 1 should be called complete only after the baseline comparison is reviewed, key correctness properties are tested on the fixed corpus, and the freeze-option behavior is explicitly verified. This is separate from claiming that every future improvement proposal is implemented.
