@@ -1,1 +1,1262 @@
-[]
+[
+  {
+    "index": 0,
+    "provider": "openai",
+    "intent": "debug",
+    "size": "short",
+    "diff": {
+      "case_id": {
+        "baseline": "short",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 1,
+    "provider": "openai",
+    "intent": "debug",
+    "size": "medium",
+    "diff": {
+      "case_id": {
+        "baseline": "medium",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 2,
+    "provider": "openai",
+    "intent": "debug",
+    "size": "long",
+    "diff": {
+      "case_id": {
+        "baseline": "long",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 3,
+    "provider": "openai",
+    "intent": "explain",
+    "size": "short",
+    "diff": {
+      "case_id": {
+        "baseline": "short",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 4,
+    "provider": "openai",
+    "intent": "explain",
+    "size": "medium",
+    "diff": {
+      "case_id": {
+        "baseline": "medium",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 5,
+    "provider": "openai",
+    "intent": "explain",
+    "size": "long",
+    "diff": {
+      "case_id": {
+        "baseline": "long",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 6,
+    "provider": "openai",
+    "intent": "summarize",
+    "size": "short",
+    "diff": {
+      "case_id": {
+        "baseline": "short",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 7,
+    "provider": "openai",
+    "intent": "summarize",
+    "size": "medium",
+    "diff": {
+      "case_id": {
+        "baseline": "medium",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 8,
+    "provider": "openai",
+    "intent": "summarize",
+    "size": "long",
+    "diff": {
+      "case_id": {
+        "baseline": "long",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 9,
+    "provider": "anthropic",
+    "intent": "debug",
+    "size": "short",
+    "diff": {
+      "case_id": {
+        "baseline": "short",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 10,
+    "provider": "anthropic",
+    "intent": "debug",
+    "size": "medium",
+    "diff": {
+      "case_id": {
+        "baseline": "medium",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 11,
+    "provider": "anthropic",
+    "intent": "debug",
+    "size": "long",
+    "diff": {
+      "case_id": {
+        "baseline": "long",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 12,
+    "provider": "anthropic",
+    "intent": "explain",
+    "size": "short",
+    "diff": {
+      "case_id": {
+        "baseline": "short",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 13,
+    "provider": "anthropic",
+    "intent": "explain",
+    "size": "medium",
+    "diff": {
+      "case_id": {
+        "baseline": "medium",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 14,
+    "provider": "anthropic",
+    "intent": "explain",
+    "size": "long",
+    "diff": {
+      "case_id": {
+        "baseline": "long",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 15,
+    "provider": "anthropic",
+    "intent": "summarize",
+    "size": "short",
+    "diff": {
+      "case_id": {
+        "baseline": "short",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 16,
+    "provider": "anthropic",
+    "intent": "summarize",
+    "size": "medium",
+    "diff": {
+      "case_id": {
+        "baseline": "medium",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 17,
+    "provider": "anthropic",
+    "intent": "summarize",
+    "size": "long",
+    "diff": {
+      "case_id": {
+        "baseline": "long",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 18,
+    "provider": "local",
+    "intent": "debug",
+    "size": "short",
+    "diff": {
+      "case_id": {
+        "baseline": "short",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 19,
+    "provider": "local",
+    "intent": "debug",
+    "size": "medium",
+    "diff": {
+      "case_id": {
+        "baseline": "medium",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 20,
+    "provider": "local",
+    "intent": "debug",
+    "size": "long",
+    "diff": {
+      "case_id": {
+        "baseline": "long",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 21,
+    "provider": "local",
+    "intent": "explain",
+    "size": "short",
+    "diff": {
+      "case_id": {
+        "baseline": "short",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 22,
+    "provider": "local",
+    "intent": "explain",
+    "size": "medium",
+    "diff": {
+      "case_id": {
+        "baseline": "medium",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 23,
+    "provider": "local",
+    "intent": "explain",
+    "size": "long",
+    "diff": {
+      "case_id": {
+        "baseline": "long",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 24,
+    "provider": "local",
+    "intent": "summarize",
+    "size": "short",
+    "diff": {
+      "case_id": {
+        "baseline": "short",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 25,
+    "provider": "local",
+    "intent": "summarize",
+    "size": "medium",
+    "diff": {
+      "case_id": {
+        "baseline": "medium",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 26,
+    "provider": "local",
+    "intent": "summarize",
+    "size": "long",
+    "diff": {
+      "case_id": {
+        "baseline": "long",
+        "current": "<missing>"
+      }
+    }
+  },
+  {
+    "index": 27,
+    "case_id": "minimal-two-turn",
+    "category": "minimal",
+    "provider": "openai",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "minimal-two-turn"
+      }
+    }
+  },
+  {
+    "index": 28,
+    "case_id": "system-instructions",
+    "category": "instruction-heavy",
+    "provider": "openai",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "system-instructions"
+      }
+    }
+  },
+  {
+    "index": 29,
+    "case_id": "repeated-content",
+    "category": "repetition",
+    "provider": "openai",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "repeated-content"
+      }
+    }
+  },
+  {
+    "index": 30,
+    "case_id": "long-multi-topic",
+    "category": "long-context",
+    "provider": "openai",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "long-multi-topic"
+      }
+    }
+  },
+  {
+    "index": 31,
+    "case_id": "structured-config",
+    "category": "structured-data",
+    "provider": "openai",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "structured-config"
+      }
+    }
+  },
+  {
+    "index": 32,
+    "case_id": "code-snippet",
+    "category": "code",
+    "provider": "openai",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "code-snippet"
+      }
+    }
+  },
+  {
+    "index": 33,
+    "case_id": "constraints-and-exceptions",
+    "category": "constraints",
+    "provider": "openai",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "constraints-and-exceptions"
+      }
+    }
+  },
+  {
+    "index": 34,
+    "case_id": "anchor-recall",
+    "category": "cross-turn-reference",
+    "provider": "openai",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "anchor-recall"
+      }
+    }
+  },
+  {
+    "index": 35,
+    "case_id": "minimal-two-turn",
+    "category": "minimal",
+    "provider": "openai",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "minimal-two-turn"
+      }
+    }
+  },
+  {
+    "index": 36,
+    "case_id": "system-instructions",
+    "category": "instruction-heavy",
+    "provider": "openai",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "system-instructions"
+      }
+    }
+  },
+  {
+    "index": 37,
+    "case_id": "repeated-content",
+    "category": "repetition",
+    "provider": "openai",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "repeated-content"
+      }
+    }
+  },
+  {
+    "index": 38,
+    "case_id": "long-multi-topic",
+    "category": "long-context",
+    "provider": "openai",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "long-multi-topic"
+      }
+    }
+  },
+  {
+    "index": 39,
+    "case_id": "structured-config",
+    "category": "structured-data",
+    "provider": "openai",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "structured-config"
+      }
+    }
+  },
+  {
+    "index": 40,
+    "case_id": "code-snippet",
+    "category": "code",
+    "provider": "openai",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "code-snippet"
+      }
+    }
+  },
+  {
+    "index": 41,
+    "case_id": "constraints-and-exceptions",
+    "category": "constraints",
+    "provider": "openai",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "constraints-and-exceptions"
+      }
+    }
+  },
+  {
+    "index": 42,
+    "case_id": "anchor-recall",
+    "category": "cross-turn-reference",
+    "provider": "openai",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "anchor-recall"
+      }
+    }
+  },
+  {
+    "index": 43,
+    "case_id": "minimal-two-turn",
+    "category": "minimal",
+    "provider": "openai",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "minimal-two-turn"
+      }
+    }
+  },
+  {
+    "index": 44,
+    "case_id": "system-instructions",
+    "category": "instruction-heavy",
+    "provider": "openai",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "system-instructions"
+      }
+    }
+  },
+  {
+    "index": 45,
+    "case_id": "repeated-content",
+    "category": "repetition",
+    "provider": "openai",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "repeated-content"
+      }
+    }
+  },
+  {
+    "index": 46,
+    "case_id": "long-multi-topic",
+    "category": "long-context",
+    "provider": "openai",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "long-multi-topic"
+      }
+    }
+  },
+  {
+    "index": 47,
+    "case_id": "structured-config",
+    "category": "structured-data",
+    "provider": "openai",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "structured-config"
+      }
+    }
+  },
+  {
+    "index": 48,
+    "case_id": "code-snippet",
+    "category": "code",
+    "provider": "openai",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "code-snippet"
+      }
+    }
+  },
+  {
+    "index": 49,
+    "case_id": "constraints-and-exceptions",
+    "category": "constraints",
+    "provider": "openai",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "constraints-and-exceptions"
+      }
+    }
+  },
+  {
+    "index": 50,
+    "case_id": "anchor-recall",
+    "category": "cross-turn-reference",
+    "provider": "openai",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "anchor-recall"
+      }
+    }
+  },
+  {
+    "index": 51,
+    "case_id": "minimal-two-turn",
+    "category": "minimal",
+    "provider": "anthropic",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "minimal-two-turn"
+      }
+    }
+  },
+  {
+    "index": 52,
+    "case_id": "system-instructions",
+    "category": "instruction-heavy",
+    "provider": "anthropic",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "system-instructions"
+      }
+    }
+  },
+  {
+    "index": 53,
+    "case_id": "repeated-content",
+    "category": "repetition",
+    "provider": "anthropic",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "repeated-content"
+      }
+    }
+  },
+  {
+    "index": 54,
+    "case_id": "long-multi-topic",
+    "category": "long-context",
+    "provider": "anthropic",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "long-multi-topic"
+      }
+    }
+  },
+  {
+    "index": 55,
+    "case_id": "structured-config",
+    "category": "structured-data",
+    "provider": "anthropic",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "structured-config"
+      }
+    }
+  },
+  {
+    "index": 56,
+    "case_id": "code-snippet",
+    "category": "code",
+    "provider": "anthropic",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "code-snippet"
+      }
+    }
+  },
+  {
+    "index": 57,
+    "case_id": "constraints-and-exceptions",
+    "category": "constraints",
+    "provider": "anthropic",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "constraints-and-exceptions"
+      }
+    }
+  },
+  {
+    "index": 58,
+    "case_id": "anchor-recall",
+    "category": "cross-turn-reference",
+    "provider": "anthropic",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "anchor-recall"
+      }
+    }
+  },
+  {
+    "index": 59,
+    "case_id": "minimal-two-turn",
+    "category": "minimal",
+    "provider": "anthropic",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "minimal-two-turn"
+      }
+    }
+  },
+  {
+    "index": 60,
+    "case_id": "system-instructions",
+    "category": "instruction-heavy",
+    "provider": "anthropic",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "system-instructions"
+      }
+    }
+  },
+  {
+    "index": 61,
+    "case_id": "repeated-content",
+    "category": "repetition",
+    "provider": "anthropic",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "repeated-content"
+      }
+    }
+  },
+  {
+    "index": 62,
+    "case_id": "long-multi-topic",
+    "category": "long-context",
+    "provider": "anthropic",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "long-multi-topic"
+      }
+    }
+  },
+  {
+    "index": 63,
+    "case_id": "structured-config",
+    "category": "structured-data",
+    "provider": "anthropic",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "structured-config"
+      }
+    }
+  },
+  {
+    "index": 64,
+    "case_id": "code-snippet",
+    "category": "code",
+    "provider": "anthropic",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "code-snippet"
+      }
+    }
+  },
+  {
+    "index": 65,
+    "case_id": "constraints-and-exceptions",
+    "category": "constraints",
+    "provider": "anthropic",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "constraints-and-exceptions"
+      }
+    }
+  },
+  {
+    "index": 66,
+    "case_id": "anchor-recall",
+    "category": "cross-turn-reference",
+    "provider": "anthropic",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "anchor-recall"
+      }
+    }
+  },
+  {
+    "index": 67,
+    "case_id": "minimal-two-turn",
+    "category": "minimal",
+    "provider": "anthropic",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "minimal-two-turn"
+      }
+    }
+  },
+  {
+    "index": 68,
+    "case_id": "system-instructions",
+    "category": "instruction-heavy",
+    "provider": "anthropic",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "system-instructions"
+      }
+    }
+  },
+  {
+    "index": 69,
+    "case_id": "repeated-content",
+    "category": "repetition",
+    "provider": "anthropic",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "repeated-content"
+      }
+    }
+  },
+  {
+    "index": 70,
+    "case_id": "long-multi-topic",
+    "category": "long-context",
+    "provider": "anthropic",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "long-multi-topic"
+      }
+    }
+  },
+  {
+    "index": 71,
+    "case_id": "structured-config",
+    "category": "structured-data",
+    "provider": "anthropic",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "structured-config"
+      }
+    }
+  },
+  {
+    "index": 72,
+    "case_id": "code-snippet",
+    "category": "code",
+    "provider": "anthropic",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "code-snippet"
+      }
+    }
+  },
+  {
+    "index": 73,
+    "case_id": "constraints-and-exceptions",
+    "category": "constraints",
+    "provider": "anthropic",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "constraints-and-exceptions"
+      }
+    }
+  },
+  {
+    "index": 74,
+    "case_id": "anchor-recall",
+    "category": "cross-turn-reference",
+    "provider": "anthropic",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "anchor-recall"
+      }
+    }
+  },
+  {
+    "index": 75,
+    "case_id": "minimal-two-turn",
+    "category": "minimal",
+    "provider": "local",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "minimal-two-turn"
+      }
+    }
+  },
+  {
+    "index": 76,
+    "case_id": "system-instructions",
+    "category": "instruction-heavy",
+    "provider": "local",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "system-instructions"
+      }
+    }
+  },
+  {
+    "index": 77,
+    "case_id": "repeated-content",
+    "category": "repetition",
+    "provider": "local",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "repeated-content"
+      }
+    }
+  },
+  {
+    "index": 78,
+    "case_id": "long-multi-topic",
+    "category": "long-context",
+    "provider": "local",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "long-multi-topic"
+      }
+    }
+  },
+  {
+    "index": 79,
+    "case_id": "structured-config",
+    "category": "structured-data",
+    "provider": "local",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "structured-config"
+      }
+    }
+  },
+  {
+    "index": 80,
+    "case_id": "code-snippet",
+    "category": "code",
+    "provider": "local",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "code-snippet"
+      }
+    }
+  },
+  {
+    "index": 81,
+    "case_id": "constraints-and-exceptions",
+    "category": "constraints",
+    "provider": "local",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "constraints-and-exceptions"
+      }
+    }
+  },
+  {
+    "index": 82,
+    "case_id": "anchor-recall",
+    "category": "cross-turn-reference",
+    "provider": "local",
+    "intent": "debug",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "anchor-recall"
+      }
+    }
+  },
+  {
+    "index": 83,
+    "case_id": "minimal-two-turn",
+    "category": "minimal",
+    "provider": "local",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "minimal-two-turn"
+      }
+    }
+  },
+  {
+    "index": 84,
+    "case_id": "system-instructions",
+    "category": "instruction-heavy",
+    "provider": "local",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "system-instructions"
+      }
+    }
+  },
+  {
+    "index": 85,
+    "case_id": "repeated-content",
+    "category": "repetition",
+    "provider": "local",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "repeated-content"
+      }
+    }
+  },
+  {
+    "index": 86,
+    "case_id": "long-multi-topic",
+    "category": "long-context",
+    "provider": "local",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "long-multi-topic"
+      }
+    }
+  },
+  {
+    "index": 87,
+    "case_id": "structured-config",
+    "category": "structured-data",
+    "provider": "local",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "structured-config"
+      }
+    }
+  },
+  {
+    "index": 88,
+    "case_id": "code-snippet",
+    "category": "code",
+    "provider": "local",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "code-snippet"
+      }
+    }
+  },
+  {
+    "index": 89,
+    "case_id": "constraints-and-exceptions",
+    "category": "constraints",
+    "provider": "local",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "constraints-and-exceptions"
+      }
+    }
+  },
+  {
+    "index": 90,
+    "case_id": "anchor-recall",
+    "category": "cross-turn-reference",
+    "provider": "local",
+    "intent": "explain",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "anchor-recall"
+      }
+    }
+  },
+  {
+    "index": 91,
+    "case_id": "minimal-two-turn",
+    "category": "minimal",
+    "provider": "local",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "minimal-two-turn"
+      }
+    }
+  },
+  {
+    "index": 92,
+    "case_id": "system-instructions",
+    "category": "instruction-heavy",
+    "provider": "local",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "system-instructions"
+      }
+    }
+  },
+  {
+    "index": 93,
+    "case_id": "repeated-content",
+    "category": "repetition",
+    "provider": "local",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "repeated-content"
+      }
+    }
+  },
+  {
+    "index": 94,
+    "case_id": "long-multi-topic",
+    "category": "long-context",
+    "provider": "local",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "long-multi-topic"
+      }
+    }
+  },
+  {
+    "index": 95,
+    "case_id": "structured-config",
+    "category": "structured-data",
+    "provider": "local",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "structured-config"
+      }
+    }
+  },
+  {
+    "index": 96,
+    "case_id": "code-snippet",
+    "category": "code",
+    "provider": "local",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "code-snippet"
+      }
+    }
+  },
+  {
+    "index": 97,
+    "case_id": "constraints-and-exceptions",
+    "category": "constraints",
+    "provider": "local",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "constraints-and-exceptions"
+      }
+    }
+  },
+  {
+    "index": 98,
+    "case_id": "anchor-recall",
+    "category": "cross-turn-reference",
+    "provider": "local",
+    "intent": "summarize",
+    "diff": {
+      "case_id": {
+        "baseline": "<missing>",
+        "current": "anchor-recall"
+      }
+    }
+  }
+]
