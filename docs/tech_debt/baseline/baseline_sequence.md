@@ -18,7 +18,9 @@ task frzbench:candidate
 task frzdlta:candidate
 ```
 
-Review `tests/_freeze_delta/freeze_delta_report.json`, then inspect the candidate in `tests/_freeze_bench/freeze_benchmark_candidate.json`. Stable fields are exact-comparison inputs. The 20 latency samples and median/p95 summaries are observational performance data.
+Review `tests/_freeze_delta/freeze_delta_report.json`, then inspect the candidate in `tests/_freeze_bench/freeze_benchmark_candidate.json`.
+
+Stable fields are exact-comparison inputs. The 20 latency samples and median/p95 summaries are observational performance data.
 
 Promote only the reviewed candidate:
 
