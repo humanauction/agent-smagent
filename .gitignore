@@ -66,3 +66,4 @@ project-tree.txt
 # Vitest
 coverage/
 .vitest/
+docs/tech_debt/improvements/ccr_option_forwarding.md
