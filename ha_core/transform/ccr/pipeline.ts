@@ -121,7 +121,7 @@ export class CCRPipeline {
         );
 
         // 4. PRIORITY ASSIGNMENT
-        const prioritized = assignPriority(scoredMessages, anchor);
+        const prioritized = assignPriority(scoredMessages, anchor, options);
         safeTelemetry(() =>
             this.telemetry.record({
                 session,
@@ -133,7 +133,11 @@ export class CCRPipeline {
 
         // 5. CONTEXT WINDOW (new WindowResult API)
         const MAX_TOKENS = 4096;
-        const windowResult = applyContextWindow(prioritized, MAX_TOKENS);
+        const windowResult = applyContextWindow(
+            prioritized,
+            options.maxTokens ?? MAX_TOKENS,
+            options,
+        );
         const windowed = windowResult.windowed;
 
         safeTelemetry(() =>

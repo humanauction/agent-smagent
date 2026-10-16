@@ -235,3 +235,48 @@ test("CCR baseline: full pipeline shape", async () => {
         "counts",
     ]);
 });
+
+test("CCR baselineFreeze: pipeline forwards options to priority and window stages", async () => {
+    const pipeline = new CCRPipeline({ record() {} } as any);
+    const messages: SMAGEMessage[] = [
+        {
+            role: "user",
+            content: "Keep this user context.",
+            meta: { provider: "local", relevance: 0 },
+        },
+        {
+            role: "tool",
+            content: "This is older diagnostic tool context.",
+            meta: { provider: "local", relevance: 0 },
+        },
+        {
+            role: "tool",
+            content: "This is diagnostic tool context.",
+            meta: { provider: "local", relevance: 0 },
+        },
+        {
+            role: "user",
+            content: "Now answer the question.",
+            meta: { provider: "local", relevance: 0 },
+        },
+    ];
+
+    const frozen = await pipeline.run("test", messages, {
+        provider: "local",
+        intent: "debug",
+        baselineFreeze: true,
+        maxTokens: 100,
+    });
+    const adaptive = await pipeline.run("test", messages, {
+        provider: "local",
+        intent: "debug",
+        baselineFreeze: false,
+        maxTokens: 100,
+    });
+
+    expect(frozen.prioritized[1]?.meta?.tier).toBe(3);
+    expect(adaptive.prioritized[1]?.meta?.tier).toBe(1);
+    expect(frozen.windowed.length).toBeGreaterThanOrEqual(
+        adaptive.windowed.length,
+    );
+});
