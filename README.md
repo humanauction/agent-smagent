@@ -61,9 +61,11 @@ This roadmap is the durable handoff for future work. Update the status and next 
 
 **Resume after a session or context change:** check `git status`, read this roadmap and `docs/tech_debt/baseline/baseline_sequence.md`, then inspect the current freeze report and the files named by the active task. Record the new state, decisions, and next command in the relevant README/doc before switching tasks.
 
-#### 2. Learning engine and durable session memory — planned
+#### 2. COMPLETE - Learning engine and durable session memory: persistence and signal foundation
 
-The current learning code is a prototype: anchors and mined signals are held in memory, and it does not tune CCR from measured outcomes. The next milestone should define persistence, session identity/resumption, expiry/deletion, and safe recovery first. Then connect logged outcomes to reviewable learning signals and evaluate one bounded adjustment against the freeze corpus. Automatic edits to `CLAUDE.md`, `AGENTS.md`, or project rules require a separate, explicit design and review step; they are not current capabilities.
+The first persistence slice is implemented in `ha_core/cache/sessionStore.ts` and is used by the existing cache and reversible-log APIs. Sessions are stored as versioned JSON envelopes under `SMAGE_CACHE_DIR` (or the system temporary directory), with atomic replacement and a recovery snapshot. Session IDs are validated, sessions have explicit `active`, `expired`, or `deleted` status, expiry is checked on access, and deletion leaves a tombstone so a deleted ID cannot be silently recreated. Corrupt primary data is recovered from the last valid snapshot when available; unrecoverable data raises an explicit store error.
+
+Logged timeline entries are normalized by `ha_learn/miner.ts` into typed samples with session/stage/timestamp provenance, outcome status, and optional token or retention metrics. Signals are bounded and reviewable observations; they do not automatically tune CCR or modify project instruction files. The next step is to choose and evaluate one bounded CCR adjustment against the freeze corpus. Automatic edits to `CLAUDE.md`, `AGENTS.md`, or project rules require a separate, explicit design and review step; they are not current capabilities.
 
 #### 3. UI and observability — partial foundation exists
 
