@@ -1,4 +1,5 @@
 import {
+    copyFileSync,
     existsSync,
     mkdirSync,
     readFileSync,
@@ -9,13 +10,18 @@ import {
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
-const SESSION_FORMAT_VERSION = 1;
+const SESSION_FORMAT_VERSION = 2;
+const DEFAULT_TTL_MS = 24 * 60 * 60 * 1000;
+
+export type SessionStatus = "active" | "expired" | "deleted";
 
 export interface SessionRecord {
     version: number;
     session: string;
     createdAt: number;
     updatedAt: number;
+    status: SessionStatus;
+    expiresAt: number | null;
     cache: unknown | null;
     messages: unknown[];
     history: unknown[];
@@ -46,6 +52,8 @@ function validateRecord(value: unknown, session: string): SessionRecord {
         value.session !== session ||
         typeof value.createdAt !== "number" ||
         typeof value.updatedAt !== "number" ||
+        !["active", "expired", "deleted"].includes(String(value.status)) ||
+        (value.expiresAt !== null && typeof value.expiresAt !== "number") ||
         !Array.isArray(value.history)
     ) {
         throw new SessionStoreError(
@@ -59,6 +67,8 @@ function validateRecord(value: unknown, session: string): SessionRecord {
         session,
         createdAt: value.createdAt,
         updatedAt: value.updatedAt,
+        status: value.status as SessionStatus,
+        expiresAt: value.expiresAt as number | null,
         cache: value.cache ?? null,
         messages: Array.isArray(value.messages) ? value.messages : [],
         history: value.history,
@@ -95,22 +105,44 @@ export class FileSessionStore {
         return join(this.rootDir, `${safeSessionName(session)}.json`);
     }
 
+    private backupPath(session: string): string {
+        return join(this.rootDir, `${safeSessionName(session)}.json.bak`);
+    }
+
+    private readFile(path: string, session: string): SessionRecord {
+        return validateRecord(
+            JSON.parse(readFileSync(path, "utf8")) as unknown,
+            session,
+        );
+    }
+
     private read(session: string): SessionRecord | null {
         const path = this.filePath(session);
         if (!existsSync(path)) return null;
 
         try {
-            return validateRecord(
-                JSON.parse(readFileSync(path, "utf8")) as unknown,
-                session,
-            );
+            return this.readFile(path, session);
         } catch (error) {
-            if (error instanceof SessionStoreError) throw error;
-            throw new SessionStoreError(
-                "Session data could not be read or parsed",
-                session,
-                error,
-            );
+            const backup = this.backupPath(session);
+            if (!existsSync(backup)) {
+                throw new SessionStoreError(
+                    "Session data could not be read or parsed and no recovery snapshot exists",
+                    session,
+                    error,
+                );
+            }
+
+            try {
+                const recovered = this.readFile(backup, session);
+                this.write(recovered);
+                return recovered;
+            } catch (recoveryError) {
+                throw new SessionStoreError(
+                    "Session data and its recovery snapshot could not be read",
+                    session,
+                    recoveryError,
+                );
+            }
         }
     }
 
@@ -118,6 +150,7 @@ export class FileSessionStore {
         mkdirSync(this.rootDir, { recursive: true });
 
         const path = this.filePath(record.session);
+        const backup = this.backupPath(record.session);
         const temporaryPath = `${path}.${process.pid}.${Date.now()}.tmp`;
         try {
             writeFileSync(
@@ -126,6 +159,7 @@ export class FileSessionStore {
                 "utf8",
             );
             renameSync(temporaryPath, path);
+            copyFileSync(path, backup);
         } catch (error) {
             if (existsSync(temporaryPath)) unlinkSync(temporaryPath);
             throw new SessionStoreError(
@@ -138,12 +172,47 @@ export class FileSessionStore {
 
     get(session: string): SessionRecord | null {
         const record = this.read(session);
-        return record ? clone(record) : null;
+        if (!record) return null;
+
+        if (
+            record.status === "active" &&
+            record.expiresAt !== null &&
+            record.expiresAt <= Date.now()
+        ) {
+            record.status = "expired";
+            record.updatedAt = Date.now();
+            this.write(record);
+        }
+
+        return record.status === "active" ? clone(record) : null;
     }
 
-    getOrCreate(session: string): SessionRecord {
-        const existing = this.get(session);
-        if (existing) return existing;
+    inspect(session: string): SessionRecord | null {
+        const record = this.read(session);
+        if (!record) return null;
+        if (
+            record.status === "active" &&
+            record.expiresAt !== null &&
+            record.expiresAt <= Date.now()
+        ) {
+            record.status = "expired";
+            record.updatedAt = Date.now();
+            this.write(record);
+        }
+        return clone(record);
+    }
+
+    resume(session: string, ttlMs = DEFAULT_TTL_MS): SessionRecord {
+        const existing = this.inspect(session);
+        if (existing) {
+            if (existing.status !== "active") {
+                throw new SessionStoreError(
+                    `Cannot resume ${existing.status} session`,
+                    session,
+                );
+            }
+            return existing;
+        }
 
         const now = Date.now();
         const record: SessionRecord = {
@@ -151,6 +220,8 @@ export class FileSessionStore {
             session: safeSessionName(session),
             createdAt: now,
             updatedAt: now,
+            status: "active",
+            expiresAt: now + ttlMs,
             cache: null,
             messages: [],
             history: [],
@@ -159,8 +230,12 @@ export class FileSessionStore {
         return clone(record);
     }
 
+    getOrCreate(session: string): SessionRecord {
+        return this.resume(session);
+    }
+
     putCache(session: string, cache: unknown): void {
-        const record = this.getOrCreate(session);
+        const record = this.resume(session);
         record.cache = clone(cache);
         record.updatedAt = Date.now();
         this.write(record);
@@ -171,7 +246,7 @@ export class FileSessionStore {
             throw new Error("Message index must be a non-negative integer");
         }
 
-        const record = this.getOrCreate(session);
+        const record = this.resume(session);
         record.messages[index] = clone(message);
         record.updatedAt = Date.now();
         this.write(record);
@@ -183,16 +258,19 @@ export class FileSessionStore {
     }
 
     appendHistory(session: string, entry: unknown): void {
-        const record = this.getOrCreate(session);
+        const record = this.resume(session);
         record.history.push(clone(entry));
         record.updatedAt = Date.now();
         this.write(record);
     }
 
     delete(session: string): boolean {
-        const path = this.filePath(session);
-        if (!existsSync(path)) return false;
-        unlinkSync(path);
+        const record = this.inspect(session);
+        if (!record) return false;
+        if (record.status === "deleted") return false;
+        record.status = "deleted";
+        record.updatedAt = Date.now();
+        this.write(record);
         return true;
     }
 }

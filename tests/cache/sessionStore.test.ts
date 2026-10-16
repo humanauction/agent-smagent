@@ -46,8 +46,9 @@ describe("FileSessionStore", () => {
             temporaryDirectories[0] as string,
         );
         expect(reopened.get("session-one")).toMatchObject({
-            version: 1,
+            version: 2,
             session: "session-one",
+            status: "active",
             cache: { value: "cached" },
             messages: [],
             history: [{ stage: "shaped" }],
@@ -62,17 +63,67 @@ describe("FileSessionStore", () => {
         );
     });
 
-    it("surfaces malformed data instead of treating it as a new session", () => {
+    it("recovers malformed primary data instead of treating it as a new session", () => {
         const store = createStore();
         store.putCache("broken", { value: "before corruption" });
 
         const file = join(temporaryDirectories[0] as string, "broken.json");
         writeFileSync(file, "{not-json", "utf8");
 
-        expect(() => store.getOrCreate("broken")).toThrow(SessionStoreError);
-        expect(() => store.get("broken")).toThrow(
-            "could not be read or parsed",
+        expect(store.getOrCreate("broken").cache).toEqual({
+            value: "before corruption",
+        });
+        expect(store.get("broken")?.cache).toEqual({
+            value: "before corruption",
+        });
+    });
+
+    it("reports unrecoverable corruption explicitly", () => {
+        const store = createStore();
+        const file = join(
+            temporaryDirectories[0] as string,
+            "unrecoverable.json",
         );
+        writeFileSync(file, "{truncated", "utf8");
+
+        expect(() => store.get("unrecoverable")).toThrow(SessionStoreError);
+        expect(() => store.get("unrecoverable")).toThrow(
+            "no recovery snapshot exists",
+        );
+    });
+
+    it("recovers the last valid atomic snapshot after primary corruption", () => {
+        const store = createStore();
+        store.putCache("recoverable", { value: "first" });
+        store.putCache("recoverable", { value: "second" });
+
+        const file = join(
+            temporaryDirectories[0] as string,
+            "recoverable.json",
+        );
+        writeFileSync(file, "{truncated", "utf8");
+
+        expect(store.get("recoverable")?.cache).toEqual({ value: "second" });
+        expect(store.inspect("recoverable")?.status).toBe("active");
+    });
+
+    it("expires sessions without allowing them to be silently recreated", () => {
+        const store = createStore();
+        store.resume("short-lived", 0);
+
+        expect(store.get("short-lived")).toBeNull();
+        expect(store.inspect("short-lived")?.status).toBe("expired");
+        expect(() => store.resume("short-lived")).toThrow("expired session");
+    });
+
+    it("uses a tombstone for deletion so deleted IDs cannot be resurrected", () => {
+        const store = createStore();
+        store.resume("deleted-session");
+
+        expect(store.delete("deleted-session")).toBe(true);
+        expect(store.inspect("deleted-session")?.status).toBe("deleted");
+        expect(store.delete("deleted-session")).toBe(false);
+        expect(() => store.resume("deleted-session")).toThrow("deleted session");
     });
 
     it("writes complete snapshots that can be read after a new store instance", () => {
