@@ -41,6 +41,10 @@ Thumbs.db
 smage.db
 reversible_logs/
 cache/
+!ha_core/cache/
+!ha_core/cache/sessionStore.ts
+!tests/cache/
+!tests/cache/sessionStore.test.ts
 coverage/
 smage-linux/
 smage/node_modules/
