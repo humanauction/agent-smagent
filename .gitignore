@@ -52,6 +52,7 @@ smage/node_modules/
 # Freeze harness
 tests/_freeze/
 tests/_snapshots/
+tests/_adaptive/
 
 # Docker
 docker-compose.override.yml
