@@ -55,7 +55,7 @@ This roadmap is the durable handoff for future work. Update the status and next 
 
 #### 1. MVP baseline and project continuity — current
 
-**In place:** CCR pipeline stages, reversible logging, provider adapters, routing/orchestration, proxy and MCP entry points, wrappers, and an offline freeze harness with a fixed 72-row benchmark matrix.
+**In place:** CCR pipeline stages, reversible logging, provider adapters, routing/orchestration, proxy and MCP entry points, wrappers, offline freeze harness with a fixed 72-row benchmark matrix.
 
 **Next:** keep the approved baseline and current benchmark separate; maintain the regression gate; use corpus results to identify correctness gaps and prioritize the first improvement. The harness does not establish live provider quality, API cost, or wrapper behavior by itself.
 
