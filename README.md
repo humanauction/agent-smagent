@@ -87,7 +87,7 @@ Candidate areas are relevance-tier policy, provider-adaptive compression, schema
 6. Fuse identical normalized anchor text and compress the payload.
 7. Reduce the final message and return stage outputs, counts, and token estimates.
 
-The relevance, priority, window, reconstruction, and payload modules are implemented. Their measured behavior is still being established. In particular, the pipeline currently does not pass its options object to priority assignment or window shaping, so do not assume `baselineFreeze` disables every provider- or intent-specific adjustment. See [the CCR Stage 1 status](docs/tech_debt/baseline/ccr_stage1.md).
+The relevance, priority, window, reconstruction, and payload modules are implemented. Their measured behavior is still being established. The pipeline now forwards its options object to priority assignment and window shaping; adaptive policy movement is measured separately in `tests/transform/adaptiveCcr.test.ts`, while the approved freeze corpus continues to run with `baselineFreeze`.
 
 ## Architecture
 
