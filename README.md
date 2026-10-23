@@ -69,7 +69,7 @@ Logged timeline entries are normalized by `ha_learn/miner.ts` into typed samples
 
 #### 3. UI and observability — partial foundation exists
 
-Proxy dashboards and HTML rendering modules exist. A cohesive CCR visualizer, memory/session inspector, and provider-routing view remain future work. Build these after the metrics and event fields are stable enough to explain what the UI displays.
+Proxy dashboards and HTML rendering modules exist. A cohesive CCR visualizer, memory/session inspector, and provider-routing view remain future work. Build stage: after the metrics and event fields are stable enough to explain what the UI displays.
 
 #### 4. Compression research — evidence-led, not yet ranked
 
