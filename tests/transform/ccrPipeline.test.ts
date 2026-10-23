@@ -2,6 +2,7 @@
 import { CCRPipeline } from "../../ha_core/transform/ccr/pipeline.js";
 import { ProviderChainTelemetry } from "../../ha_core/call/providers/chainTelemetry.js";
 import type { SMAGEMessage } from "../../ha_core/index.js";
+import { applyContextWindow } from "../../ha_core/transform/window.js";
 import { describe, it, expect, test } from "vitest";
 
 // helper
@@ -280,3 +281,67 @@ test("CCR baselineFreeze: pipeline forwards options to priority and window stage
         adaptive.windowed.length,
     );
 });
+
+    test("relevanceFirst fills the budget without changing the default policy", () => {
+        const messages: SMAGEMessage[] = [
+            {
+                role: "user",
+                content: "one two three four five six",
+                meta: { relevance: 0.9, priority: 3 },
+            },
+            {
+                role: "user",
+                content: "seven eight",
+                meta: { relevance: 0.8, priority: 3 },
+            },
+        ];
+
+        const baseline = applyContextWindow(messages, 8, {
+            tierPolicy: "baseline",
+        });
+        const omitted = applyContextWindow(messages, 8);
+        const relevanceFirst = applyContextWindow(messages, 8, {
+            tierPolicy: "relevanceFirst",
+        });
+        const frozenRelevanceFirst = applyContextWindow(messages, 8, {
+            baselineFreeze: true,
+            tierPolicy: "relevanceFirst",
+        });
+
+        expect(omitted.windowed.map((message) => message.content)).toEqual(
+            baseline.windowed.map((message) => message.content),
+        );
+        expect(baseline.windowed).toHaveLength(1);
+        expect(frozenRelevanceFirst.windowed).toEqual(baseline.windowed);
+        expect(relevanceFirst.tokens).toBeLessThanOrEqual(8);
+        expect(relevanceFirst.windowed).toHaveLength(2);
+    });
+
+    test("relevanceFirst preserves anchors and chronological order", () => {
+        const anchor: SMAGEMessage = {
+            role: "system",
+            content: "mandatory instruction",
+            meta: { anchor: true },
+        };
+        const older: SMAGEMessage = {
+            role: "user",
+            content: "older context",
+            meta: { relevance: 0.2, priority: 1 },
+        };
+        const newer: SMAGEMessage = {
+            role: "user",
+            content: "newer context",
+            meta: { relevance: 0.8, priority: 3 },
+        };
+
+        const result = applyContextWindow([anchor, older, newer], 20, {
+            tierPolicy: "relevanceFirst",
+        });
+
+        expect(result.windowed).toContain(anchor);
+        expect(result.windowed.map((message) => message.content)).toEqual([
+            anchor.content,
+            older.content,
+            newer.content,
+        ]);
+    });

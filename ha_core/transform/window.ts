@@ -104,20 +104,28 @@ export function applyContextWindow(
     // Anchors ALWAYS included
     for (const a of anchors) tryAdd(a);
 
-    // High tier (up to ~70% budget)
-    for (const h of high) {
-        if (used > maxTokens * 0.7) break;
-        tryAdd(h);
-    }
+    if (!freeze && options?.tierPolicy === "relevanceFirst") {
+        // Opt-in policy: use the same deterministic tier order without
+        // reserving implicit budget fractions for earlier tiers.
+        for (const message of [...high, ...medium, ...low]) {
+            tryAdd(message);
+        }
+    } else {
+        // High tier (up to ~70% budget)
+        for (const h of high) {
+            if (used > maxTokens * 0.7) break;
+            tryAdd(h);
+        }
 
-    // Medium tier (up to ~90% budget)
-    for (const m of medium) {
-        if (used > maxTokens * 0.9) break;
-        tryAdd(m);
-    }
+        // Medium tier (up to ~90% budget)
+        for (const m of medium) {
+            if (used > maxTokens * 0.9) break;
+            tryAdd(m);
+        }
 
-    // Low tier (opportunistic)
-    for (const l of low) tryAdd(l);
+        // Low tier (opportunistic)
+        for (const l of low) tryAdd(l);
+    }
 
     // --- 4. Hard trim if over budget (never trim anchors) ---
     const overBudget = used > maxTokens;

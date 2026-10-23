@@ -8,6 +8,7 @@ export interface SMAGEOptions {
     model?: string;
     strategy?: "auto" | "single" | "round_robin" | "fan_out";
     baselineFreeze?: boolean;
+    tierPolicy?: "baseline" | "relevanceFirst";
 
     // Provider‑specific CCR shaping metadata
     provider?: string;
