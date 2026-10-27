@@ -25,6 +25,7 @@ export interface SessionRecord {
     cache: unknown | null;
     messages: unknown[];
     history: unknown[];
+    schemaRegistry: Record<string, unknown>;
 }
 
 export class SessionStoreError extends Error {
@@ -72,6 +73,9 @@ function validateRecord(value: unknown, session: string): SessionRecord {
         cache: value.cache ?? null,
         messages: Array.isArray(value.messages) ? value.messages : [],
         history: value.history,
+        schemaRegistry: isRecord(value.schemaRegistry)
+            ? value.schemaRegistry
+            : {},
     };
 }
 
@@ -181,6 +185,7 @@ export class FileSessionStore {
         ) {
             record.status = "expired";
             record.updatedAt = Date.now();
+            record.schemaRegistry = {};
             this.write(record);
         }
 
@@ -197,6 +202,7 @@ export class FileSessionStore {
         ) {
             record.status = "expired";
             record.updatedAt = Date.now();
+            record.schemaRegistry = {};
             this.write(record);
         }
         return clone(record);
@@ -225,6 +231,7 @@ export class FileSessionStore {
             cache: null,
             messages: [],
             history: [],
+            schemaRegistry: {},
         };
         this.write(record);
         return clone(record);
@@ -264,12 +271,27 @@ export class FileSessionStore {
         this.write(record);
     }
 
+    getSchemaRegistry(session: string): Record<string, unknown> {
+        return this.get(session)?.schemaRegistry ?? {};
+    }
+
+    putSchemaRegistry(
+        session: string,
+        schemaRegistry: Record<string, unknown>,
+    ): void {
+        const record = this.resume(session);
+        record.schemaRegistry = clone(schemaRegistry);
+        record.updatedAt = Date.now();
+        this.write(record);
+    }
+
     delete(session: string): boolean {
         const record = this.inspect(session);
         if (!record) return false;
         if (record.status === "deleted") return false;
         record.status = "deleted";
         record.updatedAt = Date.now();
+        record.schemaRegistry = {};
         this.write(record);
         return true;
     }

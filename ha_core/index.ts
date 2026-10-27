@@ -9,6 +9,7 @@ export interface SMAGEOptions {
     strategy?: "auto" | "single" | "round_robin" | "fan_out";
     baselineFreeze?: boolean;
     tierPolicy?: "baseline" | "relevanceFirst";
+    schemaFactoring?: boolean;
 
     // Provider‑specific CCR shaping metadata
     provider?: string;
@@ -37,3 +38,7 @@ export function msg(m: SMAGEMessage): SMAGEMessage {
 }
 
 export { compress } from "./compress.js";
+export {
+    factorJsonRecords,
+    restoreFactoredJson,
+} from "./transform/schemaFactoring.js";

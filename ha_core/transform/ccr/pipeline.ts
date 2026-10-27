@@ -169,7 +169,7 @@ export class CCRPipeline {
         const withSemanticFusion = semanticAnchorFusion(reconstructed);
         // 7. PAYLOAD COMPRESSION (async, heavy) with timeout
         const compressedRaw = await timeoutGuard(
-            applyPayloadCompression(withSemanticFusion, options),
+            applyPayloadCompression(withSemanticFusion, options, session),
             CCR_STAGE_TIMEOUT_MS,
             `ccr-compress-${session}`,
         );

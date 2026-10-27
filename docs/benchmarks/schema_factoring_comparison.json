@@ -1,0 +1,21 @@
+{
+  "experiment": "schema-factoring-repeated-scalar-records-v1",
+  "scope": "deterministic offline fixture; no provider calls",
+  "fixture": {
+    "id": "eight-same-shaped-operator-records",
+    "recordCount": 8,
+    "fieldsPerRecord": 6,
+    "supportedValues": ["string", "finite number", "boolean"],
+    "baselineEstimatedTokens": 105,
+    "factoredEstimatedTokens": 75,
+    "estimatedTokensSaved": 30,
+    "estimatedReductionPercent": 28.6
+  },
+  "estimator": "Deterministic JSON lexical estimator built from JSON lexemes and the project's whitespace tokenCount for string values; includes packet field/type/reference overhead.",
+  "result": "The opt-in transform reduced the estimate for this fixture and round-tripped the parsed JSON values and field order exactly.",
+  "limits": [
+    "This is a single synthetic fixture, not a representative corpus result.",
+    "The estimate is not a provider tokenizer measurement and does not establish API cost or model quality.",
+    "Schema factoring remains opt-in and is disabled under baselineFreeze."
+  ]
+}

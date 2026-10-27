@@ -48,7 +48,7 @@ export async function applyCCR(
     reversibleLog(session, "ccr_learned_anchors", learnedAnchors);
 
     // 5. Payload compression
-    const compressedInput = await applyPayloadCompression(messages, options);
+    const compressedInput = await applyPayloadCompression(messages, options, session);
     reversibleLog(session, "ccr_compressed_input", compressedInput);
 
     // 6. Dedupe
@@ -122,7 +122,7 @@ export async function applyCCR(
     });
 
     // 15. Reconstruct final message list
-    const reconstructed = reconstruct(windowed, combinedAnchor);
+    const reconstructed = reconstruct(windowed, combinedAnchor, session);
     reversibleLog(session, "ccr_reconstructed", reconstructed);
 
     // 16. Output reduction

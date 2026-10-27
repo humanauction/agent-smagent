@@ -1,5 +1,6 @@
 import type { SMAGEMessage, SMAGEOptions } from "../index.js";
 import { tokenCount } from "../analyze/tokens.js";
+import { factorJsonRecords } from "./schemaFactoring.js";
 
 /**
  * CCR Payload Compression (Stage 1)
@@ -15,6 +16,7 @@ import { tokenCount } from "../analyze/tokens.js";
 export async function applyPayloadCompression(
     messages: SMAGEMessage[],
     options: SMAGEOptions,
+    session?: string,
 ): Promise<SMAGEMessage[]> {
     const out: SMAGEMessage[] = [];
     const seen = new Set<string>();
@@ -67,6 +69,33 @@ export async function applyPayloadCompression(
         if (meta.anchor) {
             out.push(msg);
             continue;
+        }
+
+        if (
+            options.schemaFactoring === true &&
+            options.baselineFreeze !== true &&
+            session
+        ) {
+            const factored =
+                typeof msg.content === "string"
+                    ? factorJsonRecords(msg.content, session)
+                    : null;
+            if (factored) {
+                out.push({
+                    ...msg,
+                    content: factored.content,
+                    meta: {
+                        ...meta,
+                        schemaFactored: true,
+                        schemaReference: factored.reference,
+                        schemaTokenEstimate: {
+                            before: factored.estimatedTokensBefore,
+                            after: factored.estimatedTokensAfter,
+                        },
+                    },
+                });
+                continue;
+            }
         }
 
         const trimmed = msg.content.replace(/\s+/g, " ").trim();

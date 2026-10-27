@@ -56,3 +56,16 @@ export function cacheAppend(session: string, entry: any): void {
 export function cacheDelete(session: string): boolean {
     return sessionStore.delete(session);
 }
+
+export function getSessionSchemaRegistry(
+    session: string,
+): Record<string, unknown> {
+    return sessionStore.getSchemaRegistry(session);
+}
+
+export function putSessionSchemaRegistry(
+    session: string,
+    registry: Record<string, unknown>,
+): void {
+    sessionStore.putSchemaRegistry(session, registry);
+}

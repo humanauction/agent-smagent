@@ -13,7 +13,7 @@ Right?
 
 ## Current Stage: CCR Baseline and Evaluation
 
-The CCR pipeline and a deterministic freeze harness are in place. The current work is to keep the behavior measurable, expand evaluation where the baseline exposes gaps, and choose the first improvement from evidence. The learning engine is still a prototype; it does not yet tune CCR from measured results.
+The CCR pipeline and deterministic freeze harness are in place. The approved baseline is the regression reference; the current active experiment is opt-in schema factoring, followed by entity dictionary and AST compression. The learning engine is still a prototype; it does not yet tune CCR from measured results.
 
 ### Current freeze benchmark
 
@@ -67,15 +67,19 @@ This roadmap is the durable handoff for future work. Update the status and next 
 
 The first persistence slice is implemented in `ha_core/cache/sessionStore.ts` and is used by the existing cache and reversible-log APIs. Sessions are stored as versioned JSON envelopes under `SMAGE_CACHE_DIR` (or the system temporary directory), with atomic replacement and a recovery snapshot. Session IDs are validated, sessions have explicit `active`, `expired`, or `deleted` status, expiry is checked on access, and deletion leaves a tombstone so a deleted ID cannot be silently recreated. Corrupt primary data is recovered from the last valid snapshot when available; unrecoverable data raises an explicit store error.
 
-Logged timeline entries are normalized by `ha_learn/miner.ts` into typed samples with session/stage/timestamp provenance, outcome status, and optional token or retention metrics. Signals are bounded and reviewable observations; they do not automatically tune CCR or modify project instruction files. The bounded CCR adjustment and separate adaptive fixtures are complete; the current relevance-tier experiment remains opt-in pending evidence. Automatic edits to `CLAUDE.md`, `AGENTS.md`, or project rules require a separate, explicit design and review step; they are not current capabilities.
+Logged timeline entries are normalized by `ha_learn/miner.ts` into typed samples with session/stage/timestamp provenance, outcome status, and optional token or retention metrics. Signals are bounded and reviewable observations; they do not automatically tune CCR or modify project instruction files. The bounded CCR adjustment and separate adaptive fixtures are complete;
+The `relevance-tier experiment` is evaluated and retained as opt-in. It improved required-phrase retention in two synthetic cutoff-pressure histories without reducing token use, and matched the baseline on a no-pressure control. `Not promoted as the default policy`.
+Automatic edits to `CLAUDE.md`, `AGENTS.md`, or project rules require a separate, explicit design and review step; they are not current capabilities.
 
 #### 3. UI and observability — partial foundation exists
 
 Proxy dashboards and HTML rendering modules exist. A cohesive CCR visualizer, memory/session inspector, and provider-routing view remain future work. Build stage: after the metrics and event fields are stable enough to explain what the UI displays.
 
-#### 4. Compression research — evidence-led, not yet ranked
+#### 4. Compression research — schema factoring active, opt-in
 
-Candidate areas are relevance-tier policy, provider-adaptive compression, schema factoring, semantic anchors, entity dictionaries, and AST compression. Some have existing building blocks; none should be assumed complete. Rank them from measured baseline gaps, add task-specific fixtures and correctness checks, then evaluate one change at a time. Estimates in proposal docs are hypotheses until measured.
+The agreed experiment sequence is **schema factoring → entity dictionary compression → AST compression → priority-threshold experiments → UI and observability**. Schema factoring is implemented behind `schemaFactoring: true`; it supports a narrow set of repeated scalar JSON records and stays disabled by default and under `baselineFreeze`. Its eight-record fixture estimated 105 tokens before and 75 after packet overhead (30 fewer under the deterministic local estimator). This synthetic result does not establish provider token savings or general quality. See [the schema factoring proposal](docs/tech_debt/improvements/schema_factor.md) and [comparison report](docs/benchmarks/schema_factoring_comparison.json).
+
+Next, broaden schema factoring evaluation against the baseline corpus and more varied supported/unsupported inputs. Then move to entity dictionary compression and AST compression, retaining opt-in behavior until correctness and measured benefit are reviewed. Promote a freeze baseline only when an experiment yields a reviewed, intentional candidate; do not regenerate or approve the baseline as a side effect of an experiment.
 
 ## CCR pipeline
 
