@@ -14,6 +14,8 @@ import type { CCRAnchor } from "./anchor.js";
  * It determines which messages survive window shaping.
  */
 
+// TODO?: Add or refine an explicit reversible tier policy; Avoid changing the current default behavior initially.
+
 export function assignPriority(
     messages: SMAGEMessage[],
     anchor: CCRAnchor | null,

@@ -1,0 +1,101 @@
+{
+  "experiment": "relevance-tier-long-history-v1",
+  "scope": "offline deterministic window-selection comparison; no provider calls",
+  "policy": "baseline versus opt-in relevanceFirst",
+  "fixtures": [
+    {
+      "id": "long-history-high-tier-tail",
+      "description": "A one-token remainder is spent on medium context while a two-token high-priority fact is skipped by the 70% phase cutoff.",
+      "maxTokens": 10,
+      "inputTokens": 46,
+      "requiredPhraseCount": 1,
+      "baseline": {
+        "tokens": 10,
+        "selectedMessageIds": [
+          "older-project-context",
+          "medium-detail-1"
+        ],
+        "retainedRequiredPhrases": [],
+        "retainedHighPriorityMessages": 1
+      },
+      "relevanceFirst": {
+        "tokens": 10,
+        "selectedMessageIds": [
+          "older-project-context",
+          "release-fact"
+        ],
+        "retainedRequiredPhrases": [
+          "Launch Cedar"
+        ],
+        "retainedHighPriorityMessages": 2
+      }
+    },
+    {
+      "id": "long-history-multiple-critical-facts",
+      "description": "Several high-priority facts compete with medium-tier filler after the baseline's high-tier phase cutoff.",
+      "maxTokens": 14,
+      "inputTokens": 44,
+      "requiredPhraseCount": 2,
+      "baseline": {
+        "tokens": 14,
+        "selectedMessageIds": [
+          "older-rollout-context",
+          "medium-status-1",
+          "medium-status-2"
+        ],
+        "retainedRequiredPhrases": [],
+        "retainedHighPriorityMessages": 1
+      },
+      "relevanceFirst": {
+        "tokens": 14,
+        "selectedMessageIds": [
+          "older-rollout-context",
+          "window-fact",
+          "owner-fact"
+        ],
+        "retainedRequiredPhrases": [
+          "Window Friday",
+          "Owner Maya"
+        ],
+        "retainedHighPriorityMessages": 3
+      }
+    },
+    {
+      "id": "long-history-no-cutoff-pressure",
+      "description": "Control case where the high tier fits below the phase cutoff and the policies should select the same context.",
+      "maxTokens": 20,
+      "inputTokens": 43,
+      "requiredPhraseCount": 1,
+      "baseline": {
+        "tokens": 19,
+        "selectedMessageIds": [
+          "rollout-context",
+          "pilot-fact",
+          "medium-checkpoint-1",
+          "medium-checkpoint-2",
+          "medium-checkpoint-3",
+          "medium-checkpoint-4"
+        ],
+        "retainedRequiredPhrases": [
+          "Pilot Cedar"
+        ],
+        "retainedHighPriorityMessages": 2
+      },
+      "relevanceFirst": {
+        "tokens": 19,
+        "selectedMessageIds": [
+          "rollout-context",
+          "pilot-fact",
+          "medium-checkpoint-1",
+          "medium-checkpoint-2",
+          "medium-checkpoint-3",
+          "medium-checkpoint-4"
+        ],
+        "retainedRequiredPhrases": [
+          "Pilot Cedar"
+        ],
+        "retainedHighPriorityMessages": 2
+      }
+    }
+  ]
+}

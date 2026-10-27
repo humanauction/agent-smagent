@@ -1,6 +1,6 @@
 # Improvement Proposal: Relevance-Tier Chunking
 
-Status: experiment implemented behind an opt-in policy; evaluation pending.
+Status: initial opt-in comparison recorded; policy remains opt-in and is not promoted as the new default.
 
 ## Hypothesis
 
@@ -35,11 +35,36 @@ same effective token budget and still restores chronological order.
   use on labeled long-history cases without violating anchor and ordering
   invariants?
 
+## Initial comparison result (2026-10-27)
+
+Command:
+
+```bash
+SMAGE_RUN_RELEVANCE_TIER_EXPERIMENT=1 npx vitest --run tests/transform/relevanceTierComparison.test.ts
+```
+
+The comparison passed on two hand-labeled cutoff-pressure histories and one
+control history. Across the two targeted cases, baseline retained 0/3 required
+phrases; `relevanceFirst` retained 3/3. High-priority message coverage rose
+from 2/5 to 5/5. Token use was unchanged in both cases (10 vs 10 and 14 vs
+14). The control retained its required phrase under both policies and selected
+the same messages (19 tokens each).
+
+This is evidence that removing the implicit phase cutoffs can use the budget
+for higher-priority facts in these constructed cases. It did not reduce token
+use. The fixtures use preassigned priority/relevance and exact phrase checks;
+they do not measure semantic quality or prove end-to-end gains on real
+conversations. Keep `relevanceFirst` opt-in and broaden the labeled corpus
+before changing the default.
+
+Full deterministic output: `docs/benchmarks/relevance_tier_comparison.json`.
+
 ## Evaluation plan
 
 Use the fixed freeze corpus as an unchanged control plus labeled long-history
 fixtures with `tierPolicy: "relevanceFirst"`. Compare input/output tokens,
 exact retained required phrases, dropped messages by role/priority, and
-reconstruction results. Add targeted tests for default parity, anchor
-preservation, token bounds, deterministic output, and chronological ordering.
-Keep the change opt-in until correctness and improvement are demonstrated.
+reconstruction results. The initial comparison covers long-history cutoff
+pressure and one no-pressure control. Add more labeled histories, including
+anchor-bearing and varied-role cases. Keep the change opt-in until broader
+correctness and improvement are demonstrated.

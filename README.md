@@ -57,7 +57,9 @@ This roadmap is the durable handoff for future work. Update the status and next 
 
 **In place:** CCR pipeline stages, reversible logging, provider adapters, routing/orchestration, proxy and MCP entry points, wrappers, offline freeze harness with a fixed 72-row benchmark matrix.
 
-**Next:** keep the approved baseline and current benchmark separate; maintain the regression gate; use corpus results to identify correctness gaps and prioritize the next improvement. The first bounded CCR adjustment (forwarding existing options into priority and window shaping) was evaluated against the corpus with 100% required-phrase retention and no stable-field delta; it was not promoted as a quality improvement. The current experiment is an opt-in `relevanceFirst` tier policy, evaluated separately from the approved freeze behavior. The harness does not establish live provider quality, API cost, or wrapper behavior by itself.
+**Next:** keep the approved baseline and current benchmark separate; maintain the regression gate; use corpus results to identify correctness gaps and prioritize the next improvement. The first bounded CCR adjustment (forwarding existing options into priority and window shaping) was evaluated against the corpus with 100% required-phrase retention and no stable-field delta; it was not promoted as a quality improvement.
+
+**Latest relevance-tier experiment:** on two synthetic long histories with phase-cutoff pressure, opt-in `relevanceFirst` retained 3/3 required phrases versus 0/3 for baseline, with equal token use in both cases (10 vs 10 and 14 vs 14). A no-pressure control was unchanged (same selected messages, 19 tokens, and required phrase retained by both). This shows a retention improvement in these fixtures, not token savings or general semantic quality. The policy remains opt-in. See [the proposal result](docs/tech_debt/improvements/relevance_tiers.md) and [the full report](docs/benchmarks/relevance_tier_comparison.json). The baseline harness does not establish live provider quality, API cost, or wrapper behavior by itself.
 
 **Resume after a session or context change:** check `git status`, read this roadmap and `docs/tech_debt/baseline/baseline_sequence.md`, then inspect the current freeze report and the files named by the active task. Record the new state, decisions, and next command in the relevant README/doc before switching tasks.
 
@@ -110,6 +112,14 @@ npx vitest --run
 ```
 
 Taskfile shortcuts include `task tst:ts`, `task frztst`, `task frzbench:current`, `task frzdlta`, `task frzbench:candidate`, and `task frzdlta:candidate`. The repository Taskfile currently prefixes several commands with `arch -arm64`; adjust invocation to match your host if needed.
+
+Run the opt-in relevance-tier comparison separately from the approved freeze benchmark:
+
+```bash
+SMAGE_RUN_RELEVANCE_TIER_EXPERIMENT=1 npx vitest --run tests/transform/relevanceTierComparison.test.ts
+```
+
+It writes `docs/benchmarks/relevance_tier_comparison.json`; the test is skipped unless the environment flag is set.
 
 To regenerate the API reference and HTML docsite:
 
