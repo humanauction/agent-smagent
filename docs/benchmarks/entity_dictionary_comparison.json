@@ -1,0 +1,629 @@
+{
+  "experiment": "entity-dictionary-exact-titlecase-v1",
+  "scope": "local deterministic CCR corpus paths and synthetic phrase fixtures; no provider calls",
+  "policy": "Replace repeated exact title-cased multiword spans only when the inline dictionary packet has positive estimated savings; packet references are session-bound.",
+  "tokenEstimator": "The same JSON lexical estimator used for schema factoring; heuristic only, not a provider tokenizer.",
+  "freezeCorpus": {
+    "caseCount": 8,
+    "pathCount": 4,
+    "cases": [
+      {
+        "id": "minimal-two-turn",
+        "category": "minimal",
+        "control": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 11,
+          "compressedLexicalTokenEstimate": 11,
+          "requiredPhraseCount": 1,
+          "requiredPhrasesRetained": [
+            "Define context compression"
+          ],
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "elapsedLocalMs": 0.97
+        },
+        "optIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 11,
+          "compressedLexicalTokenEstimate": 11,
+          "requiredPhraseCount": 1,
+          "requiredPhrasesRetained": [
+            "Define context compression"
+          ],
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "elapsedLocalMs": 0.1
+        },
+        "freezeControl": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 11,
+          "compressedLexicalTokenEstimate": 11,
+          "requiredPhraseCount": 1,
+          "requiredPhrasesRetained": [
+            "Define context compression"
+          ],
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "elapsedLocalMs": 0.09
+        },
+        "freezeOptIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 11,
+          "compressedLexicalTokenEstimate": 11,
+          "requiredPhraseCount": 1,
+          "requiredPhrasesRetained": [
+            "Define context compression"
+          ],
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "elapsedLocalMs": 0.08
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "system-instructions",
+        "category": "instruction-heavy",
+        "control": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 35,
+          "compressedLexicalTokenEstimate": 35,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "plain English",
+            "under five sentences"
+          ],
+          "windowCount": 4,
+          "reconstructionCount": 4,
+          "compressedCount": 4,
+          "elapsedLocalMs": 0.13
+        },
+        "optIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 35,
+          "compressedLexicalTokenEstimate": 35,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "plain English",
+            "under five sentences"
+          ],
+          "windowCount": 4,
+          "reconstructionCount": 4,
+          "compressedCount": 4,
+          "elapsedLocalMs": 0.63
+        },
+        "freezeControl": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 35,
+          "compressedLexicalTokenEstimate": 35,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "plain English",
+            "under five sentences"
+          ],
+          "windowCount": 4,
+          "reconstructionCount": 4,
+          "compressedCount": 4,
+          "elapsedLocalMs": 0.08
+        },
+        "freezeOptIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 35,
+          "compressedLexicalTokenEstimate": 35,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "plain English",
+            "under five sentences"
+          ],
+          "windowCount": 4,
+          "reconstructionCount": 4,
+          "compressedCount": 4,
+          "elapsedLocalMs": 0.07
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "repeated-content",
+        "category": "repetition",
+        "control": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 27,
+          "compressedLexicalTokenEstimate": 27,
+          "requiredPhraseCount": 1,
+          "requiredPhrasesRetained": [
+            "cache expires after ten minutes"
+          ],
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "elapsedLocalMs": 0.07
+        },
+        "optIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 27,
+          "compressedLexicalTokenEstimate": 27,
+          "requiredPhraseCount": 1,
+          "requiredPhrasesRetained": [
+            "cache expires after ten minutes"
+          ],
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "elapsedLocalMs": 0.11
+        },
+        "freezeControl": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 27,
+          "compressedLexicalTokenEstimate": 27,
+          "requiredPhraseCount": 1,
+          "requiredPhrasesRetained": [
+            "cache expires after ten minutes"
+          ],
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "elapsedLocalMs": 0.06
+        },
+        "freezeOptIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 27,
+          "compressedLexicalTokenEstimate": 27,
+          "requiredPhraseCount": 1,
+          "requiredPhrasesRetained": [
+            "cache expires after ten minutes"
+          ],
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "elapsedLocalMs": 0.04
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "long-multi-topic",
+        "category": "long-context",
+        "control": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 85,
+          "compressedLexicalTokenEstimate": 85,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "12 by 8 metre",
+            "wheelchair user"
+          ],
+          "windowCount": 10,
+          "reconstructionCount": 10,
+          "compressedCount": 10,
+          "elapsedLocalMs": 0.16
+        },
+        "optIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 85,
+          "compressedLexicalTokenEstimate": 85,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "12 by 8 metre",
+            "wheelchair user"
+          ],
+          "windowCount": 10,
+          "reconstructionCount": 10,
+          "compressedCount": 10,
+          "elapsedLocalMs": 0.13
+        },
+        "freezeControl": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 85,
+          "compressedLexicalTokenEstimate": 85,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "12 by 8 metre",
+            "wheelchair user"
+          ],
+          "windowCount": 10,
+          "reconstructionCount": 10,
+          "compressedCount": 10,
+          "elapsedLocalMs": 0.1
+        },
+        "freezeOptIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 85,
+          "compressedLexicalTokenEstimate": 85,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "12 by 8 metre",
+            "wheelchair user"
+          ],
+          "windowCount": 10,
+          "reconstructionCount": 10,
+          "compressedCount": 10,
+          "elapsedLocalMs": 0.09
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "structured-config",
+        "category": "structured-data",
+        "control": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 20,
+          "compressedLexicalTokenEstimate": 20,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "timeout_ms",
+            "1200"
+          ],
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "elapsedLocalMs": 0.05
+        },
+        "optIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 20,
+          "compressedLexicalTokenEstimate": 20,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "timeout_ms",
+            "1200"
+          ],
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "elapsedLocalMs": 0.03
+        },
+        "freezeControl": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 20,
+          "compressedLexicalTokenEstimate": 20,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "timeout_ms",
+            "1200"
+          ],
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "elapsedLocalMs": 0.04
+        },
+        "freezeOptIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 20,
+          "compressedLexicalTokenEstimate": 20,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "timeout_ms",
+            "1200"
+          ],
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "elapsedLocalMs": 0.03
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "code-snippet",
+        "category": "code",
+        "control": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 31,
+          "compressedLexicalTokenEstimate": 31,
+          "requiredPhraseCount": 1,
+          "requiredPhrasesRetained": [
+            "Math.min(max, Math.max(min, n))"
+          ],
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "elapsedLocalMs": 0.04
+        },
+        "optIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 31,
+          "compressedLexicalTokenEstimate": 31,
+          "requiredPhraseCount": 1,
+          "requiredPhrasesRetained": [
+            "Math.min(max, Math.max(min, n))"
+          ],
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "elapsedLocalMs": 0.04
+        },
+        "freezeControl": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 31,
+          "compressedLexicalTokenEstimate": 31,
+          "requiredPhraseCount": 1,
+          "requiredPhrasesRetained": [
+            "Math.min(max, Math.max(min, n))"
+          ],
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "elapsedLocalMs": 0.03
+        },
+        "freezeOptIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 31,
+          "compressedLexicalTokenEstimate": 31,
+          "requiredPhraseCount": 1,
+          "requiredPhrasesRetained": [
+            "Math.min(max, Math.max(min, n))"
+          ],
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "elapsedLocalMs": 0.03
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "constraints-and-exceptions",
+        "category": "constraints",
+        "control": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 39,
+          "compressedLexicalTokenEstimate": 39,
+          "requiredPhraseCount": 4,
+          "requiredPhrasesRetained": [
+            "No car",
+            "avoid stairs",
+            "£40",
+            "18:00"
+          ],
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "elapsedLocalMs": 0.06
+        },
+        "optIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 39,
+          "compressedLexicalTokenEstimate": 39,
+          "requiredPhraseCount": 4,
+          "requiredPhrasesRetained": [
+            "No car",
+            "avoid stairs",
+            "£40",
+            "18:00"
+          ],
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "elapsedLocalMs": 0.04
+        },
+        "freezeControl": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 39,
+          "compressedLexicalTokenEstimate": 39,
+          "requiredPhraseCount": 4,
+          "requiredPhrasesRetained": [
+            "No car",
+            "avoid stairs",
+            "£40",
+            "18:00"
+          ],
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "elapsedLocalMs": 0.03
+        },
+        "freezeOptIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 39,
+          "compressedLexicalTokenEstimate": 39,
+          "requiredPhraseCount": 4,
+          "requiredPhrasesRetained": [
+            "No car",
+            "avoid stairs",
+            "£40",
+            "18:00"
+          ],
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "elapsedLocalMs": 0.04
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "anchor-recall",
+        "category": "cross-turn-reference",
+        "control": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 38,
+          "compressedLexicalTokenEstimate": 38,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "Cedar",
+            "12 October"
+          ],
+          "windowCount": 5,
+          "reconstructionCount": 5,
+          "compressedCount": 5,
+          "elapsedLocalMs": 0.06
+        },
+        "optIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 38,
+          "compressedLexicalTokenEstimate": 38,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "Cedar",
+            "12 October"
+          ],
+          "windowCount": 5,
+          "reconstructionCount": 5,
+          "compressedCount": 5,
+          "elapsedLocalMs": 0.06
+        },
+        "freezeControl": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 38,
+          "compressedLexicalTokenEstimate": 38,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "Cedar",
+            "12 October"
+          ],
+          "windowCount": 5,
+          "reconstructionCount": 5,
+          "compressedCount": 5,
+          "elapsedLocalMs": 0.04
+        },
+        "freezeOptIn": {
+          "entityDictionaryFactoredMessageCount": 0,
+          "exactEntityRestores": true,
+          "inputLexicalTokenEstimate": 38,
+          "compressedLexicalTokenEstimate": 38,
+          "requiredPhraseCount": 2,
+          "requiredPhrasesRetained": [
+            "Cedar",
+            "12 October"
+          ],
+          "windowCount": 5,
+          "reconstructionCount": 5,
+          "compressedCount": 5,
+          "elapsedLocalMs": 0.05
+        },
+        "freezeOutputEqual": true
+      }
+    ],
+    "factoredMessages": 0,
+    "requiredPhraseLosses": 0,
+    "freezeParityFailures": 0,
+    "entityRestoreFailures": 0
+  },
+  "fixtures": {
+    "count": 7,
+    "entityHeavy": 3,
+    "ordinary": 2,
+    "edge": 2,
+    "results": [
+      {
+        "id": "repeated-project-name",
+        "category": "entity-heavy",
+        "factored": true,
+        "expectedToFactor": true,
+        "classification": "beneficial",
+        "inputLexicalTokens": 84,
+        "packetLexicalTokens": 82,
+        "estimatedTokensSaved": 2,
+        "entityCount": 1,
+        "elapsedLocalMs": 0.51
+      },
+      {
+        "id": "multiple-repeated-organizations",
+        "category": "entity-heavy",
+        "factored": true,
+        "expectedToFactor": true,
+        "classification": "beneficial",
+        "inputLexicalTokens": 150,
+        "packetLexicalTokens": 106,
+        "estimatedTokensSaved": 44,
+        "entityCount": 2,
+        "elapsedLocalMs": 0.06
+      },
+      {
+        "id": "unicode-entity-name",
+        "category": "entity-heavy",
+        "factored": true,
+        "expectedToFactor": true,
+        "classification": "beneficial",
+        "inputLexicalTokens": 176,
+        "packetLexicalTokens": 138,
+        "estimatedTokensSaved": 38,
+        "entityCount": 1,
+        "elapsedLocalMs": 0.04
+      },
+      {
+        "id": "ordinary-prose-short-repetitions",
+        "category": "ordinary",
+        "factored": false,
+        "expectedToFactor": false,
+        "classification": "fallback",
+        "inputLexicalTokens": 15,
+        "packetLexicalTokens": 15,
+        "estimatedTokensSaved": 0,
+        "entityCount": 0,
+        "elapsedLocalMs": 0.01
+      },
+      {
+        "id": "one-off-proper-name",
+        "category": "ordinary",
+        "factored": false,
+        "expectedToFactor": false,
+        "classification": "fallback",
+        "inputLexicalTokens": 12,
+        "packetLexicalTokens": 12,
+        "estimatedTokensSaved": 0,
+        "entityCount": 0,
+        "elapsedLocalMs": 0.01
+      },
+      {
+        "id": "literal-handle-collision",
+        "category": "edge",
+        "factored": true,
+        "expectedToFactor": true,
+        "classification": "beneficial",
+        "inputLexicalTokens": 98,
+        "packetLexicalTokens": 96,
+        "estimatedTokensSaved": 2,
+        "entityCount": 1,
+        "elapsedLocalMs": 0.04
+      },
+      {
+        "id": "punctuation-and-quotes",
+        "category": "edge",
+        "factored": true,
+        "expectedToFactor": true,
+        "classification": "beneficial",
+        "inputLexicalTokens": 70,
+        "packetLexicalTokens": 68,
+        "estimatedTokensSaved": 2,
+        "entityCount": 1,
+        "elapsedLocalMs": 0.03
+      }
+    ]
+  },
+  "runtime": {
+    "freezePathRunCount": 32,
+    "note": "Local elapsed times vary by run; timing is recorded for observation, not asserted."
+  },
+  "decision": "Keep opt-in only pending larger, naturally occurring entity-heavy data and provider-tokenizer validation."
+}
