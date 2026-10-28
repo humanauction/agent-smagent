@@ -266,7 +266,7 @@ tasks:
     chk:
         desc: "Run full system check"
         cmds:
-            - task rebuild
+            - task rbd
             - task tst
             - task learn
             - task proxy

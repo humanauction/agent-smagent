@@ -1,24 +1,54 @@
 {
   "experiment": "openai-live-input-token-validation-v1",
-  "status": "skipped",
+  "status": "complete",
   "skippedBecauseGateDisabled": false,
-  "skipReason": "missing_api_key",
+  "skipReason": null,
   "provider": "OpenAI",
   "model": "gpt-6-luna",
-  "timestamp": "2026-10-28T14:12:00.368Z",
+  "timestamp": "2026-10-28T17:15:13.137Z",
   "scope": "smoke",
   "fixtureIds": [
     "repeated-project-identifiers"
   ],
-  "requestCount": 0,
-  "tokenCountRequestCount": 0,
+  "requestCount": 2,
+  "tokenCountRequestCount": 2,
   "responseGenerationRequestCount": 0,
-  "localEstimatedInputTokens": 0,
-  "providerReportedInputTokens": null,
+  "localEstimatedInputTokens": 329,
+  "providerReportedInputTokens": 630,
   "outputTokenCap": 0,
-  "conservativeEstimatedCostUsd": null,
+  "conservativeEstimatedCostUsd": 0.0003596,
   "reportedUsageCostUsd": null,
+  "budgetUsd": 0.02,
+  "requestResults": [
+    {
+      "fixtureId": "repeated-project-identifiers",
+      "category": "project-heavy",
+      "path": "control",
+      "localEstimatedInputTokens": 176,
+      "providerReportedInputTokens": 305,
+      "elapsedMs": 1540.11
+    },
+    {
+      "fixtureId": "repeated-project-identifiers",
+      "category": "project-heavy",
+      "path": "entityDictionary",
+      "localEstimatedInputTokens": 153,
+      "providerReportedInputTokens": 325,
+      "elapsedMs": 402.45
+    }
+  ],
+  "comparisons": [
+    {
+      "id": "repeated-project-identifiers",
+      "category": "project-heavy",
+      "requiredPhraseCount": 2,
+      "controlProviderInputTokens": 305,
+      "entityDictionaryProviderInputTokens": 325,
+      "providerInputTokensSaved": -20
+    }
+  ],
+  "errors": [],
   "credentialValuesWritten": false,
-  "note": "No request was sent. Reports contain no API key, prompt text, or generated response.",
+  "note": "Input-token count endpoint only; no model responses were generated. Cost is not returned by this endpoint. The guard conservatively prices UTF-8 byte bounds at the standard input rate.",
   "reportPath": "/Users/guns4kids/Documents/vscode-projects/agent-smagent/docs/benchmarks/openai_provider_validation.json"
 }
