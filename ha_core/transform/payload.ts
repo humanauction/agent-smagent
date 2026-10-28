@@ -1,6 +1,7 @@
 import type { SMAGEMessage, SMAGEOptions } from "../index.js";
 import { tokenCount } from "../analyze/tokens.js";
 import { factorJsonRecords } from "./schemaFactoring.js";
+import { factorRepeatedEntities } from "./entityDictionary.js";
 
 /**
  * CCR Payload Compression (Stage 1)
@@ -89,6 +90,31 @@ export async function applyPayloadCompression(
                         schemaFactored: true,
                         schemaReference: factored.reference,
                         schemaTokenEstimate: {
+                            before: factored.estimatedTokensBefore,
+                            after: factored.estimatedTokensAfter,
+                        },
+                    },
+                });
+                continue;
+            }
+        }
+
+        if (
+            options.entityDictionary === true &&
+            options.baselineFreeze !== true &&
+            session
+        ) {
+            const factored = factorRepeatedEntities(msg.content, session);
+            if (factored) {
+                out.push({
+                    ...msg,
+                    content: factored.content,
+                    meta: {
+                        ...meta,
+                        entityDictionaryFactored: true,
+                        entityDictionaryReference: factored.reference,
+                        entityDictionaryStats: {
+                            count: factored.entityCount,
                             before: factored.estimatedTokensBefore,
                             after: factored.estimatedTokensAfter,
                         },

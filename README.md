@@ -13,7 +13,7 @@ Right?
 
 ## Current Stage: CCR Baseline and Evaluation
 
-The CCR pipeline and deterministic freeze harness are in place. The approved baseline is the regression reference; the current active experiment is opt-in schema factoring, followed by entity dictionary and AST compression. The learning engine is still a prototype; it does not yet tune CCR from measured results.
+The CCR pipeline and deterministic freeze harness are in place. The approved baseline is the regression reference; schema factoring has been evaluated and remains opt-in, and the current active experiment is entity dictionary compression. AST compression follows next. The learning engine is still a prototype; it does not yet tune CCR from measured results.
 
 ### Current freeze benchmark
 
@@ -75,13 +75,17 @@ Automatic edits to `CLAUDE.md`, `AGENTS.md`, or project rules require a separate
 
 Proxy dashboards and HTML rendering modules exist. A cohesive CCR visualizer, memory/session inspector, and provider-routing view remain future work. Build stage: after the metrics and event fields are stable enough to explain what the UI displays.
 
-#### 4. Compression research — schema factoring active, opt-in
+#### 4. Compression research — entity dictionary active, opt-in
 
-The agreed experiment sequence is **schema factoring → entity dictionary compression → AST compression → priority-threshold experiments → UI and observability**. Schema factoring is implemented behind `schemaFactoring: true`; it supports a narrow set of repeated scalar JSON records and stays disabled by default and under `baselineFreeze`. The expanded evaluation covered all eight freeze cases across four control paths and 21 varied codec fixtures: six encoded supported fixtures round-tripped, 14 unsupported inputs fell back unchanged, and one minimum-size fixture was declined because packet overhead exceeded savings. The six successful fixtures saved 1,212 heuristic tokens in aggregate (3,726 to 2,514); this is not a provider tokenizer measurement. The freeze corpus had no eligible arrays, with zero phrase losses and exact freeze-mode parity. Keep the feature opt-in. See the [schema factoring proposal](docs/tech_debt/improvements/schema_factor.md), [initial report](docs/benchmarks/schema_factoring_comparison.json), and [expanded report](docs/benchmarks/schema_factoring_expanded_comparison.json).
+The agreed experiment sequence is **schema factoring → entity dictionary compression → AST compression → priority-threshold experiments → UI and observability**. Schema factoring is implemented behind `schemaFactoring: true`; it supports a narrow set of repeated scalar JSON records and stays disabled by default and under `baselineFreeze`. Its expanded evaluation covered all eight freeze cases and 21 varied codec fixtures. Six encoded fixtures round-tripped and saved 1,212 heuristic tokens in aggregate; 14 unsupported inputs fell back unchanged, and the minimum-size supported shape was declined because packet overhead exceeded savings. The freeze corpus had no eligible arrays, with zero phrase losses and exact freeze-mode parity. Keep schema factoring opt-in. See its [proposal](docs/tech_debt/improvements/schema_factor.md) and [expanded report](docs/benchmarks/schema_factoring_expanded_comparison.json).
+
+The next bounded experiment, entity dictionary compression, replaces repeated exact title-cased multiword spans only when an inline map makes a net estimated saving. Its map is carried in the packet and its reference is session-bound; it adds no durable registry. The first seven fixtures produced five positive estimates (88 heuristic tokens saved total), while two ordinary-prose cases fell back. The freeze corpus had no eligible spans, with zero phrase losses and exact freeze-mode parity. Two positive fixtures saved only two tokens each, so the gains are inconclusive. Keep this opt-in pending natural entity-heavy inputs and provider-tokenizer measurements. See the [proposal](docs/tech_debt/improvements/entity_dictionary.md) and [comparison report](docs/benchmarks/entity_dictionary_comparison.json).
+
+Rerun the entity comparison and regenerate only its report by setting `SMAGE_ENTITY_DICTIONARY_REPORT=docs/benchmarks/entity_dictionary_comparison.json` before running `npx vitest --run tests/transform/entityDictionary.test.ts tests/transform/entityDictionaryComparison.test.ts`. It does not overwrite the approved freeze benchmark.
 
 To rerun only this comparison and write its separate report, set `SMAGE_SCHEMA_FACTORING_REPORT=docs/benchmarks/schema_factoring_expanded_comparison.json` before running `npx vitest --run tests/transform/schemaFactoringComparison.test.ts`. It does not overwrite the approved freeze benchmark.
 
-Next, broaden schema factoring evaluation against the baseline corpus and more varied supported/unsupported inputs. Then move to entity dictionary compression and AST compression, retaining opt-in behavior until correctness and measured benefit are reviewed. Promote a freeze baseline only when an experiment yields a reviewed, intentional candidate; do not regenerate or approve the baseline as a side effect of an experiment.
+Next, broaden the entity dictionary fixtures with naturally occurring domain text, then evaluate AST compression as the third improvement. Keep both experiments opt-in until correctness and measured benefit are reviewed. Promote a freeze baseline only when an experiment yields a reviewed, intentional candidate; do not regenerate or approve the baseline as a side effect of an experiment.
 
 ## CCR pipeline
 

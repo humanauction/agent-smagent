@@ -2,6 +2,7 @@ import type { SMAGEMessage } from "../index.js";
 import type { CCRAnchor } from "./anchor.js";
 import { applyAnchor } from "./anchor.js";
 import { restoreFactoredJson } from "./schemaFactoring.js";
+import { restoreRepeatedEntities } from "./entityDictionary.js";
 
 /**
  * CCR Reconstruction (Stage 1)
@@ -20,6 +21,29 @@ export function reconstruct(
     session?: string,
 ): SMAGEMessage[] {
     const restoreMessage = (message: SMAGEMessage): SMAGEMessage => {
+        const entityReference = message.meta?.entityDictionaryReference;
+        if (
+            session &&
+            message.meta?.entityDictionaryFactored === true &&
+            typeof entityReference === "string" &&
+            typeof message.content === "string"
+        ) {
+            const content = restoreRepeatedEntities(
+                message.content,
+                session,
+                entityReference,
+            );
+            if (content !== null) {
+                const {
+                    entityDictionaryFactored: _entityDictionaryFactored,
+                    entityDictionaryReference: _entityDictionaryReference,
+                    entityDictionaryStats: _entityDictionaryStats,
+                    ...meta
+                } = message.meta ?? {};
+                return { ...message, content, meta };
+            }
+        }
+
         const reference = message.meta?.schemaReference;
         if (
             !session ||
