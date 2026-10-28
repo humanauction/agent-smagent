@@ -1,0 +1,1007 @@
+{
+  "experiment": "schema-factoring-expanded-evaluation-v1",
+  "scope": "offline deterministic corpus and fixture comparison; no provider calls",
+  "tokenEstimator": "JSON lexical estimator with whitespace tokenCount for decoded string lexemes; packet fields, types, and reference included.",
+  "freezeCorpus": {
+    "caseCount": 8,
+    "pathCount": 4,
+    "cases": [
+      {
+        "id": "minimal-two-turn",
+        "category": "minimal",
+        "control": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 11,
+          "compressedLexicalTokenEstimate": 11,
+          "inputBytes": 82,
+          "compressedBytes": 82,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "Define context compression"
+          ],
+          "requiredPhraseCount": 1,
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.83
+        },
+        "optIn": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 11,
+          "compressedLexicalTokenEstimate": 11,
+          "inputBytes": 82,
+          "compressedBytes": 82,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "Define context compression"
+          ],
+          "requiredPhraseCount": 1,
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.08
+        },
+        "approvedFreezeControl": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 11,
+          "compressedLexicalTokenEstimate": 11,
+          "inputBytes": 82,
+          "compressedBytes": 82,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "Define context compression"
+          ],
+          "requiredPhraseCount": 1,
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.07
+        },
+        "freezeWithOptionSupplied": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 11,
+          "compressedLexicalTokenEstimate": 11,
+          "inputBytes": 82,
+          "compressedBytes": 82,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "Define context compression"
+          ],
+          "requiredPhraseCount": 1,
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.06
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "system-instructions",
+        "category": "instruction-heavy",
+        "control": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 35,
+          "compressedLexicalTokenEstimate": 35,
+          "inputBytes": 231,
+          "compressedBytes": 231,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "plain English",
+            "under five sentences"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 4,
+          "reconstructionCount": 4,
+          "compressedCount": 4,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.12
+        },
+        "optIn": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 35,
+          "compressedLexicalTokenEstimate": 35,
+          "inputBytes": 231,
+          "compressedBytes": 231,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "plain English",
+            "under five sentences"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 4,
+          "reconstructionCount": 4,
+          "compressedCount": 4,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.09
+        },
+        "approvedFreezeControl": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 35,
+          "compressedLexicalTokenEstimate": 35,
+          "inputBytes": 231,
+          "compressedBytes": 231,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "plain English",
+            "under five sentences"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 4,
+          "reconstructionCount": 4,
+          "compressedCount": 4,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.09
+        },
+        "freezeWithOptionSupplied": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 35,
+          "compressedLexicalTokenEstimate": 35,
+          "inputBytes": 231,
+          "compressedBytes": 231,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "plain English",
+            "under five sentences"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 4,
+          "reconstructionCount": 4,
+          "compressedCount": 4,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.06
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "repeated-content",
+        "category": "repetition",
+        "control": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 27,
+          "compressedLexicalTokenEstimate": 27,
+          "inputBytes": 172,
+          "compressedBytes": 172,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "cache expires after ten minutes"
+          ],
+          "requiredPhraseCount": 1,
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.08
+        },
+        "optIn": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 27,
+          "compressedLexicalTokenEstimate": 27,
+          "inputBytes": 172,
+          "compressedBytes": 172,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "cache expires after ten minutes"
+          ],
+          "requiredPhraseCount": 1,
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.07
+        },
+        "approvedFreezeControl": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 27,
+          "compressedLexicalTokenEstimate": 27,
+          "inputBytes": 172,
+          "compressedBytes": 172,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "cache expires after ten minutes"
+          ],
+          "requiredPhraseCount": 1,
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.05
+        },
+        "freezeWithOptionSupplied": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 27,
+          "compressedLexicalTokenEstimate": 27,
+          "inputBytes": 172,
+          "compressedBytes": 172,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "cache expires after ten minutes"
+          ],
+          "requiredPhraseCount": 1,
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.05
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "long-multi-topic",
+        "category": "long-context",
+        "control": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 85,
+          "compressedLexicalTokenEstimate": 85,
+          "inputBytes": 496,
+          "compressedBytes": 496,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "12 by 8 metre",
+            "wheelchair user"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 10,
+          "reconstructionCount": 10,
+          "compressedCount": 10,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.14
+        },
+        "optIn": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 85,
+          "compressedLexicalTokenEstimate": 85,
+          "inputBytes": 496,
+          "compressedBytes": 496,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "12 by 8 metre",
+            "wheelchair user"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 10,
+          "reconstructionCount": 10,
+          "compressedCount": 10,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.14
+        },
+        "approvedFreezeControl": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 85,
+          "compressedLexicalTokenEstimate": 85,
+          "inputBytes": 496,
+          "compressedBytes": 496,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "12 by 8 metre",
+            "wheelchair user"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 10,
+          "reconstructionCount": 10,
+          "compressedCount": 10,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.11
+        },
+        "freezeWithOptionSupplied": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 85,
+          "compressedLexicalTokenEstimate": 85,
+          "inputBytes": 496,
+          "compressedBytes": 496,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "12 by 8 metre",
+            "wheelchair user"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 10,
+          "reconstructionCount": 10,
+          "compressedCount": 10,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.08
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "structured-config",
+        "category": "structured-data",
+        "control": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 20,
+          "compressedLexicalTokenEstimate": 20,
+          "inputBytes": 163,
+          "compressedBytes": 163,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "timeout_ms",
+            "1200"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.05
+        },
+        "optIn": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 20,
+          "compressedLexicalTokenEstimate": 20,
+          "inputBytes": 163,
+          "compressedBytes": 163,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "timeout_ms",
+            "1200"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.03
+        },
+        "approvedFreezeControl": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 20,
+          "compressedLexicalTokenEstimate": 20,
+          "inputBytes": 163,
+          "compressedBytes": 163,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "timeout_ms",
+            "1200"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.04
+        },
+        "freezeWithOptionSupplied": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 20,
+          "compressedLexicalTokenEstimate": 20,
+          "inputBytes": 163,
+          "compressedBytes": 163,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "timeout_ms",
+            "1200"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.03
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "code-snippet",
+        "category": "code",
+        "control": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 31,
+          "compressedLexicalTokenEstimate": 31,
+          "inputBytes": 200,
+          "compressedBytes": 200,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "Math.min(max, Math.max(min, n))"
+          ],
+          "requiredPhraseCount": 1,
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.04
+        },
+        "optIn": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 31,
+          "compressedLexicalTokenEstimate": 31,
+          "inputBytes": 200,
+          "compressedBytes": 200,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "Math.min(max, Math.max(min, n))"
+          ],
+          "requiredPhraseCount": 1,
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.04
+        },
+        "approvedFreezeControl": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 31,
+          "compressedLexicalTokenEstimate": 31,
+          "inputBytes": 200,
+          "compressedBytes": 200,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "Math.min(max, Math.max(min, n))"
+          ],
+          "requiredPhraseCount": 1,
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.04
+        },
+        "freezeWithOptionSupplied": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 31,
+          "compressedLexicalTokenEstimate": 31,
+          "inputBytes": 200,
+          "compressedBytes": 200,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "Math.min(max, Math.max(min, n))"
+          ],
+          "requiredPhraseCount": 1,
+          "windowCount": 2,
+          "reconstructionCount": 2,
+          "compressedCount": 2,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.04
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "constraints-and-exceptions",
+        "category": "constraints",
+        "control": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 39,
+          "compressedLexicalTokenEstimate": 39,
+          "inputBytes": 229,
+          "compressedBytes": 229,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "No car",
+            "avoid stairs",
+            "£40",
+            "18:00"
+          ],
+          "requiredPhraseCount": 4,
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.05
+        },
+        "optIn": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 39,
+          "compressedLexicalTokenEstimate": 39,
+          "inputBytes": 229,
+          "compressedBytes": 229,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "No car",
+            "avoid stairs",
+            "£40",
+            "18:00"
+          ],
+          "requiredPhraseCount": 4,
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.04
+        },
+        "approvedFreezeControl": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 39,
+          "compressedLexicalTokenEstimate": 39,
+          "inputBytes": 229,
+          "compressedBytes": 229,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "No car",
+            "avoid stairs",
+            "£40",
+            "18:00"
+          ],
+          "requiredPhraseCount": 4,
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.04
+        },
+        "freezeWithOptionSupplied": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 39,
+          "compressedLexicalTokenEstimate": 39,
+          "inputBytes": 229,
+          "compressedBytes": 229,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "No car",
+            "avoid stairs",
+            "£40",
+            "18:00"
+          ],
+          "requiredPhraseCount": 4,
+          "windowCount": 3,
+          "reconstructionCount": 3,
+          "compressedCount": 3,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.03
+        },
+        "freezeOutputEqual": true
+      },
+      {
+        "id": "anchor-recall",
+        "category": "cross-turn-reference",
+        "control": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 38,
+          "compressedLexicalTokenEstimate": 38,
+          "inputBytes": 240,
+          "compressedBytes": 240,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "Cedar",
+            "12 October"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 5,
+          "reconstructionCount": 5,
+          "compressedCount": 5,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.07
+        },
+        "optIn": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 38,
+          "compressedLexicalTokenEstimate": 38,
+          "inputBytes": 240,
+          "compressedBytes": 240,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "Cedar",
+            "12 October"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 5,
+          "reconstructionCount": 5,
+          "compressedCount": 5,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.05
+        },
+        "approvedFreezeControl": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 38,
+          "compressedLexicalTokenEstimate": 38,
+          "inputBytes": 240,
+          "compressedBytes": 240,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "Cedar",
+            "12 October"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 5,
+          "reconstructionCount": 5,
+          "compressedCount": 5,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.04
+        },
+        "freezeWithOptionSupplied": {
+          "schemaFactoredMessageCount": 0,
+          "unsupportedFallbackCount": 0,
+          "inputLexicalTokenEstimate": 38,
+          "compressedLexicalTokenEstimate": 38,
+          "inputBytes": 240,
+          "compressedBytes": 240,
+          "schemaReconstructionEquality": true,
+          "requiredPhrasesRetained": [
+            "Cedar",
+            "12 October"
+          ],
+          "requiredPhraseCount": 2,
+          "windowCount": 5,
+          "reconstructionCount": 5,
+          "compressedCount": 5,
+          "registryEntriesBefore": 0,
+          "registryEntriesAfter": 0,
+          "registryStorageBytes": 2,
+          "elapsedLocalMs": 0.04
+        },
+        "freezeOutputEqual": true
+      }
+    ],
+    "schemaFactoredMessages": 0,
+    "requiredPhraseLosses": 0,
+    "freezeParityFailures": 0,
+    "schemaReconstructionFailures": 0
+  },
+  "variedFixtures": {
+    "total": 21,
+    "supported": 7,
+    "unsupportedFallback": 14,
+    "roundTripPassCount": 6,
+    "classificationCounts": {
+      "beneficial": 6,
+      "neutral": 0,
+      "rejected": 1,
+      "fallback": 14
+    },
+    "supportedEstimatedTokensBefore": 3726,
+    "supportedEstimatedTokensAfter": 2514,
+    "fixtures": [
+      {
+        "id": "minimum-three-rows",
+        "category": "supported",
+        "expectedSupport": true,
+        "classification": "rejected",
+        "inputBytes": 459,
+        "packetBytes": null,
+        "estimatedTokensBefore": 55,
+        "estimatedTokensAfter": 55,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "large-64-row-records",
+        "category": "supported",
+        "expectedSupport": true,
+        "classification": "beneficial",
+        "inputBytes": 19576,
+        "packetBytes": 7283,
+        "estimatedTokensBefore": 2305,
+        "estimatedTokensAfter": 1457,
+        "estimatedTokensSaved": 848,
+        "roundTrip": true
+      },
+      {
+        "id": "one-field-records",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 442,
+        "packetBytes": null,
+        "estimatedTokensBefore": 49,
+        "estimatedTokensAfter": 49,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "many-fields",
+        "category": "supported",
+        "expectedSupport": true,
+        "classification": "beneficial",
+        "inputBytes": 5504,
+        "packetBytes": 1918,
+        "estimatedTokensBefore": 637,
+        "estimatedTokensAfter": 417,
+        "estimatedTokensSaved": 220,
+        "roundTrip": true
+      },
+      {
+        "id": "punctuation-braces-quotes-and-marker-text",
+        "category": "supported",
+        "expectedSupport": true,
+        "classification": "beneficial",
+        "inputBytes": 1862,
+        "packetBytes": 1337,
+        "estimatedTokensBefore": 211,
+        "estimatedTokensAfter": 183,
+        "estimatedTokensSaved": 28,
+        "roundTrip": true
+      },
+      {
+        "id": "unicode-and-empty-strings",
+        "category": "supported",
+        "expectedSupport": true,
+        "classification": "beneficial",
+        "inputBytes": 1162,
+        "packetBytes": 574,
+        "estimatedTokensBefore": 156,
+        "estimatedTokensAfter": 128,
+        "estimatedTokensSaved": 28,
+        "roundTrip": true
+      },
+      {
+        "id": "null-negative-decimal-and-booleans",
+        "category": "supported",
+        "expectedSupport": true,
+        "classification": "beneficial",
+        "inputBytes": 1387,
+        "packetBytes": 522,
+        "estimatedTokensBefore": 181,
+        "estimatedTokensAfter": 137,
+        "estimatedTokensSaved": 44,
+        "roundTrip": true
+      },
+      {
+        "id": "mixed-scalar-types-by-field",
+        "category": "supported",
+        "expectedSupport": true,
+        "classification": "beneficial",
+        "inputBytes": 1202,
+        "packetBytes": 472,
+        "estimatedTokensBefore": 181,
+        "estimatedTokensAfter": 137,
+        "estimatedTokensSaved": 44,
+        "roundTrip": true
+      },
+      {
+        "id": "two-records",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 188,
+        "packetBytes": null,
+        "estimatedTokensBefore": 21,
+        "estimatedTokensAfter": 21,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "nested-objects",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 626,
+        "packetBytes": null,
+        "estimatedTokensBefore": 85,
+        "estimatedTokensAfter": 85,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "nested-arrays",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 578,
+        "packetBytes": null,
+        "estimatedTokensBefore": 85,
+        "estimatedTokensAfter": 85,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "inconsistent-field-order",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 216,
+        "packetBytes": null,
+        "estimatedTokensBefore": 43,
+        "estimatedTokensAfter": 43,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "missing-and-extra-fields",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 154,
+        "packetBytes": null,
+        "estimatedTokensBefore": 31,
+        "estimatedTokensAfter": 31,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "mixed-values-within-one-field",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 153,
+        "packetBytes": null,
+        "estimatedTokensBefore": 31,
+        "estimatedTokensAfter": 31,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "negative-zero",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 156,
+        "packetBytes": null,
+        "estimatedTokensBefore": 31,
+        "estimatedTokensAfter": 31,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "non-json-infinity-and-nan",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 169,
+        "packetBytes": null,
+        "estimatedTokensBefore": 1,
+        "estimatedTokensAfter": 1,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "root-object",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 570,
+        "packetBytes": null,
+        "estimatedTokensBefore": 75,
+        "estimatedTokensAfter": 75,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "prose-with-json-fragment",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 82,
+        "packetBytes": null,
+        "estimatedTokensBefore": 13,
+        "estimatedTokensAfter": 13,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "array-with-non-object-values",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 112,
+        "packetBytes": null,
+        "estimatedTokensBefore": 23,
+        "estimatedTokensAfter": 23,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "empty-array",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 2,
+        "packetBytes": null,
+        "estimatedTokensBefore": 2,
+        "estimatedTokensAfter": 2,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      },
+      {
+        "id": "malformed-json",
+        "category": "unsupported",
+        "expectedSupport": false,
+        "classification": "fallback",
+        "inputBytes": 30,
+        "packetBytes": null,
+        "estimatedTokensBefore": 2,
+        "estimatedTokensAfter": 2,
+        "estimatedTokensSaved": 0,
+        "roundTrip": false
+      }
+    ]
+  },
+  "lifecycle": {
+    "separateDurableStoreRoots": "pass",
+    "crossSessionReferenceIsolation": "pass",
+    "deletionRegistryCleanup": "pass",
+    "expiryRegistryCleanup": "pass",
+    "missingReferenceRejected": "pass",
+    "stalePacketPreservedUnrestored": "pass",
+    "repeatedSchemaReferenceStable": "pass",
+    "distinctSameSessionSchemasIsolated": "pass",
+    "literalReferenceCollisionAvoided": "pass"
+  },
+  "runtime": {
+    "observations": "Per-path local elapsed milliseconds are recorded in freezeCorpus.cases; timing is nondeterministic and excluded from assertions.",
+    "freezePathRunCount": 32
+  },
+  "decision": "retain opt-in only; this evaluation is local, synthetic for supported records, and does not measure provider tokenization or live model quality"
+}

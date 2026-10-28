@@ -68,7 +68,13 @@ function sameSchema(left: SchemaDefinition, right: SchemaDefinition) {
     );
 }
 
-function jsonTokenEstimate(jsonText: string): number {
+export function estimateSchemaTokens(jsonText: string): number {
+    try {
+        JSON.parse(jsonText);
+    } catch {
+        return tokenCount(jsonText);
+    }
+
     const lexemes =
         jsonText.match(
             /"(?:\\.|[^"\\])*"|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?|true|false|null|[{}\[\]:,]/g,
@@ -180,8 +186,8 @@ export function factorJsonRecords(
         rows,
     });
 
-    const estimatedTokensBefore = jsonTokenEstimate(content);
-    const estimatedTokensAfter = jsonTokenEstimate(output);
+    const estimatedTokensBefore = estimateSchemaTokens(content);
+    const estimatedTokensAfter = estimateSchemaTokens(output);
     if (estimatedTokensAfter >= estimatedTokensBefore) return null;
 
     registry[reference] = definition;
