@@ -22,7 +22,7 @@
           "windowCount": 2,
           "reconstructionCount": 2,
           "compressedCount": 2,
-          "elapsedLocalMs": 0.97
+          "elapsedLocalMs": 0.98
         },
         "optIn": {
           "entityDictionaryFactoredMessageCount": 0,
@@ -36,7 +36,7 @@
           "windowCount": 2,
           "reconstructionCount": 2,
           "compressedCount": 2,
-          "elapsedLocalMs": 0.1
+          "elapsedLocalMs": 0.08
         },
         "freezeControl": {
           "entityDictionaryFactoredMessageCount": 0,
@@ -50,7 +50,7 @@
           "windowCount": 2,
           "reconstructionCount": 2,
           "compressedCount": 2,
-          "elapsedLocalMs": 0.09
+          "elapsedLocalMs": 0.08
         },
         "freezeOptIn": {
           "entityDictionaryFactoredMessageCount": 0,
@@ -64,7 +64,7 @@
           "windowCount": 2,
           "reconstructionCount": 2,
           "compressedCount": 2,
-          "elapsedLocalMs": 0.08
+          "elapsedLocalMs": 0.07
         },
         "freezeOutputEqual": true
       },
@@ -84,7 +84,7 @@
           "windowCount": 4,
           "reconstructionCount": 4,
           "compressedCount": 4,
-          "elapsedLocalMs": 0.13
+          "elapsedLocalMs": 0.14
         },
         "optIn": {
           "entityDictionaryFactoredMessageCount": 0,
@@ -99,7 +99,7 @@
           "windowCount": 4,
           "reconstructionCount": 4,
           "compressedCount": 4,
-          "elapsedLocalMs": 0.63
+          "elapsedLocalMs": 0.64
         },
         "freezeControl": {
           "entityDictionaryFactoredMessageCount": 0,
@@ -148,7 +148,7 @@
           "windowCount": 3,
           "reconstructionCount": 3,
           "compressedCount": 3,
-          "elapsedLocalMs": 0.07
+          "elapsedLocalMs": 0.08
         },
         "optIn": {
           "entityDictionaryFactoredMessageCount": 0,
@@ -210,7 +210,7 @@
           "windowCount": 10,
           "reconstructionCount": 10,
           "compressedCount": 10,
-          "elapsedLocalMs": 0.16
+          "elapsedLocalMs": 0.13
         },
         "optIn": {
           "entityDictionaryFactoredMessageCount": 0,
@@ -225,7 +225,7 @@
           "windowCount": 10,
           "reconstructionCount": 10,
           "compressedCount": 10,
-          "elapsedLocalMs": 0.13
+          "elapsedLocalMs": 0.12
         },
         "freezeControl": {
           "entityDictionaryFactoredMessageCount": 0,
@@ -240,7 +240,7 @@
           "windowCount": 10,
           "reconstructionCount": 10,
           "compressedCount": 10,
-          "elapsedLocalMs": 0.1
+          "elapsedLocalMs": 0.09
         },
         "freezeOptIn": {
           "entityDictionaryFactoredMessageCount": 0,
@@ -255,7 +255,7 @@
           "windowCount": 10,
           "reconstructionCount": 10,
           "compressedCount": 10,
-          "elapsedLocalMs": 0.09
+          "elapsedLocalMs": 0.08
         },
         "freezeOutputEqual": true
       },
@@ -367,7 +367,7 @@
           "windowCount": 2,
           "reconstructionCount": 2,
           "compressedCount": 2,
-          "elapsedLocalMs": 0.03
+          "elapsedLocalMs": 0.04
         },
         "freezeOptIn": {
           "entityDictionaryFactoredMessageCount": 0,
@@ -381,7 +381,7 @@
           "windowCount": 2,
           "reconstructionCount": 2,
           "compressedCount": 2,
-          "elapsedLocalMs": 0.03
+          "elapsedLocalMs": 0.04
         },
         "freezeOutputEqual": true
       },
@@ -403,7 +403,7 @@
           "windowCount": 3,
           "reconstructionCount": 3,
           "compressedCount": 3,
-          "elapsedLocalMs": 0.06
+          "elapsedLocalMs": 0.05
         },
         "optIn": {
           "entityDictionaryFactoredMessageCount": 0,
@@ -437,7 +437,7 @@
           "windowCount": 3,
           "reconstructionCount": 3,
           "compressedCount": 3,
-          "elapsedLocalMs": 0.03
+          "elapsedLocalMs": 0.04
         },
         "freezeOptIn": {
           "entityDictionaryFactoredMessageCount": 0,
@@ -530,10 +530,12 @@
     "entityRestoreFailures": 0
   },
   "fixtures": {
-    "count": 7,
+    "count": 16,
     "entityHeavy": 3,
-    "ordinary": 2,
-    "edge": 2,
+    "projectHeavy": 7,
+    "ordinary": 3,
+    "edge": 3,
+    "requiredPhraseLosses": 0,
     "results": [
       {
         "id": "repeated-project-name",
@@ -545,7 +547,9 @@
         "packetLexicalTokens": 82,
         "estimatedTokensSaved": 2,
         "entityCount": 1,
-        "elapsedLocalMs": 0.51
+        "requiredPhraseCount": 0,
+        "requiredPhrasesRetained": [],
+        "elapsedLocalMs": 0.58
       },
       {
         "id": "multiple-repeated-organizations",
@@ -557,7 +561,9 @@
         "packetLexicalTokens": 106,
         "estimatedTokensSaved": 44,
         "entityCount": 2,
-        "elapsedLocalMs": 0.06
+        "requiredPhraseCount": 0,
+        "requiredPhrasesRetained": [],
+        "elapsedLocalMs": 0.07
       },
       {
         "id": "unicode-entity-name",
@@ -569,6 +575,8 @@
         "packetLexicalTokens": 138,
         "estimatedTokensSaved": 38,
         "entityCount": 1,
+        "requiredPhraseCount": 0,
+        "requiredPhrasesRetained": [],
         "elapsedLocalMs": 0.04
       },
       {
@@ -581,6 +589,8 @@
         "packetLexicalTokens": 15,
         "estimatedTokensSaved": 0,
         "entityCount": 0,
+        "requiredPhraseCount": 0,
+        "requiredPhrasesRetained": [],
         "elapsedLocalMs": 0.01
       },
       {
@@ -593,6 +603,8 @@
         "packetLexicalTokens": 12,
         "estimatedTokensSaved": 0,
         "entityCount": 0,
+        "requiredPhraseCount": 0,
+        "requiredPhrasesRetained": [],
         "elapsedLocalMs": 0.01
       },
       {
@@ -605,6 +617,8 @@
         "packetLexicalTokens": 96,
         "estimatedTokensSaved": 2,
         "entityCount": 1,
+        "requiredPhraseCount": 0,
+        "requiredPhrasesRetained": [],
         "elapsedLocalMs": 0.04
       },
       {
@@ -617,7 +631,163 @@
         "packetLexicalTokens": 68,
         "estimatedTokensSaved": 2,
         "entityCount": 1,
-        "elapsedLocalMs": 0.03
+        "requiredPhraseCount": 0,
+        "requiredPhrasesRetained": [],
+        "elapsedLocalMs": 0.04
+      },
+      {
+        "id": "repeated-project-identifiers",
+        "category": "project-heavy",
+        "factored": true,
+        "expectedToFactor": true,
+        "classification": "beneficial",
+        "inputLexicalTokens": 176,
+        "packetLexicalTokens": 153,
+        "estimatedTokensSaved": 23,
+        "entityCount": 1,
+        "requiredPhraseCount": 2,
+        "requiredPhrasesRetained": [
+          "SMAGE Deterministic Freeze Baseline",
+          "reviewed result"
+        ],
+        "elapsedLocalMs": 0.05
+      },
+      {
+        "id": "multiple-projects-with-similar-prefixes",
+        "category": "project-heavy",
+        "factored": true,
+        "expectedToFactor": true,
+        "classification": "beneficial",
+        "inputLexicalTokens": 84,
+        "packetLexicalTokens": 82,
+        "estimatedTokensSaved": 2,
+        "entityCount": 2,
+        "requiredPhraseCount": 2,
+        "requiredPhrasesRetained": [
+          "SMAGE Schema Factoring Evaluation",
+          "SMAGE Schema Factoring Pipeline"
+        ],
+        "elapsedLocalMs": 0.04
+      },
+      {
+        "id": "project-name-with-phase-and-version",
+        "category": "project-heavy",
+        "factored": true,
+        "expectedToFactor": true,
+        "classification": "beneficial",
+        "inputLexicalTokens": 192,
+        "packetLexicalTokens": 184,
+        "estimatedTokensSaved": 8,
+        "entityCount": 1,
+        "requiredPhraseCount": 3,
+        "requiredPhrasesRetained": [
+          "CCR Baseline Sequence",
+          "phase 2",
+          "v2.4"
+        ],
+        "elapsedLocalMs": 0.06
+      },
+      {
+        "id": "project-status-across-decisions",
+        "category": "project-heavy",
+        "factored": true,
+        "expectedToFactor": true,
+        "classification": "beneficial",
+        "inputLexicalTokens": 162,
+        "packetLexicalTokens": 133,
+        "estimatedTokensSaved": 29,
+        "entityCount": 1,
+        "requiredPhraseCount": 2,
+        "requiredPhrasesRetained": [
+          "Agent Smagent Entity Dictionary",
+          "remains opt-in"
+        ],
+        "elapsedLocalMs": 0.05
+      },
+      {
+        "id": "project-name-in-quoted-requirement",
+        "category": "project-heavy",
+        "factored": true,
+        "expectedToFactor": true,
+        "classification": "beneficial",
+        "inputLexicalTokens": 192,
+        "packetLexicalTokens": 169,
+        "estimatedTokensSaved": 23,
+        "entityCount": 1,
+        "requiredPhraseCount": 2,
+        "requiredPhrasesRetained": [
+          "Agent Smagent Reversible Compression",
+          "restore every source value exactly"
+        ],
+        "elapsedLocalMs": 0.04
+      },
+      {
+        "id": "one-off-project-reference",
+        "category": "ordinary",
+        "factored": false,
+        "expectedToFactor": false,
+        "classification": "fallback",
+        "inputLexicalTokens": 14,
+        "packetLexicalTokens": 14,
+        "estimatedTokensSaved": 0,
+        "entityCount": 0,
+        "requiredPhraseCount": 1,
+        "requiredPhrasesRetained": [
+          "SMAGE Deterministic Freeze Baseline"
+        ],
+        "elapsedLocalMs": 0.01
+      },
+      {
+        "id": "similar-project-names-must-not-merge",
+        "category": "project-heavy",
+        "factored": true,
+        "expectedToFactor": true,
+        "classification": "beneficial",
+        "inputLexicalTokens": 224,
+        "packetLexicalTokens": 162,
+        "estimatedTokensSaved": 62,
+        "entityCount": 2,
+        "requiredPhraseCount": 2,
+        "requiredPhrasesRetained": [
+          "Agent Smagent Freeze Gate",
+          "Agent Smagent Freeze Review"
+        ],
+        "elapsedLocalMs": 0.05
+      },
+      {
+        "id": "literal-project-handle-collision",
+        "category": "edge",
+        "factored": true,
+        "expectedToFactor": true,
+        "classification": "beneficial",
+        "inputLexicalTokens": 208,
+        "packetLexicalTokens": 185,
+        "estimatedTokensSaved": 23,
+        "entityCount": 1,
+        "requiredPhraseCount": 2,
+        "requiredPhrasesRetained": [
+          "SMAGE_ENTITY_0_REF",
+          "SMAGE Deterministic Freeze Baseline"
+        ],
+        "elapsedLocalMs": 0.04
+      },
+      {
+        "id": "mixed-project-and-ordinary-prose",
+        "category": "project-heavy",
+        "factored": true,
+        "expectedToFactor": true,
+        "classification": "beneficial",
+        "inputLexicalTokens": 304,
+        "packetLexicalTokens": 281,
+        "estimatedTokensSaved": 23,
+        "entityCount": 1,
+        "requiredPhraseCount": 3,
+        "requiredPhrasesRetained": [
+          "Agent Smagent Schema Evaluation",
+          "meeting notes",
+          "lunch plans"
+        ],
+        "elapsedLocalMs": 0.06
       }
     ]
   },

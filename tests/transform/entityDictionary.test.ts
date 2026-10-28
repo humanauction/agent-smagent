@@ -42,6 +42,12 @@ describe("opt-in entity dictionary compression", () => {
                         factored.reference,
                     ),
                 ).toBe(fixture.content);
+                expect(
+                    (fixture.requiredPhrases ?? []).every((phrase) =>
+                        fixture.content.includes(phrase),
+                    ),
+                    fixture.id,
+                ).toBe(true);
             }
         }
     });
@@ -80,6 +86,32 @@ describe("opt-in entity dictionary compression", () => {
                 "anything",
             ),
         ).toBeNull();
+    });
+
+    it("keeps similar project names as distinct dictionary entries", () => {
+        const fixture = entityDictionaryFixtures.find(
+            (candidate) => candidate.id === "similar-project-names-must-not-merge",
+        );
+        if (!fixture) throw new Error("Similar-name fixture missing");
+        const packet = factorRepeatedEntities(
+            fixture.content,
+            "similar-project-session",
+        );
+        expect(packet).not.toBeNull();
+        const encoded = JSON.parse(packet?.content ?? "{}") as {
+            entries?: [string, string][];
+        };
+        const names = (encoded.entries ?? []).map(([, name]) => name);
+        expect(names).toContain("Agent Smagent Freeze Gate");
+        expect(names).toContain("Agent Smagent Freeze Review");
+        expect(new Set(names).size).toBe(names.length);
+        expect(
+            restoreRepeatedEntities(
+                packet?.content ?? "{}",
+                "similar-project-session",
+                packet?.reference ?? "",
+            ),
+        ).toBe(fixture.content);
     });
 
     it("keeps ordinary/default and baselineFreeze output unchanged and restores opt-in output", async () => {

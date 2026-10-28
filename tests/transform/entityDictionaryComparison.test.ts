@@ -134,6 +134,7 @@ describe("entity dictionary corpus comparison", () => {
                 fixture.content,
                 fixture.id,
                 fixture.expectedToFactor,
+                fixture.requiredPhrases ?? [],
             );
             return {
                 id: fixture.id,
@@ -183,11 +184,19 @@ describe("entity dictionary corpus comparison", () => {
                 entityHeavy: fixtureResults.filter(
                     (row) => row.category === "entity-heavy",
                 ).length,
+                projectHeavy: fixtureResults.filter(
+                    (row) => row.category === "project-heavy",
+                ).length,
                 ordinary: fixtureResults.filter(
                     (row) => row.category === "ordinary",
                 ).length,
                 edge: fixtureResults.filter((row) => row.category === "edge")
                     .length,
+                requiredPhraseLosses: fixtureResults.reduce(
+                    (total, row) => total + row.requiredPhraseCount -
+                        row.requiredPhrasesRetained.length,
+                    0,
+                ),
                 results: fixtureResults,
             },
             runtime: {
@@ -205,6 +214,7 @@ describe("entity dictionary corpus comparison", () => {
         expect(report.freezeCorpus.freezeParityFailures).toBe(0);
         expect(report.freezeCorpus.requiredPhraseLosses).toBe(0);
         expect(report.freezeCorpus.entityRestoreFailures).toBe(0);
+        expect(report.fixtures.requiredPhraseLosses).toBe(0);
     });
 });
 
@@ -212,10 +222,12 @@ function runDirectEstimate(
     content: string,
     session: string,
     expectedToFactor: boolean,
+    requiredPhrases: string[],
 ) {
-    // The comparison report's per-fixture packet sizes are asserted by the codec tests.
-    // Here we import lazily through the static module dependency for report values.
     const packet = factorRepeatedEntities(content, session);
+    const restored = packet
+        ? restoreRepeatedEntities(packet.content, session, packet.reference) ?? ""
+        : content;
     return {
         factored: packet !== null,
         expectedToFactor,
@@ -231,5 +243,9 @@ function runDirectEstimate(
             ? packet.estimatedTokensBefore - packet.estimatedTokensAfter
             : 0,
         entityCount: packet?.entityCount ?? 0,
+        requiredPhraseCount: requiredPhrases.length,
+        requiredPhrasesRetained: requiredPhrases.filter((phrase) =>
+            restored.includes(phrase),
+        ),
     };
 }
