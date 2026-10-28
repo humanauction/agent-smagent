@@ -14,22 +14,24 @@ The inline map makes the meaning available to the model and to local reconstruct
 
 ## Expanded evaluation result
 
-The offline comparison report is [here](../../benchmarks/entity_dictionary_comparison.json). It contains all eight freeze corpus cases across four paths (control, opt-in, approved-freeze control, and freeze-with-option) and seven entity-heavy, ordinary-prose, and edge fixtures.
+The offline comparison report is [`here`](../../benchmarks/entity_dictionary_comparison.json). It contains all eight freeze corpus cases across four paths (control, opt-in, approved-freeze control, and freeze-with-option), plus 16 entity-heavy, project-heavy, ordinary-prose, and edge fixtures.
 
-| Measure | Result |
-| --- | ---: |
-| Freeze cases / paths | 8 / 4 (32 CCR runs) |
-| Factored messages in freeze corpus | 0 |
-| Required-phrase losses | 0 |
-| Freeze output parity failures | 0 |
-| Exact restore failures | 0 |
-| Synthetic fixtures factored | 5 of 7 |
-| Synthetic fixtures left unchanged | 2 of 7 |
-| Estimated savings across factored fixtures | 88 heuristic tokens |
+| Measure                                    |               Result |
+| ------------------------------------------ | -------------------: |
+| Freeze cases / paths                       |  8 / 4 (32 CCR runs) |
+| Factored messages in freeze corpus         |                    0 |
+| Required-phrase losses                     |                    0 |
+| Freeze output parity failures              |                    0 |
+| Exact restore failures                     |                    0 |
+| Synthetic fixtures factored                |             13 of 16 |
+| Synthetic fixtures left unchanged          |              3 of 16 |
+| Project-oriented fixtures                  |                    7 |
+| Required phrase losses across fixtures     |                    0 |
+| Estimated savings across factored fixtures | 281 heuristic tokens |
 
-Two of the five positive cases save only two heuristic tokens each, so those small gains should be treated as inconclusive. The freeze corpus contains no eligible repeated multiword names; it confirms parity but does not establish in-corpus savings. Local runtime observations are included per case and are not an acceptance metric. No provider tokenizer or live model was used.
+The fixture set now covers repeated project identifiers; similar names and prefixes; phase/version labels; requirements, statuses, and decisions; quoted text; one-off names; literal-handle collisions; and mixed project/ordinary prose. Similar names remain separate entries and reconstruct exactly. Three cases fall back because the complete packet does not produce positive estimated savings. Some successful cases save only a few heuristic tokens, so small gains should be treated as inconclusive. The freeze corpus contains no eligible repeated multiword names; it confirms parity but does not establish in-corpus savings. Local runtime observations are included per case and are not an acceptance metric. No provider tokenizer or live model was used.
 
-Decision: retain as opt-in for further evaluation. The implementation demonstrates reversible behavior and positive estimates on some synthetic inputs, but needs naturally occurring entity-heavy fixtures and provider-tokenizer measurements before any default or baseline promotion.
+Decision: retain as opt-in for further evaluation. The implementation demonstrates reversible behavior and positive estimates on project-shaped synthetic inputs, but needs naturally occurring entity-heavy fixtures and provider-tokenizer measurements before any default or baseline promotion.
 
 Rerun and write only this report with:
 

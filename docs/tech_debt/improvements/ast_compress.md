@@ -1,6 +1,6 @@
 # Improvement Proposal: AST Compression for Code
 
-Status: proposed. No AST parser/encoder or source reconstruction module currently exists in the CCR transforms.
+Status: evaluation and contract definition only. No AST parser/encoder or source reconstruction module currently exists in the CCR transforms. Do not integrate an AST transform into CCR until the evaluation contract below is satisfied.
 
 ## Hypothesis
 
@@ -16,4 +16,8 @@ For selected code tasks, a syntax-aware representation may reduce repeated synta
 
 ## Evaluation plan
 
-Start with fixed code fixtures covering ordinary syntax, comments, generics, decorators, malformed input, and large files. Require parse/print or round-trip correctness checks, compilation of reconstructed examples, and no regressions on non-code corpus cases. Expand language support only after the first language has evidence of safe net benefit.
+Start with TypeScript and JavaScript fixtures covering ordinary functions, imports/exports, interfaces and generics, decorators, comments/directives, strings containing code-like syntax, malformed source, and unsupported syntax. Select and pin one parser/printer pair before measuring. Define lossless reconstruction requirements before attempting compression.
+
+For each fixture, record source token estimate, complete serialized packet including schema and reference metadata, reconstructed source equality, TypeScript compilation result, parser/printer runtime, and fallback behavior. Do not use abstract AST node count as a compression result. Require exact reconstruction and compilation where applicable, unchanged fallback for unsupported/malformed input, `baselineFreeze` parity, and positive net savings after packet overhead. Keep this experiment separate from the approved freeze benchmark and opt-in if implementation follows.
+
+The entity dictionary work and provider-tokenizer validation are separate experiments. Do not use live provider output as a substitute for AST reconstruction checks, and do not let live validation change the deterministic freeze gate.

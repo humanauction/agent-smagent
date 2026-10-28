@@ -1,0 +1,24 @@
+{
+  "experiment": "openai-live-input-token-validation-v1",
+  "status": "skipped",
+  "skippedBecauseGateDisabled": false,
+  "skipReason": "missing_api_key",
+  "provider": "OpenAI",
+  "model": "gpt-6-luna",
+  "timestamp": "2026-10-28T14:12:00.368Z",
+  "scope": "smoke",
+  "fixtureIds": [
+    "repeated-project-identifiers"
+  ],
+  "requestCount": 0,
+  "tokenCountRequestCount": 0,
+  "responseGenerationRequestCount": 0,
+  "localEstimatedInputTokens": 0,
+  "providerReportedInputTokens": null,
+  "outputTokenCap": 0,
+  "conservativeEstimatedCostUsd": null,
+  "reportedUsageCostUsd": null,
+  "credentialValuesWritten": false,
+  "note": "No request was sent. Reports contain no API key, prompt text, or generated response.",
+  "reportPath": "/Users/guns4kids/Documents/vscode-projects/agent-smagent/docs/benchmarks/openai_provider_validation.json"
+}

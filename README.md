@@ -77,15 +77,37 @@ Proxy dashboards and HTML rendering modules exist. A cohesive CCR visualizer, me
 
 #### 4. Compression research — entity dictionary active, opt-in
 
-The agreed experiment sequence is **schema factoring → entity dictionary compression → AST compression → priority-threshold experiments → UI and observability**. Schema factoring is implemented behind `schemaFactoring: true`; it supports a narrow set of repeated scalar JSON records and stays disabled by default and under `baselineFreeze`. Its expanded evaluation covered all eight freeze cases and 21 varied codec fixtures. Six encoded fixtures round-tripped and saved 1,212 heuristic tokens in aggregate; 14 unsupported inputs fell back unchanged, and the minimum-size supported shape was declined because packet overhead exceeded savings. The freeze corpus had no eligible arrays, with zero phrase losses and exact freeze-mode parity. Keep schema factoring opt-in. See its [proposal](docs/tech_debt/improvements/schema_factor.md) and [expanded report](docs/benchmarks/schema_factoring_expanded_comparison.json).
+The agreed experiment order is **schema factoring → entity dictionary compression → AST evaluation → priority-threshold experiments → UI and observability**. Schema factoring stays behind `schemaFactoring: true`, disabled by default and under `baselineFreeze`. Its expanded evaluation covered eight freeze cases and 21 varied codec fixtures: six encoded fixtures round-tripped and saved 1,212 heuristic tokens in aggregate; 14 unsupported inputs fell back unchanged, and the minimum-size shape was declined because packet overhead exceeded savings. The freeze corpus had no eligible arrays. See its [proposal](docs/tech_debt/improvements/schema_factor.md) and [expanded report](docs/benchmarks/schema_factoring_expanded_comparison.json).
 
-The next bounded experiment, entity dictionary compression, replaces repeated exact title-cased multiword spans only when an inline map makes a net estimated saving. Its map is carried in the packet and its reference is session-bound; it adds no durable registry. The first seven fixtures produced five positive estimates (88 heuristic tokens saved total), while two ordinary-prose cases fell back. The freeze corpus had no eligible spans, with zero phrase losses and exact freeze-mode parity. Two positive fixtures saved only two tokens each, so the gains are inconclusive. Keep this opt-in pending natural entity-heavy inputs and provider-tokenizer measurements. See the [proposal](docs/tech_debt/improvements/entity_dictionary.md) and [comparison report](docs/benchmarks/entity_dictionary_comparison.json).
+Entity dictionary compression is the active experiment. It replaces repeated exact title-cased multiword spans only when the complete inline packet shows estimated savings. The map stays inline and its reference is session-bound, with no durable registry. The project-oriented expansion now covers 16 fixtures (7 project-heavy): 13 factored, 3 fell back unchanged, required phrases were retained, and the local estimate saved 281 tokens. In the eight freeze cases, no message factored, phrase loss was zero, and freeze-mode output matched exactly. Some synthetic gains are small; keep it opt-in pending provider-tokenizer evidence and naturally occurring project text. See the [proposal](docs/tech_debt/improvements/entity_dictionary.md) and [report](docs/benchmarks/entity_dictionary_comparison.json).
 
-Rerun the entity comparison and regenerate only its report by setting `SMAGE_ENTITY_DICTIONARY_REPORT=docs/benchmarks/entity_dictionary_comparison.json` before running `npx vitest --run tests/transform/entityDictionary.test.ts tests/transform/entityDictionaryComparison.test.ts`. It does not overwrite the approved freeze benchmark.
+Both experiment reports are separate from the approved freeze benchmark. Rerun the entity comparison with `SMAGE_ENTITY_DICTIONARY_REPORT=docs/benchmarks/entity_dictionary_comparison.json npx vitest --run tests/transform/entityDictionary.test.ts tests/transform/entityDictionaryComparison.test.ts`.
 
-To rerun only this comparison and write its separate report, set `SMAGE_SCHEMA_FACTORING_REPORT=docs/benchmarks/schema_factoring_expanded_comparison.json` before running `npx vitest --run tests/transform/schemaFactoringComparison.test.ts`. It does not overwrite the approved freeze benchmark.
+AST compression remains an evaluation and contract-definition stage. To add later: AST transform to CCR after parser/printer versions, lossless reconstruction, unsupported syntax fallback, and complete-packet token accounting have been assessed. See the [AST proposal](docs/tech_debt/improvements/ast_compress.md).
 
-Next, broaden the entity dictionary fixtures with naturally occurring domain text, then evaluate AST compression as the third improvement. Keep both experiments opt-in until correctness and measured benefit are reviewed. Promote a freeze baseline only when an experiment yields a reviewed, intentional candidate; do not regenerate or approve the baseline as a side effect of an experiment.
+#### 5. Provider-tokenizer validation — gated
+
+This separate validation stage compares local estimates with OpenAI’s reported input token counts for control and opt-in inputs. It uses the [Responses API input-token endpoint](https://developers.openai.com/api/reference/resources/responses/subresources/input_tokens/methods/count); it generates no model response, so response quality and generation latency are outside this first pass. Each report records model, timestamp, scope, fixture IDs, request count, local and provider token counts, count-request latency, output-token cap (0), and cost estimate/availability. It writes only `docs/benchmarks/openai_provider_validation.json` and never updates the approved freeze benchmark.
+
+The gate fails closed unless `SMAGE_RUN_OPENAI_VALIDATION=1`, a key is supplied through the process environment, the model has a configured price, and the preflight estimate is within budget. The only configured model is `gpt-6-luna`; its current standard input price is $0.05 per million tokens on the [official pricing page](https://developers.openai.com/api/docs/pricing). The default guard is $0.02, with a hard maximum of $0.05. Pricing and model access will change always recheck them before running. The API key is read from the environment only and must never appear in repository files or reports. `.env` and `.env.*` are ignored by git.
+
+Initially starting with a small paired smoke fixture:
+
+```bash
+SMAGE_RUN_OPENAI_VALIDATION=1 SMAGE_OPENAI_VALIDATION_SCOPE=smoke \
+  node --env-file-if-exists=.env --import tsx scripts/openaiProviderValidation.ts
+```
+
+Only after reviewing that report, run the full freeze corpus plus project fixtures:
+
+```bash
+SMAGE_RUN_OPENAI_VALIDATION=1 SMAGE_OPENAI_VALIDATION_SCOPE=full \
+  node --env-file-if-exists=.env --import tsx scripts/openaiProviderValidation.ts
+```
+
+With the gate disabled, the script writes a `skipped` report and sends no request. If the gate is enabled but the API key or required price configuration is missing, it records the reason, sends no request, and exits with an error. Verify the current balance before running. Never write the API key to repository files, reports, or logs.
+
+Next: gather naturally occurring entity-heavy project examples, run the smoke check once the ignored local environment file is configured, review its token-count report, then decide whether the full corpus run is justified. Keep entity dictionary and future AST work opt-in; baseline promotion still requires a separately reviewed candidate.
 
 ## CCR pipeline
 
