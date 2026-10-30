@@ -95,7 +95,7 @@ Initially starting with a small paired smoke fixture:
 
 ```bash
 SMAGE_RUN_OPENAI_VALIDATION=1 SMAGE_OPENAI_VALIDATION_SCOPE=smoke \
-  node --env-file-if-exists=.env --import tsx scripts/openaiProviderValidation.ts
+  node --env-file-if-exists=smage/.env --import tsx scripts/openaiProviderValidation.ts
 ```
 
 Only after reviewing that report, run the full freeze corpus plus project fixtures:
