@@ -5,18 +5,18 @@
   "skipReason": null,
   "provider": "OpenAI",
   "model": "gpt-6-luna",
-  "timestamp": "2026-10-30T16:00:55.879Z",
+  "timestamp": "2026-10-30T16:12:09.060Z",
   "scope": "smoke",
   "fixtureIds": [
     "repeated-project-identifiers"
   ],
-  "requestCount": 2,
-  "tokenCountRequestCount": 2,
+  "requestCount": 5,
+  "tokenCountRequestCount": 5,
   "responseGenerationRequestCount": 0,
-  "localEstimatedInputTokens": 329,
-  "providerReportedInputTokens": 630,
+  "localEstimatedInputTokens": 734,
+  "providerReportedInputTokens": 1376,
   "outputTokenCap": 0,
-  "conservativeEstimatedCostUsd": 0.0003596,
+  "conservativeEstimatedCostUsd": 0.0008019000000000001,
   "reportedUsageCostUsd": null,
   "budgetUsd": 0.02,
   "requestResults": [
@@ -26,15 +26,39 @@
       "path": "control",
       "localEstimatedInputTokens": 176,
       "providerReportedInputTokens": 305,
-      "elapsedMs": 1358.08
+      "elapsedMs": 1234.46
     },
     {
       "fixtureId": "repeated-project-identifiers",
       "category": "project-heavy",
-      "path": "entityDictionary",
+      "path": "currentText",
+      "localEstimatedInputTokens": 128,
+      "providerReportedInputTokens": 273,
+      "elapsedMs": 218.96
+    },
+    {
+      "fixtureId": "repeated-project-identifiers",
+      "category": "project-heavy",
+      "path": "currentPacket",
       "localEstimatedInputTokens": 153,
-      "providerReportedInputTokens": 325,
-      "elapsedMs": 607.27
+      "providerReportedInputTokens": 322,
+      "elapsedMs": 217.56
+    },
+    {
+      "fixtureId": "repeated-project-identifiers",
+      "category": "project-heavy",
+      "path": "compactText",
+      "localEstimatedInputTokens": 128,
+      "providerReportedInputTokens": 225,
+      "elapsedMs": 207.95
+    },
+    {
+      "fixtureId": "repeated-project-identifiers",
+      "category": "project-heavy",
+      "path": "compactPacket",
+      "localEstimatedInputTokens": 149,
+      "providerReportedInputTokens": 251,
+      "elapsedMs": 223.34
     }
   ],
   "comparisons": [
@@ -43,8 +67,17 @@
       "category": "project-heavy",
       "requiredPhraseCount": 2,
       "controlProviderInputTokens": 305,
-      "entityDictionaryProviderInputTokens": 325,
-      "providerInputTokensSaved": -20
+      "entityDictionaryProviderInputTokens": 322,
+      "providerInputTokensSaved": -17,
+      "packetTokenDiagnostics": {
+        "originalText": 305,
+        "currentTransformedTextOnly": 273,
+        "currentFullPacket": 322,
+        "compactTransformedTextOnly": 225,
+        "compactFullPacket": 251,
+        "currentEnvelopeOverhead": 49,
+        "compactEnvelopeOverhead": 26
+      }
     }
   ],
   "errors": [],

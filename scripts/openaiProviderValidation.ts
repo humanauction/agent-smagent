@@ -8,6 +8,10 @@ import { applyPayloadCompression } from "../ha_core/transform/payload.js";
 import type { SMAGEMessage } from "../ha_core/index.js";
 import { freezeCorpus } from "../tests/freeze/freezeCorpus.js";
 import { entityDictionaryFixtures } from "../tests/transform/entityDictionaryFixtures.js";
+import {
+    factorRepeatedEntities,
+    factorRepeatedEntitiesCompact,
+} from "../ha_core/transform/entityDictionary.js";
 import { configureSessionStore } from "../ha_core/cache/store.js";
 import { defaultSessionStorePath } from "../ha_core/cache/sessionStore.js";
 
@@ -32,12 +36,28 @@ interface ValidationCase {
     requiredPhrases: string[];
     control: string;
     optIn: string;
+    diagnosticInputs?: {
+        path:
+            | "control"
+            | "entityDictionary"
+            | "currentText"
+            | "currentPacket"
+            | "compactText"
+            | "compactPacket";
+        input: string;
+    }[];
 }
 
 interface RequestResult {
     fixtureId: string;
     category: string;
-    path: "control" | "entityDictionary";
+    path:
+        | "control"
+        | "entityDictionary"
+        | "currentText"
+        | "currentPacket"
+        | "compactText"
+        | "compactPacket";
     localEstimatedInputTokens: number;
     providerReportedInputTokens: number | null;
     elapsedMs: number | null;
@@ -95,14 +115,28 @@ async function makeCases(scope: "smoke" | "full"): Promise<ValidationCase[]> {
             (entry) => entry.id === "repeated-project-identifiers",
         );
         if (!fixture) throw new Error("Smoke fixture is missing");
-        return [
-            await entityFixtureCase(
-                fixture.id,
-                fixture.category,
-                fixture.content,
-                fixture.requiredPhrases ?? [],
-            ),
-        ];
+        const session = `live-${fixture.id}-diagnostic`;
+        const current = factorRepeatedEntities(fixture.content, session);
+        const compact = factorRepeatedEntitiesCompact(fixture.content, session);
+        if (!current || !compact) {
+            throw new Error("Smoke fixture did not produce both packet encodings");
+        }
+        const currentPacket = JSON.parse(current.content) as { text: string };
+        const compactPacket = JSON.parse(compact.content) as { t: string };
+        return [{
+            id: fixture.id,
+            category: fixture.category,
+            requiredPhrases: fixture.requiredPhrases ?? [],
+            control: fixture.content,
+            optIn: current.content,
+            diagnosticInputs: [
+                { path: "control", input: fixture.content },
+                { path: "currentText", input: currentPacket.text },
+                { path: "currentPacket", input: current.content },
+                { path: "compactText", input: compactPacket.t },
+                { path: "compactPacket", input: compact.content },
+            ],
+        }];
     }
 
     const corpusCases: ValidationCase[] = [];
@@ -309,12 +343,24 @@ async function main() {
 
     const requestInputs: {
         fixture: ValidationCase;
-        path: "control" | "entityDictionary";
+        path: RequestResult["path"];
         input: string;
-    }[] = cases.flatMap((fixture) => [
-        { fixture, path: "control" as const, input: fixture.control },
-        { fixture, path: "entityDictionary" as const, input: fixture.optIn },
-    ]);
+    }[] = cases.flatMap((fixture) =>
+        fixture.diagnosticInputs
+            ? fixture.diagnosticInputs.map((variant) => ({
+                  fixture,
+                  path: variant.path,
+                  input: variant.input,
+              }))
+            : [
+                  { fixture, path: "control" as const, input: fixture.control },
+                  {
+                      fixture,
+                      path: "entityDictionary" as const,
+                      input: fixture.optIn,
+                  },
+              ],
+    );
     const totalByteBound = requestInputs.reduce(
         (total, entry) => total + byteBound(entry.input),
         0,
@@ -365,12 +411,17 @@ async function main() {
     }
 
     const byFixture = cases.map((fixture) => {
+        const getTokens = (path: RequestResult["path"]) =>
+            results.find((row) => row.fixtureId === fixture.id && row.path === path)
+                ?.providerReportedInputTokens ?? null;
         const control = results.find(
             (row) => row.fixtureId === fixture.id && row.path === "control",
         );
         const optIn = results.find(
             (row) =>
                 row.fixtureId === fixture.id && row.path === "entityDictionary",
+        ) ?? results.find(
+            (row) => row.fixtureId === fixture.id && row.path === "currentPacket",
         );
         return {
             id: fixture.id,
@@ -388,6 +439,29 @@ async function main() {
                     ? control.providerReportedInputTokens -
                       optIn.providerReportedInputTokens
                     : null,
+            ...(fixture.diagnosticInputs
+                ? {
+                      packetTokenDiagnostics: {
+                          originalText: getTokens("control"),
+                          currentTransformedTextOnly: getTokens("currentText"),
+                          currentFullPacket: getTokens("currentPacket"),
+                          compactTransformedTextOnly: getTokens("compactText"),
+                          compactFullPacket: getTokens("compactPacket"),
+                          currentEnvelopeOverhead:
+                              getTokens("currentPacket") !== null &&
+                              getTokens("currentText") !== null
+                                  ? getTokens("currentPacket")! -
+                                    getTokens("currentText")!
+                                  : null,
+                          compactEnvelopeOverhead:
+                              getTokens("compactPacket") !== null &&
+                              getTokens("compactText") !== null
+                                  ? getTokens("compactPacket")! -
+                                    getTokens("compactText")!
+                                  : null,
+                      },
+                  }
+                : {}),
         };
     });
     const completed = results.length;
@@ -421,6 +495,9 @@ async function main() {
         reportPath,
     };
     writeReport(reportPath, output);
+    console.log(
+        `OpenAI input-token validation ${output.status}: ${completed} count requests; report written to ${reportPath}`,
+    );
     if (errors.length) process.exitCode = 1;
 }
 

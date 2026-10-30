@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { SMAGEMessage } from "../../ha_core/index.js";
 import {
     factorRepeatedEntities,
+    factorRepeatedEntitiesCompact,
     restoreRepeatedEntities,
 } from "../../ha_core/transform/entityDictionary.js";
 import { applyPayloadCompression } from "../../ha_core/transform/payload.js";
@@ -112,6 +113,38 @@ describe("opt-in entity dictionary compression", () => {
                 packet?.reference ?? "",
             ),
         ).toBe(fixture.content);
+    });
+
+    it("round-trips the compact candidate and avoids literal handle collisions", () => {
+        const fixture = entityDictionaryFixtures.find(
+            (candidate) => candidate.id === "repeated-project-identifiers",
+        );
+        if (!fixture) throw new Error("Project fixture missing");
+        const content = `${fixture.content} The literal handle §0§ remains unchanged.`;
+        const session = "compact-entity-candidate-session";
+        const compact = factorRepeatedEntitiesCompact(content, session);
+        const current = factorRepeatedEntities(content, session);
+
+        expect(compact).not.toBeNull();
+        expect(current).not.toBeNull();
+        const packet = JSON.parse(compact?.content ?? "{}") as {
+            $e?: number;
+            d?: [string, string][];
+            t?: string;
+            reference?: string;
+        };
+        expect(packet.$e).toBe(2);
+        expect(packet.d?.[0]?.[0]).not.toBe("§0§");
+        expect(packet.reference).toBeUndefined();
+        expect(compact?.content.length).toBeLessThan(current?.content.length ?? 0);
+        expect(packet.t).toContain("The literal handle §0§ remains unchanged.");
+        expect(
+            restoreRepeatedEntities(
+                compact?.content ?? "{}",
+                session,
+                compact?.reference ?? "",
+            ),
+        ).toBe(content);
     });
 
     it("keeps ordinary/default and baselineFreeze output unchanged and restores opt-in output", async () => {

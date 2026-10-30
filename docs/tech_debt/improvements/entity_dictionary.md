@@ -33,6 +33,22 @@ The fixture set now covers repeated project identifiers; similar names and prefi
 
 Decision: retain as opt-in for further evaluation. The implementation demonstrates reversible behavior and positive estimates on project-shaped synthetic inputs, but needs naturally occurring entity-heavy fixtures and provider-tokenizer measurements before any default or baseline promotion.
 
+## Provider-tokenizer packet diagnostic
+
+On 2026-10-30, a gated count-only smoke compared the original fixture, current transformed text without its envelope, the current full packet, and the same two variants using an experimental compact encoding. The complete request inputs were measured with the OpenAI input-token count endpoint; no responses were generated. See [`openai_provider_validation.json`](../../benchmarks/openai_provider_validation.json).
+
+| Variant | Provider input tokens | Change from original |
+| --- | ---: | ---: |
+| Original text | 305 | — |
+| Current transformed text only | 273 | −32 |
+| Current full packet | 322 | +17 |
+| Compact transformed text only | 225 | −80 |
+| Compact full packet | 251 | −54 |
+
+The current envelope added 49 tokens over its transformed text; the compact envelope added 26. The compact candidate uses collision-checked `§n§` handles and shorter JSON keys, and omits the inline reference already carried in message metadata. Its reference remains session-bound and verified during local restoration. A focused test confirms exact restoration and avoids a literal `§0§` collision. Five count requests were made; the conservative cost estimate was $0.000802.
+
+This is one synthetic fixture and one tokenizer measurement. The compact packet's short keys are less self-describing than the current packet, and count-only validation does not test whether a model interprets or uses it correctly. Keep the compact format out of the CCR path. Next, assess how to make its encoding semantics explicit without losing the token savings, add naturally occurring non-sensitive project examples, then repeat the gated comparison. Run the full comparison only if those checks support it.
+
 Rerun and write only this report with:
 
 ```bash

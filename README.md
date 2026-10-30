@@ -79,7 +79,7 @@ Proxy dashboards and HTML rendering modules exist. A cohesive CCR visualizer, me
 
 The agreed experiment order is **schema factoring → entity dictionary compression → AST evaluation → priority-threshold experiments → UI and observability**. Schema factoring stays behind `schemaFactoring: true`, disabled by default and under `baselineFreeze`. Its expanded evaluation covered eight freeze cases and 21 varied codec fixtures: six encoded fixtures round-tripped and saved 1,212 heuristic tokens in aggregate; 14 unsupported inputs fell back unchanged, and the minimum-size shape was declined because packet overhead exceeded savings. The freeze corpus had no eligible arrays. See its [proposal](docs/tech_debt/improvements/schema_factor.md) and [expanded report](docs/benchmarks/schema_factoring_expanded_comparison.json).
 
-Entity dictionary compression is the active experiment. It replaces repeated exact title-cased multiword spans only when the complete inline packet shows estimated savings. The map stays inline and its reference is session-bound, with no durable registry. The project-oriented expansion now covers 16 fixtures (7 project-heavy): 13 factored, 3 fell back unchanged, required phrases were retained, and the local estimate saved 281 tokens. In the eight freeze cases, no message factored, phrase loss was zero, and freeze-mode output matched exactly. Some synthetic gains are small; keep it opt-in pending provider-tokenizer evidence and naturally occurring project text. See the [proposal](docs/tech_debt/improvements/entity_dictionary.md) and [report](docs/benchmarks/entity_dictionary_comparison.json).
+Entity dictionary compression is the active experiment. It replaces repeated exact title-cased multiword spans only when the complete inline packet shows estimated savings. The map stays inline and its reference is session-bound, with no durable registry. The project-oriented expansion covers 16 fixtures (7 project-heavy): 13 factored, 3 fell back unchanged, required phrases were retained, and the local estimate saved 281 tokens. In the eight freeze cases, no message factored, phrase loss was zero, and freeze-mode output matched exactly. A gated count-only smoke found the current full packet costs 17 more provider tokens than the original on its one synthetic fixture. A compact candidate saved 54 provider tokens on that fixture, but its short keys need a clear interpretation contract before it can enter the CCR path. Keep the feature opt-in. See the [proposal](docs/tech_debt/improvements/entity_dictionary.md), [offline report](docs/benchmarks/entity_dictionary_comparison.json), and [provider report](docs/benchmarks/openai_provider_validation.json).
 
 Both experiment reports are separate from the approved freeze benchmark. Rerun the entity comparison with `SMAGE_ENTITY_DICTIONARY_REPORT=docs/benchmarks/entity_dictionary_comparison.json npx vitest --run tests/transform/entityDictionary.test.ts tests/transform/entityDictionaryComparison.test.ts`.
 
@@ -98,16 +98,16 @@ SMAGE_RUN_OPENAI_VALIDATION=1 SMAGE_OPENAI_VALIDATION_SCOPE=smoke \
   node --env-file-if-exists=smage/.env --import tsx scripts/openaiProviderValidation.ts
 ```
 
-Only after reviewing that report, run the full freeze corpus plus project fixtures:
+The smoke makes five count-only requests to isolate the original text, transformed text, and full current and compact packets. On 2026-10-30 it recorded 305 tokens for original text, 322 for the current packet, and 251 for the compact candidate. The compact packet remains evaluation-only because the short keys have not been validated for model interpretation. Once its semantics and naturally occurring fixture coverage are addressed, decide whether the full freeze corpus and project-fixture run is justified:
 
 ```bash
 SMAGE_RUN_OPENAI_VALIDATION=1 SMAGE_OPENAI_VALIDATION_SCOPE=full \
-  node --env-file-if-exists=.env --import tsx scripts/openaiProviderValidation.ts
+  node --env-file-if-exists=smage/.env --import tsx scripts/openaiProviderValidation.ts
 ```
 
 With the gate disabled, the script writes a `skipped` report and sends no request. If the gate is enabled but the API key or required price configuration is missing, it records the reason, sends no request, and exits with an error. Verify the current balance before running. Never write the API key to repository files, reports, or logs.
 
-Next: gather naturally occurring entity-heavy project examples, run the smoke check once the ignored local environment file is configured, review its token-count report, then decide whether the full corpus run is justified. Keep entity dictionary and future AST work opt-in; baseline promotion still requires a separately reviewed candidate.
+Next: define how the compact packet communicates its meaning, preserve exact reconstruction and handle collision safety, and gather non-sensitive naturally occurring entity-heavy examples. Re-run the gated smoke only after those changes; run the full corpus only if the compact candidate still shows provider-token savings. Keep entity dictionary and future AST work opt-in; baseline promotion still requires a separately reviewed candidate.
 
 ## CCR pipeline
 
