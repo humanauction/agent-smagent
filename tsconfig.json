@@ -45,6 +45,7 @@
         "ha_docs/**/*",
         "ha_learn/**/*",
         "smage/**/*",
+        "scripts/**/*",
         "tests/**/*",
         "vitest.config.mts"
     ],

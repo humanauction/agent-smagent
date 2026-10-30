@@ -5,7 +5,7 @@
   "skipReason": null,
   "provider": "OpenAI",
   "model": "gpt-6-luna",
-  "timestamp": "2026-10-28T17:15:13.137Z",
+  "timestamp": "2026-10-30T16:00:55.879Z",
   "scope": "smoke",
   "fixtureIds": [
     "repeated-project-identifiers"
@@ -26,7 +26,7 @@
       "path": "control",
       "localEstimatedInputTokens": 176,
       "providerReportedInputTokens": 305,
-      "elapsedMs": 1540.11
+      "elapsedMs": 1358.08
     },
     {
       "fixtureId": "repeated-project-identifiers",
@@ -34,7 +34,7 @@
       "path": "entityDictionary",
       "localEstimatedInputTokens": 153,
       "providerReportedInputTokens": 325,
-      "elapsedMs": 402.45
+      "elapsedMs": 607.27
     }
   ],
   "comparisons": [
