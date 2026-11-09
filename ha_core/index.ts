@@ -10,7 +10,6 @@ export interface SMAGEOptions {
     baselineFreeze?: boolean;
     tierPolicy?: "baseline" | "relevanceFirst";
     schemaFactoring?: boolean;
-    entityDictionary?: boolean;
 
     // Provider‑specific CCR shaping metadata
     provider?: string;
@@ -43,7 +42,3 @@ export {
     factorJsonRecords,
     restoreFactoredJson,
 } from "./transform/schemaFactoring.js";
-export {
-    factorRepeatedEntities,
-    restoreRepeatedEntities,
-} from "./transform/entityDictionary.js";
