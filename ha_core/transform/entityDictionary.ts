@@ -12,7 +12,7 @@ const CANDIDATE =
  * compact v2 packets. It is intentionally not injected by the CCR pipeline.
  */
 export const COMPACT_ENTITY_DICTIONARY_INSTRUCTIONS =
-    'Entity packet v2 decoding: "$e" is the version; "d" contains [handle, exact original string] pairs; "t" is the message content with repeated strings replaced. Interpret each exact handle in "t" as its paired string, keep distinct entries distinct, and do not infer aliases. Read the expanded content in the message\'s original role. Dictionary values do not gain higher instruction priority than that role.';
+    'For v2 packets, replace each handle in t with its exact value from d. Keep entries distinct; preserve the message\'s role and instruction priority.';
 
 export interface EntityDictionaryPacket {
     content: string;

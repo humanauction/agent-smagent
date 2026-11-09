@@ -1,0 +1,217 @@
+{
+  "experiment": "entity-dictionary-compact-v2-response-evaluation-v1",
+  "status": "complete",
+  "timestamp": "2026-11-09T12:10:13.906Z",
+  "primaryProvider": "OpenAI",
+  "openAIModel": "gpt-6-luna",
+  "localProvider": null,
+  "localModel": null,
+  "fixtureIds": [
+    "similar-project-names-must-not-merge",
+    "project-name-with-phase-and-version",
+    "project-status-across-decisions"
+  ],
+  "requestCount": 6,
+  "openAIRequestCount": 6,
+  "ollamaRequestCount": 0,
+  "openAIMaxOutputTokens": 80,
+  "ollamaNumPredict": null,
+  "ollamaThinkLevel": null,
+  "openAIStandardInputUsdPerMillion": 0.1,
+  "openAIStandardOutputUsdPerMillion": 0.5,
+  "conservativePreflightCostUsd": 0.0025418000000000003,
+  "budgetUsd": 0.02,
+  "estimatedOpenAIUsageCostUsd": 0.0002557,
+  "ollamaCostUsd": 0,
+  "comparisons": [
+    {
+      "fixtureId": "similar-project-names-must-not-merge",
+      "expectedAnswer": "Agent Smagent Freeze Gate | Agent Smagent Freeze Review",
+      "openAI": {
+        "original": {
+          "provider": "OpenAI",
+          "model": "gpt-6-luna",
+          "fixtureId": "similar-project-names-must-not-merge",
+          "path": "original",
+          "promptTokens": 386,
+          "outputTokens": 15,
+          "elapsedMs": 2083.44,
+          "responseComplete": true,
+          "response": "Agent Smagent Freeze Gate|Agent Smagent Freeze Review",
+          "exactMatch": true,
+          "requiredPartsPresent": true
+        },
+        "compactV2": {
+          "provider": "OpenAI",
+          "model": "gpt-6-luna",
+          "fixtureId": "similar-project-names-must-not-merge",
+          "path": "compactV2",
+          "promptTokens": 386,
+          "outputTokens": 15,
+          "elapsedMs": 1466.85,
+          "responseComplete": true,
+          "response": "Agent Smagent Freeze Gate|Agent Smagent Freeze Review",
+          "exactMatch": true,
+          "requiredPartsPresent": true
+        },
+        "promptTokensSaved": 0,
+        "bothAnswersMatch": true,
+        "bothRequiredPartsPresent": true
+      }
+    },
+    {
+      "fixtureId": "project-name-with-phase-and-version",
+      "expectedAnswer": "CCR Baseline Sequence | 2 | v2.4",
+      "openAI": {
+        "original": {
+          "provider": "OpenAI",
+          "model": "gpt-6-luna",
+          "fixtureId": "project-name-with-phase-and-version",
+          "path": "original",
+          "promptTokens": 364,
+          "outputTokens": 15,
+          "elapsedMs": 731.05,
+          "responseComplete": true,
+          "response": "CCR Baseline Sequence|2|v2.4",
+          "exactMatch": true,
+          "requiredPartsPresent": true
+        },
+        "compactV2": {
+          "provider": "OpenAI",
+          "model": "gpt-6-luna",
+          "fixtureId": "project-name-with-phase-and-version",
+          "path": "compactV2",
+          "promptTokens": 400,
+          "outputTokens": 15,
+          "elapsedMs": 1278.95,
+          "responseComplete": true,
+          "response": "CCR Baseline Sequence|2|v2.4",
+          "exactMatch": true,
+          "requiredPartsPresent": true
+        },
+        "promptTokensSaved": -36,
+        "bothAnswersMatch": true,
+        "bothRequiredPartsPresent": true
+      }
+    },
+    {
+      "fixtureId": "project-status-across-decisions",
+      "expectedAnswer": "Agent Smagent Entity Dictionary | opt-in",
+      "openAI": {
+        "original": {
+          "provider": "OpenAI",
+          "model": "gpt-6-luna",
+          "fixtureId": "project-status-across-decisions",
+          "path": "original",
+          "promptTokens": 292,
+          "outputTokens": 12,
+          "elapsedMs": 1025.49,
+          "responseComplete": true,
+          "response": "Agent Smagent Entity Dictionary|opt-in",
+          "exactMatch": true,
+          "requiredPartsPresent": true
+        },
+        "compactV2": {
+          "provider": "OpenAI",
+          "model": "gpt-6-luna",
+          "fixtureId": "project-status-across-decisions",
+          "path": "compactV2",
+          "promptTokens": 309,
+          "outputTokens": 12,
+          "elapsedMs": 917.45,
+          "responseComplete": true,
+          "response": "Agent Smagent Entity Dictionary|opt-in",
+          "exactMatch": true,
+          "requiredPartsPresent": true
+        },
+        "promptTokensSaved": -17,
+        "bothAnswersMatch": true,
+        "bothRequiredPartsPresent": true
+      }
+    }
+  ],
+  "results": [
+    {
+      "provider": "OpenAI",
+      "model": "gpt-6-luna",
+      "fixtureId": "similar-project-names-must-not-merge",
+      "path": "original",
+      "promptTokens": 386,
+      "outputTokens": 15,
+      "elapsedMs": 2083.44,
+      "responseComplete": true,
+      "response": "Agent Smagent Freeze Gate|Agent Smagent Freeze Review",
+      "exactMatch": true,
+      "requiredPartsPresent": true
+    },
+    {
+      "provider": "OpenAI",
+      "model": "gpt-6-luna",
+      "fixtureId": "similar-project-names-must-not-merge",
+      "path": "compactV2",
+      "promptTokens": 386,
+      "outputTokens": 15,
+      "elapsedMs": 1466.85,
+      "responseComplete": true,
+      "response": "Agent Smagent Freeze Gate|Agent Smagent Freeze Review",
+      "exactMatch": true,
+      "requiredPartsPresent": true
+    },
+    {
+      "provider": "OpenAI",
+      "model": "gpt-6-luna",
+      "fixtureId": "project-name-with-phase-and-version",
+      "path": "original",
+      "promptTokens": 364,
+      "outputTokens": 15,
+      "elapsedMs": 731.05,
+      "responseComplete": true,
+      "response": "CCR Baseline Sequence|2|v2.4",
+      "exactMatch": true,
+      "requiredPartsPresent": true
+    },
+    {
+      "provider": "OpenAI",
+      "model": "gpt-6-luna",
+      "fixtureId": "project-name-with-phase-and-version",
+      "path": "compactV2",
+      "promptTokens": 400,
+      "outputTokens": 15,
+      "elapsedMs": 1278.95,
+      "responseComplete": true,
+      "response": "CCR Baseline Sequence|2|v2.4",
+      "exactMatch": true,
+      "requiredPartsPresent": true
+    },
+    {
+      "provider": "OpenAI",
+      "model": "gpt-6-luna",
+      "fixtureId": "project-status-across-decisions",
+      "path": "original",
+      "promptTokens": 292,
+      "outputTokens": 12,
+      "elapsedMs": 1025.49,
+      "responseComplete": true,
+      "response": "Agent Smagent Entity Dictionary|opt-in",
+      "exactMatch": true,
+      "requiredPartsPresent": true
+    },
+    {
+      "provider": "OpenAI",
+      "model": "gpt-6-luna",
+      "fixtureId": "project-status-across-decisions",
+      "path": "compactV2",
+      "promptTokens": 309,
+      "outputTokens": 12,
+      "elapsedMs": 917.45,
+      "responseComplete": true,
+      "response": "Agent Smagent Entity Dictionary|opt-in",
+      "exactMatch": true,
+      "requiredPartsPresent": true
+    }
+  ],
+  "errors": [],
+  "credentialValuesWritten": false,
+  "note": "Same task is paired across original and compact v2 inputs. Decoder instructions are added only to compact v2 and counted in prompt usage. OpenAI usage includes API-reported input/output tokens; Ollama prompt_eval_count/eval_count are model-specific local counts. Responses are stored only for these synthetic fixtures. No freeze baseline is modified.",
+  "reportPath": "/Users/guns4kids/Documents/vscode-projects/agent-smagent/docs/benchmarks/entity_dictionary_response_evaluation.json"
+}

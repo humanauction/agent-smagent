@@ -13,7 +13,7 @@ Right?
 
 ## Current Stage: CCR Baseline and Evaluation
 
-The CCR pipeline and deterministic freeze harness are in place. The approved baseline is the regression reference; schema factoring has been evaluated and remains opt-in, and the current active experiment is entity dictionary compression. AST compression follows next. The learning engine is still a prototype; it does not yet tune CCR from measured results.
+The CCR pipeline and deterministic freeze harness are in place. The approved baseline is the regression reference; schema factoring has been evaluated and remains opt-in. Entity Dictionary compression was rejected for CCR after provider-token comparisons showed no net input savings, and its runtime option has been removed. AST compression evaluation is next. The learning engine is still a prototype; it does not yet tune CCR from measured results.
 
 ### Current freeze benchmark
 
@@ -75,39 +75,17 @@ Automatic edits to `CLAUDE.md`, `AGENTS.md`, or project rules require a separate
 
 Proxy dashboards and HTML rendering modules exist. A cohesive CCR visualizer, memory/session inspector, and provider-routing view remain future work. Build stage: after the metrics and event fields are stable enough to explain what the UI displays.
 
-#### 4. Compression research — entity dictionary active, opt-in
+#### 4. Compression research — Entity Dictionary rejected; AST evaluation next
 
-The agreed experiment order is **schema factoring → entity dictionary compression → AST evaluation → priority-threshold experiments → UI and observability**. Schema factoring stays behind `schemaFactoring: true`, disabled by default and under `baselineFreeze`. Its expanded evaluation covered eight freeze cases and 21 varied codec fixtures: six encoded fixtures round-tripped and saved 1,212 heuristic tokens in aggregate; 14 unsupported inputs fell back unchanged, and the minimum-size shape was declined because packet overhead exceeded savings. The freeze corpus had no eligible arrays. See its [proposal](docs/tech_debt/improvements/schema_factor.md) and [expanded report](docs/benchmarks/schema_factoring_expanded_comparison.json).
+The planned sequence was **schema factoring → entity dictionary compression → AST evaluation → priority-threshold experiments → UI and observability**. Schema factoring stays behind `schemaFactoring: true`, disabled by default and under `baselineFreeze`. Its expanded evaluation covered eight freeze cases and 21 varied codec fixtures: six encoded fixtures round-tripped and saved 1,212 heuristic tokens in aggregate; 14 unsupported inputs fell back unchanged, and the minimum-size shape was declined because packet overhead exceeded savings. The freeze corpus had no eligible arrays. See its [proposal](docs/tech_debt/improvements/schema_factor.md) and [expanded report](docs/benchmarks/schema_factoring_expanded_comparison.json).
 
-Entity dictionary compression is the active experiment. It replaces repeated exact title-cased multiword spans only when the complete inline packet shows estimated savings. The map stays inline and its reference is session-bound, with no durable registry. The project-oriented expansion covers 16 fixtures (7 project-heavy): 13 factored, 3 fell back unchanged, required phrases were retained, and the local estimate saved 281 tokens. In the eight freeze cases, no message factored, phrase loss was zero, and freeze-mode output matched exactly. A gated count-only smoke found the current full packet costs 17 more provider tokens than the original on its one synthetic fixture. The evaluation-only compact v2 candidate saved 54 provider tokens there. Its packet contract and model interpretation instruction are defined and its focused codec checks pass; it remains outside the CCR path pending local response evaluation and broader examples. Keep the feature opt-in. See the [proposal](docs/tech_debt/improvements/entity_dictionary.md), [offline report](docs/benchmarks/entity_dictionary_comparison.json), and [provider report](docs/benchmarks/openai_provider_validation.json).
+Entity Dictionary was evaluated on 16 synthetic fixtures and the eight-case freeze corpus. Its local heuristic estimated 281 tokens saved across eligible fixtures, but OpenAI counts showed the current full packet used 17 more tokens than the source on the smoke fixture. The compact v2 packet alone saved 54 tokens there; once its shorter decoder instruction was included in paired OpenAI responses, compact inputs used 0, 36, and 17 more prompt tokens across three tasks (53 extra total). Both original and compact inputs returned correct answers on all three. The efficiency gate failed, so the `entityDictionary` CCR option, transform/reconstruction branches, and live evaluation runners have been removed. The codec tests, fixtures, proposal, and [offline](docs/benchmarks/entity_dictionary_comparison.json), [tokenizer](docs/benchmarks/openai_provider_validation.json), and [response](docs/benchmarks/entity_dictionary_response_evaluation.json) reports remain as historical evidence; none changed the approved freeze baseline.
 
-Both experiment reports are separate from the approved freeze benchmark. Rerun the entity comparison with `SMAGE_ENTITY_DICTIONARY_REPORT=docs/benchmarks/entity_dictionary_comparison.json npx vitest --run tests/transform/entityDictionary.test.ts tests/transform/entityDictionaryComparison.test.ts`.
+AST compression is the next compression evaluation stage. The initial TypeScript/JavaScript fixtures are in place, and the TypeScript 6.0.3 compiler API parser/printer is pinned for evaluation. Next, define the lossless reconstruction contract before measuring complete-packet token cost, compilation, and unsupported-syntax fallback. No AST transform should enter CCR until those checks pass. See the [AST proposal](docs/tech_debt/improvements/ast_compress.md).
 
-AST compression remains an evaluation and contract-definition stage. To add later: AST transform to CCR after parser/printer versions, lossless reconstruction, unsupported syntax fallback, and complete-packet token accounting have been assessed. See the [AST proposal](docs/tech_debt/improvements/ast_compress.md).
+#### 5. Hosted-provider validation — task-specific and gated
 
-#### 5. Provider-tokenizer validation — gated
-
-This separate validation stage compares local estimates with OpenAI’s reported input token counts for control and opt-in inputs. It uses the [Responses API input-token endpoint](https://developers.openai.com/api/reference/resources/responses/subresources/input_tokens/methods/count); it generates no model response, so response quality and generation latency are outside this first pass. Each report records model, timestamp, scope, fixture IDs, request count, local and provider token counts, count-request latency, output-token cap (0), and cost estimate/availability. It writes only `docs/benchmarks/openai_provider_validation.json` and never updates the approved freeze benchmark.
-
-The gate fails closed unless `SMAGE_RUN_OPENAI_VALIDATION=1`, a key is supplied through the process environment, the model has a configured price, and the preflight estimate is within budget. The only configured model is `gpt-6-luna`; its current standard input price is $0.05 per million tokens on the [official pricing page](https://developers.openai.com/api/docs/pricing). The default guard is $0.02, with a hard maximum of $0.05. Pricing and model access will change always recheck them before running. The API key is read from the environment only and must never appear in repository files or reports. `.env` and `.env.*` are ignored by git.
-
-Initially starting with a small paired smoke fixture:
-
-```bash
-SMAGE_RUN_OPENAI_VALIDATION=1 SMAGE_OPENAI_VALIDATION_SCOPE=smoke \
-  node --env-file-if-exists=smage/.env --import tsx scripts/openaiProviderValidation.ts
-```
-
-The smoke makes five count-only requests to isolate the original text, transformed text, and full current and compact packets. On 2026-10-30 it recorded 305 tokens for original text, 322 for the current packet, and 251 for the compact candidate. The compact packet contract and interpretation instruction are now defined. The instruction is not injected into the CCR path; the next stage is a local response evaluation that includes its prompt cost. The compact packet remains evaluation-only until it passes that check and broader fixtures:
-
-```bash
-SMAGE_RUN_OPENAI_VALIDATION=1 SMAGE_OPENAI_VALIDATION_SCOPE=full \
-  node --env-file-if-exists=smage/.env --import tsx scripts/openaiProviderValidation.ts
-```
-
-With the gate disabled, the script writes a `skipped` report and sends no request. If the gate is enabled but the API key or required price configuration is missing, it records the reason, sends no request, and exits with an error. Verify the current balance before running. Never write the API key to repository files, reports, or logs.
-
-Next: run a small local response evaluation with the compact v2 interpretation instruction, include its prompt cost, and gather non-sensitive naturally occurring entity-heavy examples. Extend provider-token comparisons only if the response results are sound. Keep entity dictionary and future AST work opt-in; baseline promotion still requires a separately reviewed candidate.
+The Entity Dictionary-specific live runners have been retired with that experiment. Future hosted-provider evaluations must remain separate from the deterministic freeze benchmark, use synthetic or approved data, fail closed without an explicit feature gate, and enforce a small budget before sending requests. Never store API keys in source, fixtures, reports, or logs; `.env` files are git-ignored.
 
 ## CCR pipeline
 

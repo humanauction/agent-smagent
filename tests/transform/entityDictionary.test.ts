@@ -1,19 +1,16 @@
 import { describe, expect, it } from "vitest";
-import type { SMAGEMessage } from "../../ha_core/index.js";
 import {
     factorRepeatedEntities,
     factorRepeatedEntitiesCompact,
     restoreRepeatedEntities,
 } from "../../ha_core/transform/entityDictionary.js";
-import { applyPayloadCompression } from "../../ha_core/transform/payload.js";
-import { reconstruct } from "../../ha_core/transform/reconstruct.js";
 import { entityDictionaryFixtures } from "./entityDictionaryFixtures.js";
 
 // this file tests:
 // entity dictionary factoring, restoration logic;
 // ensures repeated title-cased multiword names are correctly factored into a dictionary, restored;
 // verifies factoring only occurs when results is positive net savings.
-describe("opt-in entity dictionary compression", () => {
+describe("archived entity dictionary codec", () => {
     it("factors only when the inline dictionary packet has positive net savings", () => {
         for (const fixture of entityDictionaryFixtures) {
             const factored = factorRepeatedEntities(
@@ -200,65 +197,7 @@ describe("opt-in entity dictionary compression", () => {
         ];
         for (const content of malformed) {
             expect(restoreRepeatedEntities(content, session, compact.reference)).toBeNull();
-            const unchanged = reconstruct(
-                [
-                    {
-                        role: "user",
-                        content,
-                        meta: {
-                            entityDictionaryFactored: true,
-                            entityDictionaryReference: compact.reference,
-                        },
-                    },
-                ],
-                {},
-                session,
-            );
-            expect(unchanged[0]?.content).toBe(content);
         }
     });
 
-    it("keeps ordinary/default and baselineFreeze output unchanged and restores opt-in output", async () => {
-        const fixture = entityDictionaryFixtures[0];
-        if (!fixture) throw new Error("Entity fixture missing");
-        const source: SMAGEMessage = {
-            role: "user",
-            content: fixture.content,
-            meta: { priority: 3, relevance: 0.9 },
-        };
-        const control = await applyPayloadCompression(
-            [source],
-            { maxPayloadChars: 20_000 },
-            "entity-default-session",
-        );
-        const defaultWithOption = await applyPayloadCompression(
-            [source],
-            { entityDictionary: false, maxPayloadChars: 20_000 },
-            "entity-default-session",
-        );
-        const frozen = await applyPayloadCompression(
-            [source],
-            {
-                entityDictionary: true,
-                baselineFreeze: true,
-                maxPayloadChars: 20_000,
-            },
-            "entity-frozen-session",
-        );
-        expect(defaultWithOption).toEqual(control);
-        expect(frozen).toEqual(control);
-
-        const session = "entity-reconstruction-session";
-        const encoded = await applyPayloadCompression(
-            [source],
-            { entityDictionary: true, maxPayloadChars: 20_000 },
-            session,
-        );
-        expect(encoded[0]?.meta?.entityDictionaryFactored).toBe(true);
-        const withoutOwner = reconstruct(encoded, {}, "another-session");
-        expect(withoutOwner[0]?.content).toBe(encoded[0]?.content);
-        const restored = reconstruct(encoded, {}, session);
-        expect(restored[0]?.content).toBe(fixture.content);
-        expect(restored[0]?.meta?.entityDictionaryFactored).toBeUndefined();
-    });
 });
