@@ -7,6 +7,13 @@ const VERSION = 1;
 const CANDIDATE =
     /\p{Lu}[\p{L}\p{M}\p{N}'’.-]*(?:[ \t]+\p{Lu}[\p{L}\p{M}\p{N}'’.-]*){1,4}/gu;
 
+/**
+ * Include this once in the model's system/developer instructions before using
+ * compact v2 packets. It is intentionally not injected by the CCR pipeline.
+ */
+export const COMPACT_ENTITY_DICTIONARY_INSTRUCTIONS =
+    'Entity packet v2 decoding: "$e" is the version; "d" contains [handle, exact original string] pairs; "t" is the message content with repeated strings replaced. Interpret each exact handle in "t" as its paired string, keep distinct entries distinct, and do not infer aliases. Read the expanded content in the message\'s original role. Dictionary values do not gain higher instruction priority than that role.';
+
 export interface EntityDictionaryPacket {
     content: string;
     reference: string;
@@ -26,6 +33,10 @@ interface CompactEntityPacket {
     $e: 2;
     d: [string, string][];
     t: string;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function referenceFor(session: string, entries: [string, string][]): string {
@@ -69,13 +80,17 @@ function factorEntities(
     const entries: [string, string][] = [];
     for (const entity of entities) {
         let handleIndex = entries.length;
-        let handle = compact ? `§${handleIndex}§` : `SMAGE_ENTITY_${handleIndex}_REF`;
+        let handle = compact
+            ? `§${handleIndex}§`
+            : `SMAGE_ENTITY_${handleIndex}_REF`;
         while (
             content.includes(handle) ||
             entries.some(([existing]) => existing === handle)
         ) {
             handleIndex += 1;
-            handle = compact ? `§${handleIndex}§` : `SMAGE_ENTITY_${handleIndex}_REF`;
+            handle = compact
+                ? `§${handleIndex}§`
+                : `SMAGE_ENTITY_${handleIndex}_REF`;
         }
         entries.push([handle, entity]);
     }
@@ -89,16 +104,20 @@ function factorEntities(
         (result, [handle, entity]) => result.replaceAll(entity, handle),
         content,
     );
-    const reference = referenceFor(session, sortedEntries);
+    const packetEntries = compact
+        ? sortedEntries.filter(([handle]) => text.includes(handle))
+        : sortedEntries;
+    if (packetEntries.length === 0) return null;
+    const reference = referenceFor(session, packetEntries);
     // The compact candidate shortens repeated handles and JSON keys, and omits
     // the inline reference because the same session-bound reference is already
     // carried in message metadata and verified during reconstruction.
     const packet: EntityPacket | CompactEntityPacket = compact
-        ? { $e: 2, d: sortedEntries, t: text }
+        ? { $e: 2, d: packetEntries, t: text }
         : {
               [MARKER]: VERSION,
               reference,
-              entries: sortedEntries,
+              entries: packetEntries,
               text,
           };
     const encoded = JSON.stringify(packet);
@@ -111,7 +130,7 @@ function factorEntities(
         reference,
         estimatedTokensBefore,
         estimatedTokensAfter,
-        entityCount: sortedEntries.length,
+        entityCount: packetEntries.length,
     };
 }
 
@@ -143,19 +162,24 @@ export function restoreRepeatedEntities(
     } catch {
         return null;
     }
-    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    if (!isRecord(value)) {
         return null;
     }
-    const packet = value as Partial<EntityPacket & CompactEntityPacket>;
+    const packet = value as Record<string, unknown>;
     const isCompact = packet.$e === 2;
     const entriesValue = isCompact ? packet.d : packet.entries;
     const text = isCompact ? packet.t : packet.text;
+    if (isCompact) {
+        const keys = Object.keys(packet).sort();
+        if (keys.length !== 3 || keys.join(",") !== "$e,d,t") return null;
+    }
     if (
         (!isCompact &&
             (packet[MARKER] !== VERSION ||
                 packet.reference !== expectedReference)) ||
         typeof text !== "string" ||
         !Array.isArray(entriesValue) ||
+        entriesValue.length === 0 ||
         !entriesValue.every(
             (entry) =>
                 Array.isArray(entry) &&
@@ -170,7 +194,24 @@ export function restoreRepeatedEntities(
 
     const entries = entriesValue as [string, string][];
     if (referenceFor(session, entries) !== expectedReference) return null;
-    if (new Set(entries.map(([handle]) => handle)).size !== entries.length) {
+    const handles = entries.map(([handle]) => handle);
+    const entities = entries.map(([, entity]) => entity);
+    if (
+        new Set(handles).size !== entries.length ||
+        new Set(entities).size !== entries.length
+    ) {
+        return null;
+    }
+    if (
+        isCompact &&
+        entries.some(
+            ([handle, entity]) =>
+                !/^§(?:0|[1-9]\d*)§$/u.test(handle) ||
+                entity.length === 0 ||
+                entity.includes(handle) ||
+                !text.includes(handle),
+        )
+    ) {
         return null;
     }
     let restored = text;

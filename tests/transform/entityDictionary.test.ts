@@ -135,6 +135,7 @@ describe("opt-in entity dictionary compression", () => {
         };
         expect(packet.$e).toBe(2);
         expect(packet.d?.[0]?.[0]).not.toBe("§0§");
+        expect(packet.d?.every(([handle]) => packet.t?.includes(handle))).toBe(true);
         expect(packet.reference).toBeUndefined();
         expect(compact?.content.length).toBeLessThan(current?.content.length ?? 0);
         expect(packet.t).toContain("The literal handle §0§ remains unchanged.");
@@ -145,6 +146,76 @@ describe("opt-in entity dictionary compression", () => {
                 compact?.reference ?? "",
             ),
         ).toBe(content);
+    });
+
+    it("enforces the compact v2 packet contract and preserves malformed packets", () => {
+        const fixture = entityDictionaryFixtures.find(
+            (candidate) =>
+                candidate.id === "similar-project-names-must-not-merge",
+        );
+        if (!fixture) throw new Error("Similar-name fixture missing");
+        const session = "compact-contract-session";
+        const compact = factorRepeatedEntitiesCompact(fixture.content, session);
+        expect(compact).not.toBeNull();
+        if (!compact) throw new Error("Compact packet was not produced");
+
+        const packet = JSON.parse(compact.content) as {
+            $e: number;
+            d: [string, string][];
+            t: string;
+        };
+        const names = packet.d.map(([, name]) => name);
+        expect(names).toContain("Agent Smagent Freeze Gate");
+        expect(names).toContain("Agent Smagent Freeze Review");
+        expect(new Set(names).size).toBe(names.length);
+        expect(
+            restoreRepeatedEntities(compact.content, session, compact.reference),
+        ).toBe(fixture.content);
+        expect(
+            restoreRepeatedEntities(
+                compact.content,
+                "different-compact-contract-session",
+                compact.reference,
+            ),
+        ).toBeNull();
+        expect(
+            restoreRepeatedEntities(
+                compact.content,
+                session,
+                "stale-compact-reference",
+            ),
+        ).toBeNull();
+
+        const firstHandle = packet.d[0]?.[0] ?? "§0§";
+        const malformed = [
+            JSON.stringify({ ...packet, extra: true }),
+            JSON.stringify({ ...packet, $e: 3 }),
+            JSON.stringify({
+                ...packet,
+                d: [
+                    [firstHandle, "duplicate one"],
+                    [firstHandle, "duplicate two"],
+                ],
+            }),
+        ];
+        for (const content of malformed) {
+            expect(restoreRepeatedEntities(content, session, compact.reference)).toBeNull();
+            const unchanged = reconstruct(
+                [
+                    {
+                        role: "user",
+                        content,
+                        meta: {
+                            entityDictionaryFactored: true,
+                            entityDictionaryReference: compact.reference,
+                        },
+                    },
+                ],
+                {},
+                session,
+            );
+            expect(unchanged[0]?.content).toBe(content);
+        }
     });
 
     it("keeps ordinary/default and baselineFreeze output unchanged and restores opt-in output", async () => {
